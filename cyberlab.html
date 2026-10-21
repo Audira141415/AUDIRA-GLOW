@@ -1,0 +1,1836 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CYBER LAB · 5 Advanced Sci-Fi Technologies</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg:#0c0d0e; --panel:#141516; --edge:#222426;
+    --line:#3d4144; --detail:#2b2e30; --body:#17181a; --deck:#1b1d1f;
+    --ink:#868b8f; --ink-hi:#e6e8e9; --live:#f4f5f5;
+    --glass:#0f1011; --glass-on:#1a1410; --recess:#0e0f10;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
+    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
+    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
+    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+  } }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
+    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
+    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
+    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--mono); font-size:13px; padding:20px 16px 32px; }
+  .wrap { max-width:1180px; margin-inline:auto; display:grid; gap:14px; }
+  .top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 18px; text-transform:uppercase; letter-spacing:.14em; padding:0 4px; }
+  .top .hi { color:var(--ink-hi); }
+  .top .dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); margin-right:10px; vertical-align:1px; }
+  .arrows { display:flex; gap:6px; }
+  .arrows button, nav button { font:inherit; color:inherit; background:none; border:1px solid var(--edge); border-radius:10px; cursor:pointer; }
+  .arrows button { padding:6px 12px; letter-spacing:.14em; text-transform:uppercase; }
+  .arrows button:hover { color:var(--ink-hi); border-color:var(--line); }
+  .top .hi { margin-right:auto; }
+  .swatches { display:flex; align-items:center; gap:4px; padding:4px; border:1px solid var(--edge); border-radius:999px; }
+  .swatches button { width:26px; height:26px; border-radius:50%; border:1px solid transparent; background:none; cursor:pointer; display:grid; place-items:center; padding:0; }
+  .swatches button i { width:12px; height:12px; border-radius:50%; background:var(--sw); border:1px solid var(--line); box-shadow:0 0 0 0 var(--sw); transition:box-shadow .2s, transform .2s; }
+  .swatches button:hover i { transform:scale(1.15); }
+  .swatches button[aria-checked="true"] { border-color:var(--line); }
+  .swatches button[aria-checked="true"] i { box-shadow:0 0 10px 1px var(--sw); }
+  .swatches button:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+  .layout { display:grid; grid-template-columns:230px minmax(0,1fr); grid-template-rows:auto 1fr; grid-template-areas:"nav fig" "credit fig"; gap:14px; align-items:start; }
+  .layout > nav { grid-area:nav; } .layout > figure { grid-area:fig; } .layout > .credit { grid-area:credit; }
+  .made-with { display:flex; justify-content:flex-end; padding:2px 6px 0; font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+  .made-with a { color:var(--line); text-decoration:none; transition:color .2s; }
+  .made-with a:hover { color:var(--ink); }
+  .credit { align-self:end; display:grid; gap:3px; padding:0 16px 22px; font-size:12px; line-height:1.5; letter-spacing:.04em; }
+  .credit a { color:var(--ink); text-decoration:none; width:fit-content; transition:color .2s; }
+  .credit a:hover { color:var(--ink-hi); }
+  .credit a:hover .ar { color:var(--accent); }
+  .credit .ar { color:var(--line); transition:color .2s; }
+  .credit .by { color:var(--line); }
+  .credit .nm { color:var(--ink); }
+  .credit .cr { color:var(--line); margin-top:8px; font-size:11px; display:grid; gap:1px; }
+  .credit .cr .hs { white-space:nowrap; }
+  .credit .cr a { color:var(--line); }
+  .credit .cr a:hover { color:var(--ink-hi); }
+  .credit .soc { display:flex; gap:12px; margin-top:4px; }
+  .credit .soc a { display:grid; place-items:center; width:16px; height:16px; }
+  .credit .soc svg { width:14px; height:14px; fill:currentColor; transition:fill .2s; }
+  .credit .soc a:hover svg { fill:var(--accent); }
+  .credit a:focus-visible { outline:1px solid var(--accent); outline-offset:2px; border-radius:3px; }
+  nav { display:grid; gap:4px; background:var(--panel); border:1px solid var(--edge); border-radius:22px; padding:14px; }
+  nav button { display:flex; gap:12px; align-items:center; text-align:left; padding:9px 12px; border-color:transparent; letter-spacing:.06em; }
+  nav button .n { color:var(--line); font-size:12px; transition:color .2s; }
+  nav button:hover { color:var(--ink-hi); }
+  nav button[aria-current="true"] { color:var(--ink-hi); border-color:var(--edge); background:var(--bg); }
+  nav button[aria-current="true"] .n { color:var(--accent); text-shadow:0 0 8px var(--accent); }
+  figure { margin:0; background:var(--panel); border:1px solid var(--edge); border-radius:22px; padding:22px 26px; display:grid; gap:6px; min-width:0; }
+  .cap { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 18px; text-transform:uppercase; letter-spacing:.14em; }
+  .cap .hi { color:var(--ink-hi); text-transform:none; letter-spacing:.05em; }
+  #stageHolder { aspect-ratio:4/3; border-radius:14px; transition:background .5s; background:radial-gradient(ellipse 50% 45% at 50% 52%, transparent, transparent); }
+  #stageHolder.glow { background:radial-gradient(ellipse 50% 45% at 50% 52%, var(--accent-dim), transparent 72%); }
+  #stage { width:100%; height:100%; display:block; touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+  #stage:focus { outline:none; }
+  #stage:focus-visible { outline:1px dashed var(--line); outline-offset:4px; border-radius:8px; }
+  .fx { position:absolute; width:0; height:0; overflow:hidden; }
+  @media (max-width: 820px) {
+    .layout { grid-template-columns:1fr; grid-template-rows:auto; grid-template-areas:"nav" "fig" "credit"; }
+    .credit { padding:4px 8px 0; display:flex; flex-wrap:wrap; align-items:center; gap:4px 14px; }
+    .credit .soc { margin-top:0; }
+    .credit .cr { margin-top:0; flex-basis:100%; }
+    nav { position:relative; top:0; display:flex; overflow-x:auto; border-radius:16px; padding:8px; scrollbar-width:none; }
+    nav button { flex:none; padding:8px 10px; }
+    figure { padding:16px; }
+  }
+
+  /* ---------- shared figure vocabulary ---------- */
+  #stage text { font-family:var(--mono); }
+  .face { fill:var(--body); stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linejoin:round; }
+  .face.top { fill:var(--deck); }
+  .face.recess { fill:var(--recess); }
+  .detail { fill:none; stroke:var(--detail); stroke-width:1; vector-effect:non-scaling-stroke; }
+  .label { fill:var(--ink); font-family:var(--mono); }
+  .glass { fill:var(--glass); transition:fill .3s, stroke .3s; }
+  .glass.hot { fill:var(--glass-on); stroke:var(--accent); }
+  .halo { fill:var(--accent); opacity:0; transition:opacity .4s; }
+  .halo.hot { opacity:.22; }
+  .scr { fill:var(--accent-hi); font-family:var(--mono); }
+  .scr-accent { fill:var(--accent); }
+  .led { fill:var(--detail); transition:fill .2s; }
+  .led.hot { fill:var(--accent); }
+  .wire { fill:none; stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linecap:round; stroke-linejoin:round; transition:stroke .4s; }
+  .wire.hot { stroke:var(--accent); }
+  .wire-under { fill:none; stroke:var(--panel); stroke-width:3.5; stroke-linecap:round; stroke-linejoin:round; }
+  .pulse { fill:none; stroke:var(--accent-hi); stroke-width:2.2; stroke-linecap:round; vector-effect:non-scaling-stroke;
+           stroke-dasharray:70 1200; stroke-dashoffset:70; opacity:0; }
+  .pulse.go { animation:flow .55s linear; }
+  @keyframes flow { 0% { stroke-dashoffset:70; opacity:1; } 90% { opacity:1; } 100% { stroke-dashoffset:-1000; opacity:0; } }
+  .press { cursor:pointer; transition:transform 60ms ease-out; }
+  .press.down { transform:translateY(3px); }
+  .press .face { transition:fill .6s ease-out, stroke .6s ease-out; }
+  .press.lit .face, .press.latched .face { fill:var(--accent); stroke:var(--accent-hi); transition:none; }
+  .press.lit .face.top, .press.latched .face.top { fill:var(--accent-hi); }
+  .press.lit { filter:url(#glow); }
+  .press.latched { filter:url(#soft); }
+  .press:hover .face.top { stroke:var(--ink); }
+  .blink { animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  @media (prefers-reduced-motion:reduce) {
+    .press, .glass, .halo, .press .face, .wire { transition:none; } .blink { animation:none; } .pulse.go { animation:none; }
+  }
+</style>
+<style>
+  :root { --dh-w: 1280px; }
+  body { padding-top: 74px !important; }
+  .dh { position:fixed; z-index:20; top:0; left:0; right:0; padding:12px 16px 10px; font:12px/1.45 "DM Mono", monospace; background:linear-gradient(var(--bg) 60%, rgba(12,13,14,0)); }
+  .dh-in { max-width:var(--dh-w, 1280px); margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:10px 18px; }
+  .dh-brand { flex:none; display:flex; align-items:center; gap:8px; color:var(--ink-hi); text-decoration:none; font-weight:500; font-size:12px; letter-spacing:.14em; text-transform:uppercase; }
+  .dh-brand .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
+  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:3px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:var(--panel); }
+  .dh-seg a { flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; padding:5px 13px; border-radius:999px; color:var(--ink); text-decoration:none; font-size:11px; letter-spacing:.06em; transition:all .2s; }
+  .dh-seg a:hover { color:var(--ink-hi); }
+  .dh-seg a.active { color:var(--ink-hi); background:var(--bg); box-shadow:0 0 0 1px var(--accent) inset; }
+  .dh-seg .n { opacity:.6; font-size:10px; }
+</style>
+</head>
+<body>
+
+<header class="dh">
+  <div class="dh-in">
+    <a class="dh-brand" href="index.html"><span class="dot"></span><span>AUDIRA GLOW</span></a>
+    <nav class="dh-seg" aria-label="Collections"><a href="audira-studio.html" class="">AUDIRA STUDIO <span class="n">5</span></a><a href="datacenter.html" class="">DATA CENTER <span class="n">12</span></a><a href="cyberlab.html" class=" active">CYBER LAB <span class="n">5</span></a><a href="objects.html" class="">OBJECTS <span class="n">10</span></a><a href="cities.html" class="">CITIES <span class="n">10</span></a><a href="lumen.html" class="">LUMEN <span class="n">12</span></a><a href="computer-demo.html" class="">DESK COMPUTER <span class="n">1</span></a><a href="assets/gallery-3d.html" class="">3D DEMO <span class="n">12</span></a></nav>
+  </div>
+</header>
+
+<svg class="fx" aria-hidden="true">
+  <defs>
+    <filter id="glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="soft" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="bloom" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+</svg>
+<div class="wrap">
+  <div class="top">
+    <span class="hi"><span class="dot"></span>CYBER LAB</span>
+    <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+    <div class="arrows"><button id="prev" aria-label="Previous figure">← Prev</button><button id="next" aria-label="Next figure">Next →</button></div>
+  </div>
+  <div class="layout">
+    <nav id="nav" aria-label="Figures"></nav>
+    <!-- optional: <aside class="credit">Made by … <a href="…">…</a></aside> (styles below) -->
+    <figure>
+      <div class="cap"><span class="hi" id="fignum">Fig 1</span><span id="figname"></span></div>
+      <div id="stageHolder"></div>
+      <div class="cap"><span id="hint"></span><span class="hi" id="readout"></span></div>
+    </figure>
+  </div>
+  <!-- Made-with credit: keep by default; delete this footer if you don't want it. -->
+  <footer class="made-with"><a href="https://iso-glow.vercel.app" target="_blank" rel="noopener">Made with ISO-GLOW ↗</a></footer>
+</div>
+<script>
+  // Gallery settings: palette 'ember' | 'city' | your own [[name, darkAccent, darkHi, lightAccent, lightHi], ...]
+  window.GALLERY = { palette: 'city', autoDemo: true, storageKey: 'iso-glow-accent' };
+  const FIGS = [];
+</script>
+<!-- FIGURES: one script per figure, each calling FIGS.push({...}). Order here = Fig 1, 2, 3 ... -->
+<script>
+/* Fig 1 — Audira Quantum Computing Cryo-Chandelier (IBM/Google Qubit Dilution Refrigerator) */
+FIGS.push({
+  id: 'audira-quantum',
+  name: 'Quantum Cryo-Chandelier',
+  hint: 'Click Qubit Core or Space to execute quantum superposition circuit · Keys 1–4',
+  aria: 'Isometric cryogenic quantum computer dilution refrigerator chandelier with gold-plated thermal plates, coiled microwave coaxial lines, and 15 millikelvin superconducting qubit quantum processor.',
+  css: `
+    [data-fig="audira-quantum"] .qubit-core { cursor:pointer; }
+    [data-fig="audira-quantum"] .qubit-core:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-quantum"] .cryo-plate { cursor:pointer; }
+    [data-fig="audira-quantum"] .cryo-plate:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-quantum"] .q-wave { fill:none; stroke:var(--accent-hi); stroke-width:1.8; stroke-linecap:round; filter:url(#soft); }
+    [data-fig="audira-quantum"] .gold-wire { fill:none; stroke:#ffd54f; stroke-width:1.2; stroke-linecap:round; opacity:0.85; }
+    [data-fig="audira-quantum"] .qubit-glow { animation:q-pulse 1.8s ease-in-out infinite; }
+    @keyframes q-pulse { 0%, 100% { opacity:0.5; filter:url(#soft); } 50% { opacity:1; filter:url(#glow); r:9; } }
+    .q-burst { animation:q-shake 0.35s ease-out; }
+    @keyframes q-shake { 0%, 100% { transform:translate(0,0); } 25% { transform:translate(-2px,2px); } 50% { transform:translate(3px,-2px); } 75% { transform:translate(-2px,1px); } }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [20, 260, 0], [300, 20, 0], [300, 260, 0], [20, 20, 0],
+      [40, 40, 290], [280, 40, 290], [40, 240, 290], [280, 240, 290]
+    ]);
+    const { TOP, FRONT, SIDE, box, boxc, path, P } = K;
+    const slits = api.iso.slits;
+
+    let svg = `<defs>
+      <radialGradient id="q-laser-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="40%" stop-color="#00e5ff"/>
+        <stop offset="85%" stop-color="#0288d1" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#01579b" stop-opacity="0"/>
+      </radialGradient>
+    </defs>`;
+
+    // 1. Stage Floor Dais with Sub-Zero Thermal Exhaust & Isolation Pillars
+    svg += boxc(20, 20, 0, 280, 240, 8, 12, 'stage-floor');
+    svg += `<g transform="${TOP(20, 20, 8)}">
+      <rect class="detail" x="10" y="10" width="260" height="220" rx="8" stroke-dasharray="8 6"/>
+      <circle cx="140" cy="120" r="95" fill="none" stroke="var(--line)" stroke-width="0.8"/>
+      <circle cx="140" cy="120" r="75" fill="none" stroke="var(--detail)" stroke-width="1.2" stroke-dasharray="10 8"/>
+      <!-- Glowing Floor Data Traces -->
+      <path id="q-floor-trace" class="q-wave" d="M 40,120 Q 90,140 140,120 T 240,120" opacity="0.6"/>
+      <text class="label" x="25" y="225" font-size="4.2" letter-spacing="1.5">AUDIRA QUANTUM LAB · 127-QUBIT SUPERCONDUCTING DILUTION CRYOSTAT</text>
+    </g>`;
+
+    // 2. Ceiling Cryo Gantry Support Rig
+    const GANTRY_Z = 270;
+    svg += boxc(50, 50, GANTRY_Z, 220, 180, 14, 8, 'gantry-steel');
+    svg += `<g transform="${TOP(50, 50, GANTRY_Z + 14)}">
+      <rect class="detail" x="10" y="10" width="200" height="160" rx="4"/>
+      <circle cx="110" cy="90" r="60" fill="none" stroke="var(--line)" stroke-width="1"/>
+      ${slits(30, 85, 3, 20, 70)}
+      ${slits(135, 190, 3, 20, 70)}
+    </g>`;
+
+    // 3. FIVE-TIER GOLD CHANDELIER (From Room Temp 300K down to 15 mK)
+    const CX = 160, CY = 140;
+    
+    // Support Tie Rods
+    const rods = [
+      [CX - 55, CY - 45], [CX + 55, CY - 45],
+      [CX - 55, CY + 45], [CX + 55, CY + 45]
+    ];
+    rods.forEach(([rx, ry]) => {
+      svg += `<line x1="${P(rx, ry, GANTRY_Z)[0]}" y1="${P(rx, ry, GANTRY_Z)[1]}" x2="${P(rx, ry, 70)[0]}" y2="${P(rx, ry, 70)[1]}" stroke="#cfd8dc" stroke-width="1.8" stroke-linecap="round"/>`;
+    });
+
+    // Tier 1: 50K Flange Plate
+    const T1_Z = 230, T1_R = 75;
+    svg += box(CX - T1_R, CY - T1_R, T1_Z, T1_R * 2, T1_R * 2, 6, 20);
+    svg += `<g transform="${TOP(CX - T1_R, CY - T1_R, T1_Z + 6)}">
+      <circle cx="${T1_R}" cy="${T1_R}" r="${T1_R - 8}" fill="none" stroke="#ffb300" stroke-width="1.2"/>
+      <circle cx="${T1_R}" cy="${T1_R}" r="${T1_R - 22}" fill="none" stroke="var(--detail)" stroke-width="0.8"/>
+      <text class="label" x="${T1_R}" y="${T1_R + 3}" font-size="4" text-anchor="middle">50 KELVIN STAGE · THERMAL SHIELD</text>
+    </g>`;
+
+    // Tier 2: 4K Flange Plate
+    const T2_Z = 185, T2_R = 62;
+    svg += box(CX - T2_R, CY - T2_R, T2_Z, T2_R * 2, T2_R * 2, 6, 16);
+    svg += `<g transform="${TOP(CX - T2_R, CY - T2_R, T2_Z + 6)}">
+      <circle cx="${T2_R}" cy="${T2_R}" r="${T2_R - 6}" fill="none" stroke="#ffb300" stroke-width="1.2"/>
+      <text class="label" x="${T2_R}" y="${T2_R + 3}" font-size="3.8" text-anchor="middle">4.2 KELVIN · 1K POT / L-He4</text>
+    </g>`;
+
+    // Tier 3: 800 mK Still Plate
+    const T3_Z = 145, T3_R = 50;
+    svg += box(CX - T3_R, CY - T3_R, T3_Z, T3_R * 2, T3_R * 2, 5, 14);
+    svg += `<g transform="${TOP(CX - T3_R, CY - T3_R, T3_Z + 5)}">
+      <circle cx="${T3_R}" cy="${T3_R}" r="${T3_R - 5}" fill="none" stroke="#ffb300" stroke-width="1"/>
+      <text class="label" x="${T3_R}" y="${T3_R + 3}" font-size="3.5" text-anchor="middle">800 mK · STILL DISTILLATION</text>
+    </g>`;
+
+    // Tier 4: 100 mK Cold Plate
+    const T4_Z = 110, T4_R = 38;
+    svg += box(CX - T4_R, CY - T4_R, T4_Z, T4_R * 2, T4_R * 2, 5, 10);
+    svg += `<g transform="${TOP(CX - T4_R, CY - T4_R, T4_Z + 5)}">
+      <circle cx="${T4_R}" cy="${T4_R}" r="${T4_R - 4}" fill="none" stroke="#ffb300" stroke-width="1"/>
+      <text class="label" x="${T4_R}" y="${T4_R + 3}" font-size="3.2" text-anchor="middle">100 mK COLD PLATE</text>
+    </g>`;
+
+    // Tier 5: 15 milliKelvin Mixing Chamber & Superconducting Qubit Package!
+    const T5_Z = 65, T5_R = 26;
+    svg += `<g id="qubit-chamber" class="qubit-core">`;
+    svg += box(CX - T5_R, CY - T5_R, T5_Z, T5_R * 2, T5_R * 2, 8, 8);
+    svg += `<g transform="${TOP(CX - T5_R, CY - T5_R, T5_Z + 8)}">
+      <circle cx="${T5_R}" cy="${T5_R}" r="${T5_R - 3}" fill="none" stroke="#ffd54f" stroke-width="1.5"/>
+      <circle class="qubit-glow" cx="${T5_R}" cy="${T5_R}" r="7" fill="url(#q-laser-grad)"/>
+      <text class="label" x="${T5_R}" y="${T5_R + 2.5}" font-size="3" text-anchor="middle" font-weight="bold">15 mK · QPU</text>
+    </g>`;
+
+    // Hanging Qubit Cryo-Can Canister Shield at bottom
+    svg += boxc(CX - 16, CY - 16, 25, 32, 32, 40, 6, 'qubit-shield');
+    svg += `<g transform="${FRONT(CX - 16, CY + 16, 65)}">
+      <rect class="detail" x="4" y="4" width="24" height="32" rx="2"/>
+      <circle cx="16" cy="18" r="8" fill="none" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <circle class="qubit-glow" cx="16" cy="18" r="4" fill="var(--accent-hi)"/>
+      <text class="label" x="16" y="34" font-size="3" text-anchor="middle">127 QUBITS</text>
+    </g>`;
+    svg += `</g>`;
+
+    // 4. COILED GOLD MICROWAVE COAXIAL CABLE HARNESSES WITH LIVE PULSING PHOTON NODES
+    for (let i = 0; i < 6; i++) {
+      const ang = (i * 60) * Math.PI / 180;
+      const r1 = 60, r2 = 48, r3 = 38, r4 = 28, r5 = 18;
+      
+      const p1 = P(CX + r1 * Math.cos(ang), CY + r1 * Math.sin(ang), T1_Z);
+      const p2 = P(CX + r2 * Math.cos(ang + 0.3), CY + r2 * Math.sin(ang + 0.3), T2_Z);
+      const p3 = P(CX + r3 * Math.cos(ang + 0.6), CY + r3 * Math.sin(ang + 0.6), T3_Z);
+      const p4 = P(CX + r4 * Math.cos(ang + 0.9), CY + r4 * Math.sin(ang + 0.9), T4_Z);
+      const p5 = P(CX + r5 * Math.cos(ang + 1.2), CY + r5 * Math.sin(ang + 1.2), T5_Z);
+
+      svg += `<path class="gold-wire" d="M ${p1.join(',')} Q ${P(CX+r1*0.8, CY+r1*0.8, (T1_Z+T2_Z)/2).join(',')} ${p2.join(',')}" />`;
+      svg += `<path class="gold-wire" d="M ${p2.join(',')} Q ${P(CX+r2*0.8, CY+r2*0.8, (T2_Z+T3_Z)/2).join(',')} ${p3.join(',')}" />`;
+      svg += `<path class="gold-wire" d="M ${p3.join(',')} Q ${P(CX+r3*0.8, CY+r3*0.8, (T3_Z+T4_Z)/2).join(',')} ${p4.join(',')}" />`;
+      svg += `<path class="gold-wire" d="M ${p4.join(',')} Q ${P(CX+r4*0.8, CY+r4*0.8, (T4_Z+T5_Z)/2).join(',')} ${p5.join(',')}" />`;
+    }
+
+    // Dynamic photon packets traveling down wires
+    svg += `<g id="live-photons">
+      ${[0, 1, 2, 3].map(i => `<circle id="q-photon-${i}" r="2.5" fill="#00e5ff" filter="url(#glow)"/>`).join('')}
+    </g>`;
+
+    // 5. LIVE CONTINUOUS SUPERPOSITION PROBABILITY WAVE STREAM
+    const [qpx, qpy] = P(CX, CY, 45);
+    svg += `<g id="quantum-live-stream">
+      <ellipse cx="${qpx}" cy="${qpy}" rx="48" ry="28" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+      <!-- Live dynamic oscillating Bloch wave path -->
+      <path id="q-live-wave-path" class="q-wave" d="M ${qpx-45} ${qpy} Q ${qpx-20} ${qpy-14} ${qpx} ${qpy} T ${qpx+45} ${qpy}"/>
+      <!-- Rotating precession ring -->
+      <ellipse id="q-precess-ring" cx="${qpx}" cy="${qpy}" rx="32" ry="18" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="6 4"/>
+      <!-- Precession vector pointer -->
+      <line id="q-state-arrow" x1="${qpx}" y1="${qpy}" x2="${qpx+18}" y2="${qpy-12}" stroke="#ffffff" stroke-width="2" stroke-linecap="round" filter="url(#soft)"/>
+    </g>`;
+
+    // 6. QUANTUM SUPERPOSITION PROBABILITY WAVE STREAM (Interactive Burst FX)
+    svg += `<g id="quantum-wave-fx" opacity="0" style="transition: opacity 0.2s ease;">
+      <circle cx="${qpx}" cy="${qpy}" r="55" fill="none" stroke="var(--accent-hi)" stroke-width="2.5" filter="url(#glow)"/>
+      <circle cx="${qpx}" cy="${qpy}" r="85" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-dasharray="8 6" filter="url(#soft)"/>
+      <circle cx="${qpx}" cy="${qpy}" r="120" fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="4 8" opacity="0.75"/>
+    </g>`;
+
+    // 7. CONTROL CONSOLE BENCH (Front left)
+    const CTRL_X = 35, CTRL_Y = 25, CTRL_Z = 8;
+    svg += box(CTRL_X, CTRL_Y, CTRL_Z, 70, 48, 26, 4);
+    svg += `<g transform="${TOP(CTRL_X, CTRL_Y, CTRL_Z + 26)}">
+      <rect class="detail" x="4" y="4" width="62" height="40" rx="2"/>
+      <rect class="glass" id="q-mon" x="8" y="8" width="54" height="32" rx="2"/>
+      <text class="scr" x="12" y="18" font-size="3.8">STATE: |Ψ⟩ = α|0⟩+β|1⟩</text>
+      <text class="scr-accent" id="q-val" x="12" y="27" font-size="3.8">0.707|0⟩ + 0.707|1⟩</text>
+      <text class="label" id="q-temp" x="12" y="35" font-size="3.2">T: 14.812 mK (±0.003)</text>
+    </g>`;
+
+    stage.innerHTML = svg;
+
+    // AUDIO SYNTHESIZER
+    const playQuantumSound = (mode) => {
+      try {
+        const audio = api.audio();
+        if (!audio || !audio.ctx) return;
+        const { ctx, out } = audio;
+        const now = ctx.currentTime;
+
+        if (mode === 'circuit') {
+          [528, 792, 1056, 1584].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.08 / (idx + 1), now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9 + idx * 0.2);
+            osc.connect(gain);
+            gain.connect(out);
+            osc.start(now);
+            osc.stop(now + 1.2);
+          });
+        } else if (mode === 'coherence') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.linearRampToValueAtTime(880, now + 0.3);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.4);
+        }
+      } catch (e) {}
+    };
+
+    // LIVE ANIMATION TIMER (Continuous real-time update)
+    const waveEl = stage.querySelector('#q-live-wave-path');
+    const ringEl = stage.querySelector('#q-precess-ring');
+    const arrowEl = stage.querySelector('#q-state-arrow');
+    const tempEl = stage.querySelector('#q-temp');
+    const valText = stage.querySelector('#q-val');
+    const waveFx = stage.querySelector('#quantum-wave-fx');
+
+    let tick = 0;
+    const animTimer = api.every(40, () => {
+      tick++;
+
+      // 1. Live dynamic superposition wave
+      if (waveEl) {
+        const y1 = qpy - 12 * Math.sin(tick * 0.15);
+        const y2 = qpy + 12 * Math.cos(tick * 0.18);
+        waveEl.setAttribute('d', `M ${qpx-45} ${qpy} Q ${qpx-22} ${y1.toFixed(1)} ${qpx} ${qpy} T ${qpx+45} ${y2.toFixed(1)}`);
+      }
+
+      // 2. Precessing Bloch sphere pointer
+      if (arrowEl) {
+        const rad = 22;
+        const ax = qpx + rad * Math.cos(tick * 0.08);
+        const ay = qpy + (rad * 0.55) * Math.sin(tick * 0.08);
+        arrowEl.setAttribute('x2', ax.toFixed(1));
+        arrowEl.setAttribute('y2', ay.toFixed(1));
+      }
+
+      // 3. Photon packets traveling down the coaxial wires
+      for (let i = 0; i < 4; i++) {
+        const pNode = stage.querySelector(`#q-photon-${i}`);
+        if (pNode) {
+          const progress = ((tick * 0.02 + i * 0.25) % 1);
+          const zPos = 230 - progress * 165;
+          const [px, py] = P(CX + 35 * Math.cos(i * 1.57), CY + 35 * Math.sin(i * 1.57), zPos);
+          pNode.setAttribute('cx', px.toFixed(1));
+          pNode.setAttribute('cy', py.toFixed(1));
+        }
+      }
+
+      // 4. Live millikelvin temperature jitter
+      if (tick % 8 === 0 && tempEl) {
+        const jitter = (14.810 + Math.sin(tick * 0.3) * 0.005).toFixed(3);
+        tempEl.textContent = `T: ${jitter} mK (±0.003)`;
+      }
+    });
+
+    let qCount = 0;
+    const runQuantumCircuit = () => {
+      playQuantumSound('circuit');
+      stage.classList.add('q-burst');
+      qCount++;
+      const states = [
+        '0.707|0⟩ + 0.707|1⟩',
+        'ENTANGLED: (|00⟩+|11⟩)',
+        'FIDELITY: 99.88%',
+        'SHOR FACTOR: 100%'
+      ];
+      if (valText) valText.textContent = states[qCount % states.length];
+      api.readout(`QUANTUM CIRCUIT EXECUTED · FIDELITY: 99.91% · COHERENCE: 142µs · T: 14.8mK`);
+      if (waveFx) waveFx.style.opacity = '1';
+      setTimeout(() => {
+        if (waveFx) waveFx.style.opacity = '0';
+        stage.classList.remove('q-burst');
+      }, 650);
+    };
+
+    const chamberEl = stage.querySelector('#qubit-chamber');
+    if (chamberEl) chamberEl.addEventListener('click', runQuantumCircuit);
+
+    api.readout('CRYOGENIC DILUTION REFRIGERATOR · 127-QUBIT READY · 14.8 mK');
+
+    return {
+      key(e) {
+        if (e.key === ' ' || e.code === 'Space') {
+          runQuantumCircuit();
+          return true;
+        }
+        if (e.key === '1') {
+          playQuantumSound('coherence');
+          api.readout('RAMSEY COHERENCE MEASUREMENT: T1=160µs, T2=125µs');
+          return true;
+        }
+        if (e.key === '2') {
+          playQuantumSound('coherence');
+          api.readout('BELL STATE ENTANGLEMENT VERIFIED · CHSH SCORE: 2.82');
+          return true;
+        }
+        if (e.key === '3') {
+          runQuantumCircuit();
+          return true;
+        }
+        if (e.key === '4') {
+          api.readout('CRYOGENIC CYCLE STABLE · STILL: 0.82K · MIXING: 14.8mK');
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        stage.classList.remove('q-burst');
+      }
+    };
+  }
+});
+
+
+/* Fig 2 — Audira Tokamak Fusion Reactor Core (Magnetic Confinement Fusion) */
+FIGS.push({
+  id: 'audira-tokamak',
+  name: 'Tokamak Fusion Core',
+  hint: 'Click Core or Space to initiate Plasma Ignition (Q > 10) · Keys 1–4',
+  aria: 'Isometric magnetic confinement fusion tokamak reactor with toroidal vacuum vessel, superconducting D-coils, central solenoid, and 150 million Kelvin burning plasma core.',
+  css: `
+    [data-fig="audira-tokamak"] .plasma-core { cursor:pointer; }
+    [data-fig="audira-tokamak"] .plasma-core:hover { filter:url(#glow) brightness(1.2); }
+    [data-fig="audira-tokamak"] .mag-coil { cursor:pointer; }
+    [data-fig="audira-tokamak"] .mag-coil:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-tokamak"] .plasma-stream { fill:none; stroke-linecap:round; }
+    .tok-ignite { animation:tok-shake 0.45s ease-out; }
+    @keyframes tok-shake { 0%, 100% { transform:translate(0,0); } 15% { transform:translate(-3px,3px); } 35% { transform:translate(4px,-3px); } 60% { transform:translate(-2px,2px); } 85% { transform:translate(2px,-1px); } }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [10, 270, 0], [310, 10, 0], [310, 270, 0], [10, 10, 0],
+      [30, 30, 260], [290, 30, 260], [30, 250, 260], [290, 250, 260]
+    ]);
+    const { TOP, FRONT, SIDE, box, boxc, path, P } = K;
+    const slits = api.iso.slits;
+
+    let svg = `<defs>
+      <radialGradient id="tok-plasma-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="35%" stop-color="#e040fb"/>
+        <stop offset="70%" stop-color="#7c4dff"/>
+        <stop offset="95%" stop-color="#00e5ff" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="nbi-beam" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#00e5ff" stop-opacity="0"/>
+        <stop offset="50%" stop-color="#00e5ff"/>
+        <stop offset="100%" stop-color="#ffffff"/>
+      </linearGradient>
+    </defs>`;
+
+    // 1. Biological Shield / Reactor Bio-Vault Foundation
+    const PLZ = 8;
+    svg += boxc(10, 10, 0, 300, 260, PLZ, 16, 'stage-floor');
+    svg += `<g transform="${TOP(10, 10, PLZ)}">
+      <rect class="detail" x="12" y="12" width="276" height="236" rx="12" stroke-dasharray="10 6"/>
+      <circle cx="150" cy="130" r="115" fill="none" stroke="var(--line)" stroke-width="1"/>
+      <circle cx="150" cy="130" r="100" fill="none" stroke="var(--detail)" stroke-width="1.2" stroke-dasharray="12 8"/>
+      <line class="detail" x1="45" y1="130" x2="255" y2="130"/>
+      <line class="detail" x1="150" y1="25" x2="150" y2="235"/>
+      <text class="label" x="25" y="248" font-size="4.2" letter-spacing="1.5">AUDIRA TOKAMAK FUSION CORE · D-T MAGNETIC CONFINEMENT (Q >= 10)</text>
+    </g>`;
+
+    // 2. Cryostat Octagonal Base Shell
+    const CX = 160, CY = 140, BASE_Z = PLZ;
+    svg += boxc(CX - 95, CY - 95, BASE_Z, 190, 190, 22, 14, 'cryo-base');
+    svg += `<g transform="${TOP(CX - 95, CY - 95, BASE_Z + 22)}">
+      <circle cx="95" cy="95" r="90" fill="none" stroke="var(--line)" stroke-width="1.4"/>
+      <circle cx="95" cy="95" r="82" fill="none" stroke="var(--detail)" stroke-width="1" stroke-dasharray="8 6"/>
+      ${slits(25, 70, 3, 20, 45)}
+      ${slits(120, 165, 3, 20, 45)}
+    </g>`;
+
+    // 3. Central Solenoid Magnetic Stack
+    const CS_Z = BASE_Z + 22, CS_R = 28, CS_H = 135;
+    svg += box(CX - CS_R, CY - CS_R, CS_Z, CS_R * 2, CS_R * 2, CS_H, 10);
+    svg += `<g transform="${TOP(CX - CS_R, CY - CS_R, CS_Z + CS_H)}">
+      <circle cx="${CS_R}" cy="${CS_R}" r="${CS_R - 3}" fill="none" stroke="var(--accent-hi)" stroke-width="1.4"/>
+      <circle cx="${CS_R}" cy="${CS_R}" r="${CS_R - 10}" fill="none" stroke="var(--detail)" stroke-width="0.8"/>
+      <text class="label" x="${CS_R}" y="${CS_R + 3}" font-size="3.2" text-anchor="middle">CENTRAL SOLENOID</text>
+    </g>`;
+
+    // 4. EIGHT SUPERCONDUCTING D-COILS
+    const coilAngles = [0, 45, 90, 135, 180, 225, 270, 315];
+    coilAngles.forEach((deg) => {
+      const rad = deg * Math.PI / 180;
+      const cDist = 65;
+      const x = CX + cDist * Math.cos(rad);
+      const y = CY + cDist * Math.sin(rad);
+
+      svg += `<g class="mag-coil">`;
+      svg += box(x - 9, y - 9, CS_Z, 18, 18, CS_H, 4);
+      svg += `<g transform="${TOP(x - 9, y - 9, CS_Z + CS_H)}">
+        <circle cx="9" cy="9" r="6" fill="none" stroke="var(--accent)" stroke-width="1"/>
+      </g>`;
+      svg += `</g>`;
+    });
+
+    // 5. LIVING TOROIDAL BURNING PLASMA RING WITH MULTI-LAYER STREAMS
+    const PLAS_Z = CS_Z + 45;
+    const [plasPx, plasPy] = P(CX, CY, PLAS_Z);
+
+    svg += `<g id="plasma-core-unit" class="plasma-core">
+      <!-- Toroidal Vacuum Chamber Vessel Outline -->
+      <ellipse cx="${plasPx}" cy="${plasPy}" rx="68" ry="40" fill="none" stroke="var(--line)" stroke-width="2.5"/>
+      <ellipse cx="${plasPx}" cy="${plasPy}" rx="38" ry="22" fill="none" stroke="var(--line)" stroke-width="2.5"/>
+
+      <!-- Inner High-Intensity Fusion Core -->
+      <ellipse id="tok-plasma-inner" cx="${plasPx}" cy="${plasPy}" rx="54" ry="32" fill="none" stroke="url(#tok-plasma-grad)" stroke-width="16" filter="url(#glow)"/>
+
+      <!-- Counter-rotating plasma stream arcs -->
+      <path id="tok-stream-cw" class="plasma-stream" stroke="#ffffff" stroke-width="3" stroke-dasharray="16 12" filter="url(#soft)" d="M ${plasPx-54} ${plasPy} A 54 32 0 1 1 ${plasPx+54} ${plasPy} A 54 32 0 1 1 ${plasPx-54} ${plasPy}"/>
+      <path id="tok-stream-ccw" class="plasma-stream" stroke="#00e5ff" stroke-width="2.5" stroke-dasharray="10 14" filter="url(#glow)" d="M ${plasPx-46} ${plasPy} A 46 27 0 1 0 ${plasPx+46} ${plasPy} A 46 27 0 1 0 ${plasPx-46} ${plasPy}"/>
+
+      <!-- Central Magnetic Field Pulse Wave -->
+      <ellipse id="tok-mag-pulse" cx="${plasPx}" cy="${plasPy}" rx="38" ry="22" fill="none" stroke="var(--accent-hi)" stroke-width="1.5" opacity="0.8"/>
+    </g>`;
+
+    // 6. TANGENTIAL NEUTRAL BEAM INJECTOR & RF HEATING PORTS
+    const NBI_X = CX + 80, NBI_Y = CY - 20, NBI_Z = CS_Z + 30;
+    svg += box(NBI_X, NBI_Y, NBI_Z, 55, 30, 28, 4);
+    svg += `<g transform="${TOP(NBI_X, NBI_Y, NBI_Z + 28)}">
+      <rect class="detail" x="4" y="4" width="47" height="22" rx="2"/>
+      <text class="label" x="27" y="15" font-size="3" text-anchor="middle">NEUTRAL BEAM 1</text>
+    </g>`;
+
+    // Injected neutral beam laser line
+    const [nb1X, nb1Y] = P(NBI_X, NBI_Y + 15, NBI_Z + 14);
+    svg += `<line id="nbi-beam-line" x1="${nb1X}" y1="${nb1Y}" x2="${plasPx + 20}" y2="${plasPy + 10}" stroke="url(#nbi-beam)" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>`;
+
+    // 7. PLASMA IGNITION SHOCKWAVE EFFECT (Activated on Trigger)
+    svg += `<g id="fusion-burst-fx" opacity="0" style="transition: opacity 0.2s ease;">
+      <ellipse cx="${plasPx}" cy="${plasPy}" rx="110" ry="65" fill="none" stroke="var(--accent-hi)" stroke-width="3.5" filter="url(#glow)"/>
+      <ellipse cx="${plasPx}" cy="${plasPy}" rx="140" ry="82" fill="none" stroke="#e040fb" stroke-width="2" stroke-dasharray="12 8" filter="url(#soft)"/>
+      ${Array.from({length: 8}).map((_, i) => {
+        const a = (i * 45) * Math.PI / 180;
+        const x2 = plasPx + 150 * Math.cos(a), y2 = plasPy + 88 * Math.sin(a);
+        return `<line x1="${plasPx}" y1="${plasPy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="6 4" filter="url(#soft)"/>`;
+      }).join('')}
+    </g>`;
+
+    // 8. NOC TELEMETRY CONSOLE (Front left)
+    const NOC_X = 25, NOC_Y = 25, NOC_Z = PLZ;
+    svg += box(NOC_X, NOC_Y, NOC_Z, 70, 48, 26, 4);
+    svg += `<g transform="${TOP(NOC_X, NOC_Y, NOC_Z + 26)}">
+      <rect class="detail" x="4" y="4" width="62" height="40" rx="2"/>
+      <rect class="glass" x="8" y="8" width="54" height="32" rx="2"/>
+      <text class="scr" id="tok-ip" x="12" y="18" font-size="3.8">Ip: 15.24 MA · B: 11.8T</text>
+      <text class="scr-accent" id="tok-q" x="12" y="27" font-size="4">GAIN: Q = 10.4</text>
+      <text class="label" id="tok-pwr" x="12" y="35" font-size="3.2">OUTPUT: 520 MWth</text>
+    </g>`;
+
+    stage.innerHTML = svg;
+
+    // AUDIO SYNTHESIZER
+    const playTokamakSound = (type) => {
+      try {
+        const audio = api.audio();
+        if (!audio || !audio.ctx) return;
+        const { ctx, out } = audio;
+        const now = ctx.currentTime;
+
+        if (type === 'ignition') {
+          const osc1 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          osc1.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(45, now);
+          osc1.frequency.exponentialRampToValueAtTime(320, now + 0.4);
+          gain1.gain.setValueAtTime(0.3, now);
+          gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+          osc1.connect(gain1);
+          gain1.connect(out);
+          osc1.start(now);
+          osc1.stop(now + 0.7);
+
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(80, now);
+          osc2.frequency.linearRampToValueAtTime(35, now + 0.6);
+          gain2.gain.setValueAtTime(0.4, now);
+          gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+          osc2.connect(gain2);
+          gain2.connect(out);
+          osc2.start(now);
+          osc2.stop(now + 0.65);
+        } else if (type === 'confinement') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(120, now);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        }
+      } catch (e) {}
+    };
+
+    // REAL-TIME ANIMATION LOOP
+    const streamCw = stage.querySelector('#tok-stream-cw');
+    const streamCcw = stage.querySelector('#tok-stream-ccw');
+    const magPulse = stage.querySelector('#tok-mag-pulse');
+    const ipText = stage.querySelector('#tok-ip');
+    const burstFx = stage.querySelector('#fusion-burst-fx');
+    const qText = stage.querySelector('#tok-q');
+    const pwrText = stage.querySelector('#tok-pwr');
+
+    let tick = 0;
+    api.every(40, () => {
+      tick++;
+
+      // 1. Counter-rotating plasma stream dashes
+      if (streamCw) streamCw.setAttribute('stroke-dashoffset', (-tick * 2.8).toFixed(1));
+      if (streamCcw) streamCcw.setAttribute('stroke-dashoffset', (tick * 3.4).toFixed(1));
+
+      // 2. Expanding magnetic pulse wave
+      if (magPulse) {
+        const pulseProg = (tick % 40) / 40;
+        const rx = 38 + pulseProg * 26;
+        const ry = 22 + pulseProg * 16;
+        magPulse.setAttribute('rx', rx.toFixed(1));
+        magPulse.setAttribute('ry', ry.toFixed(1));
+        magPulse.style.opacity = (1 - pulseProg).toFixed(2);
+      }
+
+      // 3. Telemetry jitter
+      if (tick % 7 === 0 && ipText) {
+        const jitterIp = (15.20 + Math.sin(tick * 0.2) * 0.08).toFixed(2);
+        ipText.textContent = `Ip: ${jitterIp} MA · B: 11.8T`;
+      }
+    });
+
+    let ignCount = 0;
+    const ignitePlasma = () => {
+      playTokamakSound('ignition');
+      stage.classList.add('tok-ignite');
+      ignCount++;
+      const qVals = ['GAIN: Q = 11.2', 'GAIN: Q = 14.5 (PEAK)', 'GAIN: Q = 10.8', 'GAIN: Q = 12.1'];
+      const pwrVals = ['OUTPUT: 560 MWth', 'OUTPUT: 720 MWth', 'OUTPUT: 540 MWth', 'OUTPUT: 610 MWth'];
+      if (qText) qText.textContent = qVals[ignCount % qVals.length];
+      if (pwrText) pwrText.textContent = pwrVals[ignCount % pwrVals.length];
+
+      api.readout('PLASMA IGNITION TRIGGERED · LAWSON CRITERION MET · 152M °C · B-FIELD: 11.8 TESLA');
+      if (burstFx) burstFx.style.opacity = '1';
+      setTimeout(() => {
+        if (burstFx) burstFx.style.opacity = '0';
+        stage.classList.remove('tok-ignite');
+      }, 650);
+    };
+
+    const coreUnit = stage.querySelector('#plasma-core-unit');
+    if (coreUnit) coreUnit.addEventListener('click', ignitePlasma);
+
+    api.readout('TOKAMAK FUSION CORE · D-T PLASMA CONFINED · 11.8 TESLA · READY');
+
+    return {
+      key(e) {
+        if (e.key === ' ' || e.code === 'Space') {
+          ignitePlasma();
+          return true;
+        }
+        if (e.key === '1') {
+          playTokamakSound('confinement');
+          api.readout('POLOIDAL FIELD COILS ENGAGED · PLASMA ELONGATION: 1.85');
+          return true;
+        }
+        if (e.key === '2') {
+          playTokamakSound('confinement');
+          api.readout('DEUTERIUM-TRITIUM PELLET INJECTOR: 20 HZ · DENSITY: 1.4e20 m⁻³');
+          return true;
+        }
+        if (e.key === '3') {
+          ignitePlasma();
+          return true;
+        }
+        if (e.key === '4') {
+          api.readout('DIVERTOR THERMAL EXHAUST NOMINAL · HEAT FLUX: 8.5 MW/m²');
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        stage.classList.remove('tok-ignite');
+      }
+    };
+  }
+});
+
+
+/* Fig 3 — Audira Cyberpunk Hovercar / Spinner (VTOL Aerodyne) */
+FIGS.push({
+  id: 'audira-hovercar',
+  name: 'Cyberpunk Hovercar',
+  hint: 'Click Door to open · Click Thrusters or Space for Nitro Jet Boost · Keys 1–4',
+  aria: 'Isometric cyberpunk aerodyne hovercar with four anti-gravity VTOL ion lift thrusters, opening gull-wing scissor doors, holographic cockpit HUD, and dual plasma afterburners.',
+  css: `
+    [data-fig="audira-hovercar"] .car-body { cursor:pointer; }
+    [data-fig="audira-hovercar"] .car-body:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-hovercar"] .ion-pool { fill:var(--accent); opacity:0.25; filter:url(#soft); transition:all 0.1s ease; }
+    .car-boost { animation:nitro-shake 0.4s ease-out; }
+    @keyframes nitro-shake { 0%, 100% { transform:translate(0,0); } 20% { transform:translate(5px,-4px); } 40% { transform:translate(-4px,3px); } 70% { transform:translate(2px,-2px); } }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [10, 270, 0], [330, 10, 0], [330, 270, 0], [10, 10, 0],
+      [20, 20, 240], [320, 20, 240], [20, 260, 240], [320, 260, 240]
+    ]);
+    const { TOP, FRONT, SIDE, box, boxc, path, P } = K;
+    const slits = api.iso.slits;
+
+    let svg = `<defs>
+      <linearGradient id="nitro-flame" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="30%" stop-color="#00e5ff"/>
+        <stop offset="70%" stop-color="#0288d1"/>
+        <stop offset="100%" stop-color="#01579b" stop-opacity="0"/>
+      </linearGradient>
+    </defs>`;
+
+    // 1. Skyport Landing Platform / Rooftop Helipad
+    const PLZ = 8;
+    svg += boxc(10, 10, 0, 320, 260, PLZ, 16, 'stage-floor');
+    svg += `<g transform="${TOP(10, 10, PLZ)}">
+      <rect class="detail" x="12" y="12" width="296" height="236" rx="12" stroke-dasharray="10 6"/>
+      <circle cx="160" cy="130" r="95" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+      <circle cx="160" cy="130" r="75" fill="none" stroke="var(--detail)" stroke-width="1.5" stroke-dasharray="12 8"/>
+      <!-- Dynamic Ground Shadow & 4 Ion Ground Light Pools -->
+      <ellipse id="ground-shadow" cx="160" cy="130" rx="90" ry="52" fill="var(--recess)" opacity="0.6"/>
+      ${[
+        [75, 75], [245, 75], [75, 185], [245, 185]
+      ].map(([vx, vy], idx) => {
+        return `<ellipse id="ion-pool-${idx}" class="ion-pool" cx="${vx}" cy="${vy}" rx="22" ry="14"/>`;
+      }).join('')}
+      <text class="label" x="25" y="248" font-size="4.2" letter-spacing="1.5">AUDIRA SKYPORT · AERODYNE VTOL HOVERCAR · DUAL ION DRIVES</text>
+    </g>`;
+
+    // 2. HOVERING VEHICLE GROUP (Controlled by live JS physics)
+    svg += `<g id="car-hover-group">`;
+
+    // Four Underbody Anti-Gravity VTOL Lift Rings (Elevated at Z: 40)
+    const vtolZ = PLZ + 32;
+    const vtols = [
+      [75, 75], [245, 75],
+      [75, 185], [245, 185]
+    ];
+    vtols.forEach(([vx, vy], idx) => {
+      const [px, py] = P(vx, vy, vtolZ);
+      svg += `<g>
+        <ellipse cx="${px}" cy="${py}" rx="24" ry="14" fill="none" stroke="var(--line)" stroke-width="2"/>
+        <ellipse id="vtol-glow-${idx}" cx="${px}" cy="${py}" rx="18" ry="10" fill="none" stroke="var(--accent)" stroke-width="2.5" filter="url(#glow)"/>
+        <polygon points="${px-16},${py} ${px+16},${py} ${px+22},${py+24} ${px-22},${py+24}" fill="var(--accent)" opacity="0.18"/>
+      </g>`;
+    });
+
+    // 3. HOVERCAR LOWER CHASSIS & AERODYNAMIC WEDGE BODY
+    const CAR_X = 65, CAR_Y = 65, CAR_Z = vtolZ + 10, CAR_W = 190, CAR_D = 130, CAR_H = 34;
+    svg += `<g id="car-chassis" class="car-body">`;
+    svg += boxc(CAR_X, CAR_Y, CAR_Z, CAR_W, CAR_D, CAR_H, 12, 'car-hull');
+    svg += `<g transform="${FRONT(CAR_X, CAR_Y + CAR_D, CAR_Z + CAR_H)}">
+      <rect class="detail" x="12" y="16" width="166" height="8" rx="3"/>
+      <!-- Scanning Cyber Headlight Beam -->
+      <line id="headlight-bar" x1="20" y1="20" x2="170" y2="20" stroke="var(--accent-hi)" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"/>
+      ${slits(35, 80, 4, 25, 32)}
+      ${slits(110, 155, 4, 25, 32)}
+    </g>`;
+
+    // 4. COCKPIT CANOPY & TINTED GLASS
+    const CAB_X = CAR_X + 25, CAB_Y = CAR_Y + 18, CAB_Z = CAR_Z + CAR_H, CAB_W = 140, CAB_D = 94, CAB_H = 26;
+    svg += box(CAB_X, CAB_Y, CAB_Z, CAB_W, CAB_D, CAB_H, 8);
+    svg += `<g transform="${TOP(CAB_X, CAB_Y, CAB_Z + CAB_H)}">
+      <rect class="glass hot" x="6" y="6" width="${CAB_W - 12}" height="${CAB_D - 12}" rx="6"/>
+      <line class="q-wave" x1="18" y1="25" x2="65" y2="25"/>
+      <circle cx="95" cy="45" r="14" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/>
+      <text class="scr" id="hud-status" x="20" y="70" font-size="4">HUD: ALT 1.82M · SPD 0 KM/H</text>
+    </g>`;
+
+    // 5. GULL-WING SCISSOR DOOR
+    svg += `<g id="gullwing-door" class="car-body" style="transition: transform 0.4s ease; transform-origin: ${P(CAB_X+20, CAB_Y+CAB_D, CAB_Z+CAB_H)[0]}px ${P(CAB_X+20, CAB_Y+CAB_D, CAB_Z+CAB_H)[1]}px;">`;
+    svg += `<g transform="${FRONT(CAB_X + 15, CAB_Y + CAB_D, CAB_Z + CAB_H)}">
+      <rect class="face" x="4" y="2" width="70" height="22" rx="4" fill="var(--deck)" stroke="var(--line)"/>
+      <line class="wire hot" x1="10" y1="12" x2="68" y2="12"/>
+      <text class="label" x="12" y="18" font-size="3.5">GULL-WING 01</text>
+    </g>`;
+    svg += `</g>`;
+
+    // 6. TWIN REAR AFTERBURNER NITRO THRUSTER NOZZLES
+    const NOZ_Z = CAR_Z + 8;
+    const [nz1X, nz1Y] = P(CAR_X - 10, CAR_Y + 35, NOZ_Z);
+    const [nz2X, nz2Y] = P(CAR_X - 10, CAR_Y + 95, NOZ_Z);
+
+    svg += `<g id="nitro-thrusters" class="car-body">
+      <ellipse cx="${nz1X}" cy="${nz1Y}" rx="14" ry="10" fill="#212121" stroke="var(--accent)" stroke-width="2"/>
+      <ellipse cx="${nz1X}" cy="${nz1Y}" rx="8" ry="6" fill="var(--accent-hi)" filter="url(#glow)"/>
+      <ellipse cx="${nz2X}" cy="${nz2Y}" rx="14" ry="10" fill="#212121" stroke="var(--accent)" stroke-width="2"/>
+      <ellipse cx="${nz2X}" cy="${nz2Y}" rx="8" ry="6" fill="var(--accent-hi)" filter="url(#glow)"/>
+    </g>`;
+
+    // Nitro Jet Flame Eruption FX
+    svg += `<g id="nitro-flame-fx" opacity="0" style="transition: opacity 0.15s ease;">
+      <polygon points="${nz1X},${nz1Y-6} ${nz1X},${nz1Y+6} ${nz1X-90},${nz1Y+24} ${nz1X-110},${nz1Y-18}" fill="url(#nitro-flame)" filter="url(#glow)"/>
+      <polygon points="${nz2X},${nz2Y-6} ${nz2X},${nz2Y+6} ${nz2X-90},${nz2Y+24} ${nz2X-110},${nz2Y-18}" fill="url(#nitro-flame)" filter="url(#glow)"/>
+      <ellipse cx="${nz1X-30}" cy="${nz1Y+6}" rx="18" ry="10" fill="none" stroke="#ffffff" stroke-width="2" filter="url(#soft)"/>
+      <ellipse cx="${nz2X-30}" cy="${nz2Y+6}" rx="18" ry="10" fill="none" stroke="#ffffff" stroke-width="2" filter="url(#soft)"/>
+    </g>`;
+
+    svg += `</g>`; // End hover-float group
+
+    stage.innerHTML = svg;
+
+    // AUDIO SYNTHESIZER
+    const playHoverSound = (type) => {
+      try {
+        const audio = api.audio();
+        if (!audio || !audio.ctx) return;
+        const { ctx, out } = audio;
+        const now = ctx.currentTime;
+
+        if (type === 'boost') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(1400, now + 0.35);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.6);
+
+          const bufferSize = ctx.sampleRate * 0.4;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'highpass';
+          filter.frequency.setValueAtTime(800, now);
+          const nGain = ctx.createGain();
+          nGain.gain.setValueAtTime(0.2, now);
+          nGain.gain.linearRampToValueAtTime(0, now + 0.4);
+          noise.connect(filter);
+          filter.connect(nGain);
+          nGain.connect(out);
+          noise.start(now);
+        } else if (type === 'door') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.linearRampToValueAtTime(640, now + 0.2);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.linearRampToValueAtTime(0, now + 0.22);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        }
+      } catch (e) {}
+    };
+
+    // REAL-TIME HOVER PHYSICS & SCANNING ANIMATION LOOP
+    const carGroup = stage.querySelector('#car-hover-group');
+    const shadowEl = stage.querySelector('#ground-shadow');
+    const hudStatus = stage.querySelector('#hud-status');
+    const flameFx = stage.querySelector('#nitro-flame-fx');
+    const doorEl = stage.querySelector('#gullwing-door');
+
+    let tick = 0;
+    let doorOpen = false;
+
+    api.every(35, () => {
+      tick++;
+
+      // 1. Natural floating bob & tilt
+      const bobY = Math.sin(tick * 0.08) * 7;
+      const tiltX = Math.cos(tick * 0.05) * 1.5;
+      if (carGroup) {
+        carGroup.style.transform = `translateY(${bobY.toFixed(1)}px) rotate(${tiltX.toFixed(2)}deg)`;
+      }
+
+      // 2. Dynamic ground shadow expansion
+      if (shadowEl) {
+        const shadowScale = 90 - bobY * 1.5;
+        shadowEl.setAttribute('rx', shadowScale.toFixed(1));
+        shadowEl.style.opacity = (0.6 - (bobY + 7) * 0.015).toFixed(2);
+      }
+
+      // 3. Ion ground light pools pulsing
+      for (let i = 0; i < 4; i++) {
+        const pool = stage.querySelector(`#ion-pool-${i}`);
+        if (pool) {
+          const poolR = 22 + Math.sin(tick * 0.15 + i) * 3;
+          pool.setAttribute('rx', poolR.toFixed(1));
+        }
+      }
+
+      // 4. Live HUD altitude readout
+      if (tick % 6 === 0 && hudStatus) {
+        const alt = (1.80 + Math.sin(tick * 0.08) * 0.25).toFixed(2);
+        hudStatus.textContent = `HUD: ALT ${alt}M · SPD 0 KM/H`;
+      }
+    });
+
+    const triggerNitroBoost = () => {
+      playHoverSound('boost');
+      stage.classList.add('car-boost');
+      api.readout('NITRO AFTERBURNER IGNITION · SPEED: 420 KM/H · ALTITUDE: 150M');
+      if (flameFx) flameFx.style.opacity = '1';
+      setTimeout(() => {
+        if (flameFx) flameFx.style.opacity = '0';
+        stage.classList.remove('car-boost');
+      }, 550);
+    };
+
+    const toggleDoor = () => {
+      playHoverSound('door');
+      doorOpen = !doorOpen;
+      if (doorEl) {
+        doorEl.style.transform = doorOpen ? 'translateY(-14px) rotate(-18deg)' : 'none';
+      }
+      api.readout(doorOpen ? 'GULL-WING SCISSOR DOOR OPENED · CABIN PRESSURIZED' : 'CABIN SEALED · COCKPIT SECURE');
+    };
+
+    const chassisEl = stage.querySelector('#car-chassis');
+    if (chassisEl) chassisEl.addEventListener('click', toggleDoor);
+
+    const thrusterEl = stage.querySelector('#nitro-thrusters');
+    if (thrusterEl) thrusterEl.addEventListener('click', triggerNitroBoost);
+
+    api.readout('CYBERPUNK AERODYNE HOVERCAR · VTOL ENGINES ONLINE · READY');
+
+    return {
+      key(e) {
+        if (e.key === ' ' || e.code === 'Space') {
+          triggerNitroBoost();
+          return true;
+        }
+        if (e.key === '1') {
+          toggleDoor();
+          return true;
+        }
+        if (e.key === '2') {
+          triggerNitroBoost();
+          return true;
+        }
+        if (e.key === '3') {
+          api.readout('AUTOPILOT ENGAGED · AIR TRAFFIC GRID SYNCHRONIZED');
+          return true;
+        }
+        if (e.key === '4') {
+          api.readout('ANTI-GRAV FLUX CALIBRATED · HOVER HEIGHT: 2.4 METERS');
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        stage.classList.remove('car-boost');
+      }
+    };
+  }
+});
+
+
+/* Fig 4 — Audira Deep-Space Orbital Recon Satellite (Phased Array Satellite) */
+FIGS.push({
+  id: 'audira-satellite',
+  name: 'Orbital Recon Satellite',
+  hint: 'Click Dish Antenna or Space to transmit 100Gbps Laser Uplink · Keys 1–4',
+  aria: 'Isometric deep-space reconnaissance satellite with gold thermal foil octagonal bus, deployed dual photovoltaic solar wings, high-gain parabolic phased-array dish antenna, and ion attitude control thrusters.',
+  css: `
+    [data-fig="audira-satellite"] .sat-dish { cursor:pointer; }
+    [data-fig="audira-satellite"] .sat-dish:hover { filter:url(#glow); }
+    [data-fig="audira-satellite"] .solar-wing { cursor:pointer; }
+    [data-fig="audira-satellite"] .solar-wing:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-satellite"] .laser-beam { stroke-dasharray:8 6; }
+    .sat-burst { animation:sat-shake 0.3s ease-out; }
+    @keyframes sat-shake { 0%, 100% { transform:translate(0,0); } 25% { transform:translate(-2px,2px); } 75% { transform:translate(2px,-2px); } }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 270, 0], [340, 10, 0], [340, 270, 0], [0, 10, 0],
+      [20, 20, 260], [320, 20, 260], [20, 260, 260], [320, 260, 260]
+    ]);
+    const { TOP, FRONT, SIDE, box, boxc, path, P } = K;
+    const slits = api.iso.slits;
+
+    let svg = `<defs>
+      <linearGradient id="sat-laser-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="40%" stop-color="#00e5ff"/>
+        <stop offset="100%" stop-color="#01579b" stop-opacity="0"/>
+      </linearGradient>
+    </defs>`;
+
+    // 1. Orbital Horizon Base Grid / Earth Vector Arc
+    const PLZ = 8;
+    svg += boxc(10, 10, 0, 320, 260, PLZ, 16, 'stage-floor');
+    svg += `<g transform="${TOP(10, 10, PLZ)}">
+      <rect class="detail" x="12" y="12" width="296" height="236" rx="12" stroke-dasharray="10 6"/>
+      <path d="M 20,220 Q 160,80 300,220" fill="none" stroke="var(--line)" stroke-width="1.8"/>
+      <path d="M 40,230 Q 160,105 280,230" fill="none" stroke="var(--detail)" stroke-width="1.2" stroke-dasharray="12 8"/>
+      <circle cx="160" cy="140" r="4" fill="var(--accent)"/>
+      <text class="label" x="25" y="248" font-size="4.2" letter-spacing="1.5">AUDIRA ORBITAL COMM · GEOSTATIONARY RECON SATELLITE (ALT: 35,786 KM)</text>
+    </g>`;
+
+    // 2. SATELLITE BODY IN ZERO-G (Floating Group)
+    svg += `<g id="satellite-group">`;
+
+    // Center Satellite Equipment Bus
+    const CX = 160, CY = 140, SAT_Z = 95, SAT_W = 60, SAT_D = 60, SAT_H = 80;
+    svg += box(CX - SAT_W / 2, CY - SAT_D / 2, SAT_Z, SAT_W, SAT_D, SAT_H, 8);
+    svg += `<g transform="${TOP(CX - SAT_W / 2, CY - SAT_D / 2, SAT_Z + SAT_H)}">
+      <rect class="detail" x="4" y="4" width="${SAT_W - 8}" height="${SAT_D - 8}" rx="4"/>
+      <circle cx="${SAT_W / 2}" cy="${SAT_D / 2}" r="16" fill="none" stroke="#ffd54f" stroke-width="1.4"/>
+      <circle cx="${SAT_W / 2}" cy="${SAT_D / 2}" r="8" fill="var(--accent)" opacity="0.6"/>
+      <text class="label" x="${SAT_W / 2}" y="${SAT_D / 2 + 3}" font-size="3" text-anchor="middle">SAT BUS</text>
+    </g>`;
+
+    svg += `<g transform="${FRONT(CX - SAT_W / 2, CY + SAT_D / 2, SAT_Z + SAT_H)}">
+      ${slits(6, SAT_W - 6, 4, 8, SAT_H - 10, true, 'wire hot')}
+    </g>`;
+
+    // 3. DEPLOYED DUAL PHOTOVOLTAIC SOLAR WINGS
+    const LW_W = 100, LW_D = 40, LW_Z = SAT_Z + 25;
+    svg += `<g class="solar-wing" id="left-solar-wing">`;
+    svg += box(CX - SAT_W / 2 - LW_W - 12, CY - LW_D / 2, LW_Z, LW_W, LW_D, 4, 3);
+    svg += `<g transform="${TOP(CX - SAT_W / 2 - LW_W - 12, CY - LW_D / 2, LW_Z + 4)}">
+      <rect class="glass hot" x="2" y="2" width="${LW_W - 4}" height="${LW_D - 4}" rx="2"/>
+      ${slits(6, LW_W - 6, 8, 4, LW_D - 4, true, 'wire hot')}
+      ${slits(6, LW_D - 6, 8, 4, LW_W - 4, false, 'detail')}
+    </g>`;
+    svg += `<line x1="${P(CX - SAT_W / 2, CY, LW_Z + 2)[0]}" y1="${P(CX - SAT_W / 2, CY, LW_Z + 2)[1]}" x2="${P(CX - SAT_W / 2 - 12, CY, LW_Z + 2)[0]}" y2="${P(CX - SAT_W / 2 - 12, CY, LW_Z + 2)[1]}" stroke="#cfd8dc" stroke-width="2.5"/>`;
+    svg += `</g>`;
+
+    const RW_W = 100, RW_D = 40, RW_Z = SAT_Z + 25;
+    svg += `<g class="solar-wing" id="right-solar-wing">`;
+    svg += box(CX + SAT_W / 2 + 12, CY - RW_D / 2, RW_Z, RW_W, RW_D, 4, 3);
+    svg += `<g transform="${TOP(CX + SAT_W / 2 + 12, CY - RW_D / 2, RW_Z + 4)}">
+      <rect class="glass hot" x="2" y="2" width="${RW_W - 4}" height="${RW_D - 4}" rx="2"/>
+      ${slits(6, RW_W - 6, 8, 4, RW_D - 4, true, 'wire hot')}
+      ${slits(6, RW_D - 6, 8, 4, RW_W - 4, false, 'detail')}
+    </g>`;
+    svg += `<line x1="${P(CX + SAT_W / 2, CY, RW_Z + 2)[0]}" y1="${P(CX + SAT_W / 2, CY, RW_Z + 2)[1]}" x2="${P(CX + SAT_W / 2 + 12, CY, RW_Z + 2)[0]}" y2="${P(CX + SAT_W / 2 + 12, CY, RW_Z + 2)[1]}" stroke="#cfd8dc" stroke-width="2.5"/>`;
+    svg += `</g>`;
+
+    // 4. HIGH-GAIN PARABOLIC DISH ANTENNA WITH RADAR SWEEP LINE
+    const DISH_Z = SAT_Z + SAT_H + 18;
+    const [dpx, dpy] = P(CX, CY, DISH_Z);
+
+    svg += `<g id="sat-dish-unit" class="sat-dish">
+      <line x1="${P(CX, CY, SAT_Z + SAT_H)[0]}" y1="${P(CX, CY, SAT_Z + SAT_H)[1]}" x2="${dpx}" y2="${dpy}" stroke="#cfd8dc" stroke-width="3"/>
+      <ellipse cx="${dpx}" cy="${dpy}" rx="38" ry="24" fill="var(--deck)" stroke="var(--line)" stroke-width="2"/>
+      <ellipse cx="${dpx}" cy="${dpy}" rx="32" ry="20" fill="none" stroke="var(--accent-hi)" stroke-width="1.5" stroke-dasharray="8 6"/>
+      <circle cx="${dpx}" cy="${dpy}" r="6" fill="#ffd54f" filter="url(#soft)"/>
+      <!-- Continuous rotating radar sweep needle on dish -->
+      <line id="dish-radar-needle" x1="${dpx}" y1="${dpy}" x2="${dpx+24}" y2="${dpy-10}" stroke="var(--accent-hi)" stroke-width="2" stroke-linecap="round" filter="url(#glow)"/>
+      <line x1="${dpx}" y1="${dpy}" x2="${dpx - 14}" y2="${dpy - 22}" stroke="#cfd8dc" stroke-width="1.4"/>
+      <line x1="${dpx}" y1="${dpy}" x2="${dpx + 14}" y2="${dpy - 22}" stroke="#cfd8dc" stroke-width="1.4"/>
+      <circle cx="${dpx}" cy="${dpy - 22}" r="3" fill="var(--accent-hi)" filter="url(#glow)"/>
+    </g>`;
+
+    // 5. LASER OPTICAL DATA DOWNLINK BEAM
+    svg += `<g id="laser-downlink-fx" opacity="0" style="transition: opacity 0.2s ease;">
+      <polygon points="${dpx-6},${dpy-22} ${dpx+6},${dpy-22} ${dpx+90},${dpy+180} ${dpx+70},${dpy+180}" fill="url(#sat-laser-grad)" filter="url(#glow)"/>
+      <line id="laser-data-stream" class="laser-beam" x1="${dpx}" y1="${dpy-22}" x2="${dpx+80}" y2="${dpy+180}" stroke="#ffffff" stroke-width="3" filter="url(#soft)"/>
+      <circle cx="${dpx+80}" cy="${dpy+180}" r="16" fill="none" stroke="var(--accent-hi)" stroke-width="2" filter="url(#glow)"/>
+    </g>`;
+
+    // 6. ION PROPULSION RCS THRUSTERS WITH DYNAMIC PUFF PLUMES
+    const rcsPts = [
+      [CX - SAT_W / 2, CY - SAT_D / 2], [CX + SAT_W / 2, CY - SAT_D / 2],
+      [CX - SAT_W / 2, CY + SAT_D / 2], [CX + SAT_W / 2, CY + SAT_D / 2]
+    ];
+    rcsPts.forEach(([rx, ry], idx) => {
+      const [rpx, rpy] = P(rx, ry, SAT_Z - 6);
+      svg += `<circle cx="${rpx}" cy="${rpy}" r="3" fill="#212121" stroke="var(--accent)" stroke-width="1"/>`;
+      svg += `<line id="rcs-plume-${idx}" x1="${rpx}" y1="${rpy}" x2="${rpx - 8}" y2="${rpy + 8}" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" opacity="0" filter="url(#soft)"/>`;
+    });
+
+    svg += `</g>`; // End floating group
+
+    // 7. GROUND TRACKING MISSION CONSOLE (Front left)
+    const TRK_X = 25, TRK_Y = 25, TRK_Z = PLZ;
+    svg += box(TRK_X, TRK_Y, TRK_Z, 70, 48, 26, 4);
+    svg += `<g transform="${TOP(TRK_X, TRK_Y, TRK_Z + 26)}">
+      <rect class="detail" x="4" y="4" width="62" height="40" rx="2"/>
+      <rect class="glass" x="8" y="8" width="54" height="32" rx="2"/>
+      <text class="scr" id="sat-coord" x="12" y="18" font-size="3.8">LAT: 0.00° · LON: 106.8°</text>
+      <text class="scr-accent" id="sat-link" x="12" y="27" font-size="4">LINK: 100 Gbps</text>
+      <text class="label" id="sat-pwr" x="12" y="35" font-size="3.2">SOLAR: 18.42 kW OK</text>
+    </g>`;
+
+    stage.innerHTML = svg;
+
+    // AUDIO SYNTHESIZER
+    const playSatSound = (type) => {
+      try {
+        const audio = api.audio();
+        if (!audio || !audio.ctx) return;
+        const { ctx, out } = audio;
+        const now = ctx.currentTime;
+
+        if (type === 'uplink') {
+          [1200, 1600, 2400, 3200].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.08, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.12);
+            osc.connect(gain);
+            gain.connect(out);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.15);
+          });
+        } else if (type === 'rcs') {
+          const bufferSize = ctx.sampleRate * 0.25;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(1400, now);
+          const nGain = ctx.createGain();
+          nGain.gain.setValueAtTime(0.18, now);
+          nGain.gain.linearRampToValueAtTime(0, now + 0.25);
+          noise.connect(filter);
+          filter.connect(nGain);
+          nGain.connect(out);
+          noise.start(now);
+        }
+      } catch (e) {}
+    };
+
+    // REAL-TIME ORBITAL ANIMATION LOOP
+    const satGroup = stage.querySelector('#satellite-group');
+    const radarNeedle = stage.querySelector('#dish-radar-needle');
+    const dataStream = stage.querySelector('#laser-data-stream');
+    const coordText = stage.querySelector('#sat-coord');
+    const pwrText = stage.querySelector('#sat-pwr');
+    const laserFx = stage.querySelector('#laser-downlink-fx');
+    const linkText = stage.querySelector('#sat-link');
+
+    let tick = 0;
+    api.every(45, () => {
+      tick++;
+
+      // 1. Zero-G slow orbital oscillation
+      const zeroG = Math.sin(tick * 0.06) * 5;
+      if (satGroup) satGroup.style.transform = `translateY(${zeroG.toFixed(1)}px)`;
+
+      // 2. Rotating radar sweep needle on dish
+      if (radarNeedle) {
+        const nx = dpx + 26 * Math.cos(tick * 0.12);
+        const ny = dpy + 16 * Math.sin(tick * 0.12);
+        radarNeedle.setAttribute('x2', nx.toFixed(1));
+        radarNeedle.setAttribute('y2', ny.toFixed(1));
+      }
+
+      // 3. Continuous packet flow along laser stream
+      if (dataStream) {
+        dataStream.setAttribute('stroke-dashoffset', (-tick * 3).toFixed(1));
+      }
+
+      // 4. Periodic RCS thruster puff firing on corner
+      if (tick % 60 === 0) {
+        const pIdx = (tick / 60) % 4;
+        const plume = stage.querySelector(`#rcs-plume-${pIdx}`);
+        if (plume) {
+          plume.style.opacity = '1';
+          setTimeout(() => { plume.style.opacity = '0'; }, 180);
+        }
+      }
+
+      // 5. Telemetry updates
+      if (tick % 8 === 0) {
+        const lon = (106.82 + Math.sin(tick * 0.05) * 0.02).toFixed(2);
+        if (coordText) coordText.textContent = `LAT: 0.00° · LON: ${lon}°E`;
+        const pwr = (18.40 + Math.sin(tick * 0.1) * 0.05).toFixed(2);
+        if (pwrText) pwrText.textContent = `SOLAR: ${pwr} kW OK`;
+      }
+    });
+
+    let downCount = 0;
+    const transmitDownlink = () => {
+      playSatSound('uplink');
+      stage.classList.add('sat-burst');
+      downCount++;
+      const links = ['LINK: 100 Gbps LASER', 'LINK: QUANTUM ENCRYPTED', 'LINK: TERABIT UPLINK'];
+      if (linkText) linkText.textContent = links[downCount % links.length];
+      api.readout('OPTICAL LASER DOWNLINK ACTIVE · 100 Gbps TO GROUND STATION · BIT ERROR: 0%');
+      if (laserFx) laserFx.style.opacity = '1';
+      setTimeout(() => {
+        if (laserFx) laserFx.style.opacity = '0';
+        stage.classList.remove('sat-burst');
+      }, 700);
+    };
+
+    const dishEl = stage.querySelector('#sat-dish-unit');
+    if (dishEl) dishEl.addEventListener('click', transmitDownlink);
+
+    api.readout('ORBITAL RECON SATELLITE · SOLAR ARRAY 100% · READY');
+
+    return {
+      key(e) {
+        if (e.key === ' ' || e.code === 'Space') {
+          transmitDownlink();
+          return true;
+        }
+        if (e.key === '1') {
+          playSatSound('rcs');
+          api.readout('RCS ION MANEUVERING BURN: ATTITUDE ORIENTED +0.02°');
+          return true;
+        }
+        if (e.key === '2') {
+          transmitDownlink();
+          return true;
+        }
+        if (e.key === '3') {
+          api.readout('STAR TRACKER STELLAR LOCK: 24 CONSTELLATION REFERENCES');
+          return true;
+        }
+        if (e.key === '4') {
+          api.readout('SOLAR BATTERY CAPACITY: 98.6% · 18.4 kW BUS POWER');
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        stage.classList.remove('sat-burst');
+      }
+    };
+  }
+});
+
+
+/* Fig 5 — Audira Custom Dual-Loop Liquid-Cooled Super PC Rig */
+FIGS.push({
+  id: 'audira-custompc',
+  name: 'Liquid-Cooled Super PC',
+  hint: 'Click GPU Waterblock or Space to run 3D Benchmark Stress Test · Keys 1–4',
+  aria: 'Isometric open-frame enthusiast showcase PC with dual-loop hardline liquid cooling, transparent GPU waterblock, dual cylindrical vortex reservoirs, and 360mm radiators.',
+  css: `
+    [data-fig="audira-custompc"] .pc-block { cursor:pointer; }
+    [data-fig="audira-custompc"] .pc-block:hover { filter:url(#glow); }
+    [data-fig="audira-custompc"] .coolant-pipe { fill:none; stroke-linecap:round; }
+    .bench-run { animation:bench-shake 0.35s ease-out; }
+    @keyframes bench-shake { 0%, 100% { transform:translate(0,0); } 20% { transform:translate(-2px,2px); } 60% { transform:translate(3px,-2px); } }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [10, 260, 0], [310, 10, 0], [310, 260, 0], [10, 10, 0],
+      [20, 20, 250], [300, 20, 250], [20, 250, 250], [300, 250, 250]
+    ]);
+    const { TOP, FRONT, SIDE, box, boxc, path, P } = K;
+    const slits = api.iso.slits;
+
+    let svg = `<defs>
+      <linearGradient id="coolant-cyan" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#00e5ff"/>
+        <stop offset="100%" stop-color="#0288d1"/>
+      </linearGradient>
+    </defs>`;
+
+    // 1. Desk Mount Dais
+    const PLZ = 8;
+    svg += boxc(10, 10, 0, 300, 250, PLZ, 14, 'stage-floor');
+    svg += `<g transform="${TOP(10, 10, PLZ)}">
+      <rect class="detail" x="10" y="10" width="280" height="230" rx="10" stroke-dasharray="8 6"/>
+      <circle cx="150" cy="125" r="100" fill="none" stroke="var(--line)" stroke-width="0.8"/>
+      <text class="label" x="25" y="235" font-size="4.2" letter-spacing="1.5">AUDIRA ULTRA WORKSTATION · DUAL-LOOP HARDLINE CUSTOM WATERCOOLING RIG</text>
+    </g>`;
+
+    // 2. Open-Frame Chassis Backplate
+    const CH_X = 40, CH_Y = 50, CH_Z = PLZ, CH_W = 220, CH_D = 150, CH_H = 18;
+    svg += boxc(CH_X, CH_Y, CH_Z, CH_W, CH_D, CH_H, 8, 'chassis-base');
+
+    // Vertical Motherboard Tray Tower Panel
+    const TRAY_X = CH_X + 15, TRAY_Y = CH_Y + 15, TRAY_Z = CH_Z + CH_H, TRAY_W = 190, TRAY_D = 24, TRAY_H = 160;
+    svg += box(TRAY_X, TRAY_Y, TRAY_Z, TRAY_W, TRAY_D, TRAY_H, 6);
+    svg += `<g transform="${FRONT(TRAY_X, TRAY_Y + TRAY_D, TRAY_Z + TRAY_H)}">
+      <rect class="face recess" x="12" y="12" width="166" height="136" rx="4"/>
+      <!-- CPU Socket Area & Waterblock -->
+      <rect class="detail" x="35" y="25" width="45" height="45" rx="3"/>
+      <!-- DDR5 RAM Slots -->
+      ${[0, 1, 2, 3].map(i => `<line class="wire hot" x1="${88 + i * 5}" y1="25" x2="${88 + i * 5}" y2="70" stroke-width="2"/>`).join('')}
+      <rect class="detail" x="35" y="80" width="120" height="12" rx="2"/>
+      <rect class="detail" x="35" y="100" width="120" height="12" rx="2"/>
+    </g>`;
+
+    // 3. TRANSPARENT GPU WATERBLOCK
+    const GPU_X = TRAY_X + 35, GPU_Y = TRAY_Y + TRAY_D + 18, GPU_Z = TRAY_Z + 45;
+    svg += `<g id="gpu-block-unit" class="pc-block">`;
+    svg += box(GPU_X, GPU_Y, GPU_Z, 115, 20, 60, 4);
+    svg += `<g transform="${FRONT(GPU_X, GPU_Y + 20, GPU_Z + 60)}">
+      <rect class="glass hot" x="4" y="4" width="107" height="52" rx="2"/>
+      ${slits(35, 75, 2.5, 12, 42, true, 'wire hot')}
+      <rect class="face recess" x="10" y="12" width="20" height="12" rx="1"/>
+      <text class="scr-accent" id="gpu-temp-text" x="12" y="20" font-size="3.5">42°C</text>
+      <text class="label" id="gpu-pwr-text" x="10" y="32" font-size="3">RTX 5090 · 450W</text>
+    </g>`;
+    svg += `</g>`;
+
+    // 4. DUAL CYLINDRICAL VORTEX RESERVOIRS WITH D5 PUMPS
+    const RES1_X = CH_X + 165, RES1_Y = CH_Y + 50, RES1_Z = CH_Z + CH_H;
+    svg += boxc(RES1_X, RES1_Y, RES1_Z, 28, 28, 85, 8, 'reservoir-tube');
+    svg += `<g transform="${FRONT(RES1_X, RES1_Y + 28, RES1_Z + 85)}">
+      <rect class="glass hot" x="3" y="10" width="22" height="65" rx="3"/>
+      <!-- Dynamic Swirling Liquid Vortex Path -->
+      <path id="res-vortex-1" d="M 6,20 Q 22,35 6,50 Q 22,65 6,72" fill="none" stroke="var(--accent-hi)" stroke-width="2.5" filter="url(#glow)"/>
+      <text class="label" x="14" y="8" font-size="2.8" text-anchor="middle">LOOP 1</text>
+    </g>`;
+
+    const RES2_X = CH_X + 165, RES2_Y = CH_Y + 95, RES2_Z = CH_Z + CH_H;
+    svg += boxc(RES2_X, RES2_Y, RES2_Z, 28, 28, 85, 8, 'reservoir-tube');
+    svg += `<g transform="${FRONT(RES2_X, RES2_Y + 28, RES2_Z + 85)}">
+      <rect class="glass hot" x="3" y="10" width="22" height="65" rx="3"/>
+      <path id="res-vortex-2" d="M 22,20 Q 6,35 22,50 Q 6,65 22,72" fill="none" stroke="var(--accent)" stroke-width="2.5" filter="url(#soft)"/>
+      <text class="label" x="14" y="8" font-size="2.8" text-anchor="middle">LOOP 2</text>
+    </g>`;
+
+    // 5. 360MM THICK RADIATOR WITH THREE 120MM ROTATING RGB FANS
+    const RAD_X = TRAY_X + 10, RAD_Y = TRAY_Y + 5, RAD_Z = TRAY_Z + TRAY_H + 6;
+    svg += box(RAD_X, RAD_Y, RAD_Z, 170, 32, 22, 4);
+    svg += `<g transform="${FRONT(RAD_X, RAD_Y + 32, RAD_Z + 22)}">
+      ${[0, 1, 2].map(i => {
+        const fx = 28 + i * 55, fy = 11;
+        return `
+          <circle cx="${fx}" cy="${fy}" r="9" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+          <g id="fan-unit-${i}">
+            <line id="fan-b1-${i}" x1="${fx-8}" y1="${fy}" x2="${fx+8}" y2="${fy}" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/>
+            <line id="fan-b2-${i}" x1="${fx}" y1="${fy-8}" x2="${fx}" y2="${fy+8}" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/>
+          </g>
+        `;
+      }).join('')}
+    </g>`;
+
+    // 6. HARDLINE ACRYLIC CRYSTAL TUBING WITH LIVE COOLANT BUBBLE STREAMS
+    const pRes1 = P(RES1_X + 14, RES1_Y + 14, RES1_Z + 75);
+    const pGpuIn = P(GPU_X + 25, GPU_Y + 10, GPU_Z + 50);
+    const pGpuOut = P(GPU_X + 90, GPU_Y + 10, GPU_Z + 50);
+    const pRadIn = P(RAD_X + 30, RAD_Y + 16, RAD_Z);
+
+    // Static clear tube shells
+    svg += `<path d="M ${pRes1.join(',')} L ${pGpuIn.join(',')}" fill="none" stroke="var(--line)" stroke-width="5" stroke-linecap="round"/>`;
+    svg += `<path d="M ${pGpuOut.join(',')} L ${pRadIn.join(',')}" fill="none" stroke="var(--line)" stroke-width="5" stroke-linecap="round"/>`;
+
+    // Dynamic flowing fluid streams
+    svg += `<path id="coolant-stream-1" class="coolant-pipe" d="M ${pRes1.join(',')} L ${pGpuIn.join(',')}" stroke="var(--accent-hi)" stroke-width="3" stroke-dasharray="8 6" filter="url(#glow)"/>`;
+    svg += `<path id="coolant-stream-2" class="coolant-pipe" d="M ${pGpuOut.join(',')} L ${pRadIn.join(',')}" stroke="var(--accent-hi)" stroke-width="3" stroke-dasharray="8 6" filter="url(#glow)"/>`;
+
+    // 7. STRESS BENCHMARK BENCH SCREEN (Front left)
+    const MON_X = 25, MON_Y = 25, MON_Z = PLZ;
+    svg += box(MON_X, MON_Y, MON_Z, 70, 48, 26, 4);
+    svg += `<g transform="${TOP(MON_X, MON_Y, MON_Z + 26)}">
+      <rect class="detail" x="4" y="4" width="62" height="40" rx="2"/>
+      <rect class="glass" x="8" y="8" width="54" height="32" rx="2"/>
+      <text class="scr" x="12" y="18" font-size="4">CPU: 5.9 GHz BOOST</text>
+      <text class="scr-accent" id="pc-fps" x="12" y="27" font-size="4">FPS: 240 · 4K ULTRA</text>
+      <text class="label" id="pc-flow" x="12" y="35" font-size="3.2">FLOW: 242 L/H (D5 OK)</text>
+    </g>`;
+
+    stage.innerHTML = svg;
+
+    // AUDIO SYNTHESIZER
+    const playPcSound = (type) => {
+      try {
+        const audio = api.audio();
+        if (!audio || !audio.ctx) return;
+        const { ctx, out } = audio;
+        const now = ctx.currentTime;
+
+        if (type === 'benchmark') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(120, now);
+          osc.frequency.exponentialRampToValueAtTime(750, now + 0.4);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.linearRampToValueAtTime(0.25, now + 0.2);
+          gain.gain.linearRampToValueAtTime(0, now + 0.5);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.5);
+
+          [880, 1108, 1320, 1760].forEach((freq, idx) => {
+            const bOsc = ctx.createOscillator();
+            const bGain = ctx.createGain();
+            bOsc.type = 'sine';
+            bOsc.frequency.setValueAtTime(freq, now + 0.45 + idx * 0.05);
+            bGain.gain.setValueAtTime(0.1, now + 0.45 + idx * 0.05);
+            bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9 + idx * 0.05);
+            bOsc.connect(bGain);
+            bGain.connect(out);
+            bOsc.start(now + 0.45 + idx * 0.05);
+            bOsc.stop(now + 1.0);
+          });
+        } else if (type === 'click') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        }
+      } catch (e) {}
+    };
+
+    // REAL-TIME HARDWARE & FLUID ANIMATION LOOP
+    const stream1 = stage.querySelector('#coolant-stream-1');
+    const stream2 = stage.querySelector('#coolant-stream-2');
+    const vort1 = stage.querySelector('#res-vortex-1');
+    const vort2 = stage.querySelector('#res-vortex-2');
+    const flowText = stage.querySelector('#pc-flow');
+    const fpsText = stage.querySelector('#pc-fps');
+    const tempText = stage.querySelector('#gpu-temp-text');
+    const pwrText = stage.querySelector('#gpu-pwr-text');
+
+    let tick = 0;
+    api.every(40, () => {
+      tick++;
+
+      // 1. Coolant liquid bubble flow along hardline pipes
+      if (stream1) stream1.setAttribute('stroke-dashoffset', (-tick * 3.5).toFixed(1));
+      if (stream2) stream2.setAttribute('stroke-dashoffset', (-tick * 3.5).toFixed(1));
+
+      // 2. Spinning 120mm Radiator Fan Blades
+      for (let i = 0; i < 3; i++) {
+        const b1 = stage.querySelector(`#fan-b1-${i}`);
+        const b2 = stage.querySelector(`#fan-b2-${i}`);
+        if (b1 && b2) {
+          const fx = 28 + i * 55, fy = 11;
+          const a = (tick * 0.35 + i * 0.4);
+          const r = 8;
+          b1.setAttribute('x1', (fx - r * Math.cos(a)).toFixed(1));
+          b1.setAttribute('y1', (fy - r * Math.sin(a)).toFixed(1));
+          b1.setAttribute('x2', (fx + r * Math.cos(a)).toFixed(1));
+          b1.setAttribute('y2', (fy + r * Math.sin(a)).toFixed(1));
+
+          b2.setAttribute('x1', (fx + r * Math.sin(a)).toFixed(1));
+          b2.setAttribute('y1', (fy - r * Math.cos(a)).toFixed(1));
+          b2.setAttribute('x2', (fx - r * Math.sin(a)).toFixed(1));
+          b2.setAttribute('y2', (fy + r * Math.cos(a)).toFixed(1));
+        }
+      }
+
+      // 3. Dynamic liquid vortex inside reservoirs
+      if (vort1 && vort2) {
+        const offset = Math.sin(tick * 0.2) * 5;
+        vort1.setAttribute('d', `M ${6+offset.toFixed(1)},20 Q 22,35 ${6-offset.toFixed(1)},50 Q 22,65 6,72`);
+        vort2.setAttribute('d', `M ${22-offset.toFixed(1)},20 Q 6,35 ${22+offset.toFixed(1)},50 Q 6,65 22,72`);
+      }
+
+      // 4. Flow meter and telemetry jitter
+      if (tick % 8 === 0 && flowText) {
+        const flow = (240 + Math.sin(tick * 0.15) * 4).toFixed(0);
+        flowText.textContent = `FLOW: ${flow} L/H (D5 OK)`;
+      }
+    });
+
+    let benchCount = 0;
+    const runBenchmark = () => {
+      playPcSound('benchmark');
+      stage.classList.add('bench-run');
+      benchCount++;
+      const fpsVals = ['FPS: 285 · 4K ULTRA', 'TIME SPY: 38,450', 'FPS: 310 · DLSS 3.5'];
+      const tempVals = ['58°C', '62°C', '55°C'];
+      const pwrVals = ['RTX 5090 · 580W', 'RTX 5090 · 600W (PEAK)', 'RTX 5090 · 520W'];
+      if (fpsText) fpsText.textContent = fpsVals[benchCount % fpsVals.length];
+      if (tempText) tempText.textContent = tempVals[benchCount % tempVals.length];
+      if (pwrText) pwrText.textContent = pwrVals[benchCount % pwrVals.length];
+
+      api.readout('3D BENCHMARK STRESS TEST COMPLETED · SCORE: 38,450 · LIQUID DELTA T: 4.2°C');
+      setTimeout(() => {
+        stage.classList.remove('bench-run');
+        if (pwrText) pwrText.textContent = 'RTX 5090 · 450W';
+      }, 550);
+    };
+
+    const gpuEl = stage.querySelector('#gpu-block-unit');
+    if (gpuEl) gpuEl.addEventListener('click', runBenchmark);
+
+    api.readout('CUSTOM DUAL-LOOP SUPER PC RIG · D5 PUMPS 240 L/H · LIQUID COOLED');
+
+    return {
+      key(e) {
+        if (e.key === ' ' || e.code === 'Space') {
+          runBenchmark();
+          return true;
+        }
+        if (e.key === '1') {
+          playPcSound('click');
+          api.readout('D5 PUMP SPEED STEPPED: 100% PWM · 4800 RPM');
+          return true;
+        }
+        if (e.key === '2') {
+          runBenchmark();
+          return true;
+        }
+        if (e.key === '3') {
+          playPcSound('click');
+          api.readout('RGB ARGB SYNC: CYBERPUNK SYNTHWAVE PALETTE APPLIED');
+          return true;
+        }
+        if (e.key === '4') {
+          api.readout('OVERCLOCK PROFILE ACTIVE: +250 MHz CORE, +1000 MHz VRAM');
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        stage.classList.remove('bench-run');
+      }
+    };
+  }
+});
+
+</script>
+<!-- CORE: kernel, api, navigation, palette picker. Keep after the figures. -->
+<script>
+/* ============================================================
+   iso gallery core: kernel, shared api, navigation.
+   Figures register with FIGS.push({...}) — see CONTRACT below.
+   ============================================================ */
+// FIGS is declared inline in the page before the figure scripts
+
+const ISO = (() => {
+  const C = Math.cos(Math.PI / 6), S = Math.sin(Math.PI / 6);
+  function kernel(OX, OY) {
+    const P = (x,y,z) => [(x-y)*C + OX, (x+y)*S - z + OY];
+    const D = (x,y,z) => [(x-y)*C, (x+y)*S - z];
+    const plane = (O,U,V) => { const o=P(...O), u=D(...U), v=D(...V);
+      return `matrix(${u[0]} ${u[1]} ${v[0]} ${v[1]} ${o[0]} ${o[1]})`; };
+    const TOP   = (x,y,z) => plane([x,y,z],[1,0,0],[0,1,0]);
+    const FRONT = (x,y,z) => plane([x,y,z],[1,0,0],[0,0,-1]);
+    const SIDE  = (x,y,z) => plane([x,y,z],[0,-1,0],[0,0,-1]);
+    const rect = (t,w,h,r=0,cls='face') => `<g transform="${t}"><rect class="${cls}" width="${w}" height="${h}" rx="${r}"/></g>`;
+    // Rounded box: one rounded top plus one continuous side wall along the visible part of the
+    // outline, so the corners meet cleanly. r = 0 keeps the classic three flat faces.
+    const rounded = (x,y,z,w,d,h,r,cls) => {
+      r = Math.min(r, w/2, d/2);
+      const n = 10, z1 = z + h, q = Math.PI/4, H = Math.PI/2, c = cls ? ' ' + cls : '';
+      const arc = (cx,cy,a0,a1) => { const o = []; for (let i = 0; i <= n; i++) { const a = a0 + (a1-a0)*i/n; o.push([cx + r*Math.cos(a), cy + r*Math.sin(a)]); } return o; };
+      const ring = [...arc(x+w-r,y+r,-H,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,2*H), ...arc(x+r,y+r,2*H,3*H)];
+      const vis  = [...arc(x+w-r,y+r,-q,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,3*q)];
+      const d3 = pts => 'M' + pts.map(p => P(...p).map(v => v.toFixed(2)).join(' ')).join('L') + 'Z';
+      const wall = [...vis.map(([a,b]) => [a,b,z]), ...vis.slice().reverse().map(([a,b]) => [a,b,z1])];
+      return `<path class="face${c}" d="${d3(wall)}"/><path class="face top${c}" d="${d3(ring.map(([a,b]) => [a,b,z1]))}"/>`;
+    };
+    const box = (x,y,z,w,d,h,r=0) => r > 0 ? rounded(x,y,z,w,d,h,r,'') :
+      rect(SIDE(x+w,y+d,z+h), d,h) + rect(FRONT(x,y+d,z+h), w,h) + rect(TOP(x,y,z+h), w,d,0,'face top');
+    const boxc = (x,y,z,w,d,h,r,cls) => r > 0 ? rounded(x,y,z,w,d,h,r,cls) :
+      rect(SIDE(x+w,y+d,z+h), d,h,0,'face '+cls) + rect(FRONT(x,y+d,z+h), w,h,0,'face '+cls) + rect(TOP(x,y,z+h), w,d,0,'face top '+cls);
+    // 3D polyline -> SVG path "d"
+    const path = pts => 'M' + pts.map(p => P(...p).map(n => n.toFixed(2)).join(' ')).join('L');
+    return { C, S, P, D, plane, TOP, FRONT, SIDE, rect, box, boxc, path };
+  }
+  // Frame a scene: pass its extreme 3D corners. Returns kernel + viewBox padded to ~4:3.
+  function frame(points, margin = 0.09, aspect = 4 / 3) {
+    const d = points.map(([x,y,z]) => [(x-y)*C, (x+y)*S - z]);
+    let x0 = Math.min(...d.map(p => p[0])), x1 = Math.max(...d.map(p => p[0]));
+    let y0 = Math.min(...d.map(p => p[1])), y1 = Math.max(...d.map(p => p[1]));
+    const m = margin * Math.max(x1 - x0, y1 - y0);
+    let w = x1 - x0 + 2*m, h = y1 - y0 + 2*m;
+    let ox = m - x0, oy = m - y0;
+    if (w / h < aspect) { const nw = h * aspect; ox += (nw - w) / 2; w = nw; }
+    else { const nh = w / aspect; oy += (nh - h) / 2; h = nh; }
+    return { ...kernel(ox, oy), viewBox: `0 0 ${w.toFixed(1)} ${h.toFixed(1)}`, W: w, H: h };
+  }
+  // repeated detail lines in a face-local group
+  const slits = (a0, a1, step, b0, b1, vertical = true, cls = 'detail') => {
+    let s = ''; for (let a = a0; a <= a1 + 1e-6; a += step)
+      s += vertical ? `<line class="${cls}" x1="${a}" y1="${b0}" x2="${a}" y2="${b1}"/>` : `<line class="${cls}" x1="${b0}" y1="${a}" x2="${b1}" y2="${a}"/>`;
+    return s;
+  };
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return { kernel, frame, slits, esc };
+})();
+
+/* ---------- shared audio (created on first user gesture) ---------- */
+const AUDIO = (() => {
+  let ctx = null, out = null, analyser = null;
+  return () => {
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      out = ctx.createGain(); out.gain.value = 0.5;
+      analyser = ctx.createAnalyser(); analyser.fftSize = 1024;
+      out.connect(analyser); analyser.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return { ctx, out, analyser };
+  };
+})();
+
+/* ---------- app ---------- */
+(function app() {
+  const $ = id => document.getElementById(id);
+  const CFG = window.GALLERY || {};
+  const holder = $('stageHolder'), readoutEl = $('readout'), hintEl = $('hint'), numEl = $('fignum'), nameEl = $('figname');
+  const nav = $('nav');
+  let active = null, handle = null, timers = [], frames = [], idx = 0;
+
+  const api = {
+    iso: ISO,
+    readout: s => { readoutEl.textContent = s; },
+    hint: s => { hintEl.textContent = s; },
+    audio: AUDIO,
+    after: (ms, fn) => { const t = setTimeout(fn, ms); timers.push(t); return t; },
+    every: (ms, fn) => { const t = setInterval(fn, ms); timers.push(t); return t; },
+    loop: fn => { let alive = true; const f = ts => { if (!alive) return; fn(ts); requestAnimationFrame(f); };
+      requestAnimationFrame(f); const stop = () => { alive = false; }; frames.push(stop); return stop; },
+    // light a pressable briefly (orange flash + glow, then fade)
+    flash: (el, ms = 160) => { if (!el) return; el.classList.add('down', 'lit'); clearTimeout(el._f1); clearTimeout(el._f2);
+      el._f1 = setTimeout(() => el.classList.remove('down'), 110); el._f2 = setTimeout(() => el.classList.remove('lit'), ms); },
+    // restart a one-shot CSS animation class (e.g. '.pulse' -> 'go')
+    replay: (el, cls = 'go') => { if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); },
+    power: on => { holder.classList.toggle('glow', !!on); },
+  };
+
+  function mount(i) {
+    if (handle && handle.unmount) handle.unmount();
+    timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = [];
+    frames.forEach(stop => stop()); frames = [];
+    idx = (i + FIGS.length) % FIGS.length; active = FIGS[idx];
+    holder.classList.remove('glow');
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('id', 'stage'); svg.setAttribute('role', 'img'); svg.setAttribute('tabindex', '0');
+    svg.setAttribute('aria-label', active.aria || active.name);
+    svg.dataset.fig = active.id;
+    holder.replaceChildren(svg);
+    numEl.textContent = `Fig ${idx + 1}`; nameEl.textContent = active.name;
+    hintEl.textContent = active.hint || ''; readoutEl.textContent = '';
+    document.title = `Fig ${idx + 1} · ${active.name}`;
+    [...nav.querySelectorAll('button[data-i]')].forEach(b => b.setAttribute('aria-current', +b.dataset.i === idx ? 'true' : 'false'));
+    const cur = nav.querySelector(`button[data-i="${idx}"]`);
+    if (cur && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2, behavior: 'smooth' });
+    if (location.hash.slice(1) !== active.id) history.replaceState(null, '', '#' + active.id);
+    handle = active.mount(svg, api) || {};
+    // demo(): runs on arrival unless ?still is in the URL
+    const runDemo = !/still/.test(location.search);
+    if (runDemo && handle.demo) setTimeout(() => handle.demo(), 120);
+  }
+
+  // ---------- glow colour choice ----------
+  const PALETTES = {
+    // [name, dark accent, dark hi, light accent, light hi]
+    ember: [['Ember','#ff7a1a','#ffb070','#ff7a1a','#ffb070'], ['Cyan','#22d3ee','#9beefa','#22d3ee','#9beefa'], ['Lime','#a3e635','#d6f79f','#a3e635','#d6f79f'],
+            ['Violet','#a78bfa','#d6caff','#a78bfa','#d6caff'], ['Rose','#fb7185','#fdb8c2','#fb7185','#fdb8c2'], ['Ice','#dfe9ef','#ffffff','#1f2937','#3b4656']],
+    city:  [['Sodium','#ff9a2e','#ffc77a','#ff9a2e','#ffc77a'], ['Tungsten','#ffd166','#ffe7a8','#ffd166','#ffe7a8'], ['Neon','#ff4fa3','#ff9fcb','#ff4fa3','#ff9fcb'],
+            ['Signal','#3ee8a0','#a3f5cf','#3ee8a0','#a3f5cf'], ['Dusk','#6f9dff','#b5ccff','#6f9dff','#b5ccff'], ['Moon','#dfe7f5','#ffffff','#273246','#3d4a61']],
+  };
+  const ACCENTS = Array.isArray(CFG.palette) ? CFG.palette : (PALETTES[CFG.palette] || PALETTES.ember);
+  const vars = (a, hi, dark) => `--accent:${a}; --accent-hi:${hi}; --accent-dim:color-mix(in srgb, ${a} 10%, transparent);` +
+    ` --glass-on:color-mix(in srgb, ${a} ${dark ? 9 : 12}%, ${dark ? '#101112' : '#eef0f0'});`;
+  const accentCss = ACCENTS.map(([n, da, dh, la, lh]) => { const k = n.toLowerCase();
+    return `:root[data-accent="${k}"] { ${vars(da, dh, true)} }
+@media (prefers-color-scheme: light) { :root[data-accent="${k}"]:not([data-theme="dark"]) { ${vars(la, lh, false)} } }
+:root[data-accent="${k}"][data-theme="light"] { ${vars(la, lh, false)} }`; }).join('\n');
+  const accentStyle = document.createElement('style'); accentStyle.textContent = accentCss; document.head.appendChild(accentStyle);
+  const sw = $('swatches');
+  sw.innerHTML = ACCENTS.map(([n, da]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${da}"><i></i></button>`).join('');
+  function setAccent(k) {
+    if (!ACCENTS.some(a => a[0].toLowerCase() === k)) k = ACCENTS[0][0].toLowerCase();
+    document.documentElement.dataset.accent = k;
+    sw.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
+    try { localStorage.setItem((CFG.storageKey || 'iso-glow-accent'), k); } catch (e) {}
+  }
+  let saved = null; try { saved = localStorage.getItem((CFG.storageKey || 'iso-glow-accent')); } catch (e) {}
+  setAccent(saved || ACCENTS[0][0].toLowerCase());
+  sw.addEventListener('click', e => { const b = e.target.closest('button[data-accent]'); if (b) { setAccent(b.dataset.accent); const s = $('stage'); if (s) s.focus({ preventScroll: true }); } });
+
+  // per-figure css
+  FIGS.forEach(f => { if (f.css) { const st = document.createElement('style'); st.textContent = f.css; document.head.appendChild(st); } });
+
+  // navigation markup
+  nav.innerHTML = FIGS.map((f, i) =>
+    `<button data-i="${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="t">${f.name}</span></button>`).join('');
+  // after a nav click, hand keyboard focus to the figure so space/enter go to it, not the button
+  const focusStage = () => { const s = $('stage'); if (s) s.focus({ preventScroll: true }); };
+  nav.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) { mount(+b.dataset.i); focusStage(); } });
+  $('prev').addEventListener('click', () => { mount(idx - 1); focusStage(); });
+  $('next').addEventListener('click', () => { mount(idx + 1); focusStage(); });
+  window.addEventListener('hashchange', () => { const i = FIGS.findIndex(f => f.id === location.hash.slice(1)); if (i >= 0 && i !== idx) mount(i); });
+
+  window.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target.closest && e.target.closest('button') && (e.key === 'Enter' || e.key === ' ')) return;
+    if (handle && handle.key && handle.key(e)) { e.preventDefault(); return; }
+    if (e.key === 'PageDown') mount(idx + 1);
+    if (e.key === 'PageUp') mount(idx - 1);
+  });
+  window.addEventListener('keyup', e => { if (handle && handle.keyup) handle.keyup(e); });
+  window.addEventListener('blur', () => { if (handle && handle.blur) handle.blur(); });
+
+  if (!FIGS.length) {   // nothing registered yet (figures still being built)
+    holder.innerHTML = '<p style="display:grid;place-items:center;height:100%;margin:0;letter-spacing:.14em;text-transform:uppercase">No figures yet</p>';
+    numEl.textContent = 'Fig —'; return;
+  }
+  const start = FIGS.findIndex(f => f.id === location.hash.slice(1));
+  mount(start >= 0 ? start : 0);
+})();
+
+</script>
+<style>/* light theme: the same accent as the dark theme, but no ambient glow (halos, bloom, light pools, soft blur) */
+  :root[data-theme="light"] .halo, :root[data-theme="light"] #lamp-pool, :root[data-theme="light"] #lamp-bookpool, :root[data-theme="light"] #lamp-cone { display:none !important; }
+  :root[data-theme="light"] .top .dot { box-shadow:none; }
+  :root[data-theme="light"] .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .halo, :root:not([data-theme="dark"]) #lamp-pool, :root:not([data-theme="dark"]) #lamp-bookpool, :root:not([data-theme="dark"]) #lamp-cone { display:none !important; }
+    :root:not([data-theme="dark"]) .top .dot { box-shadow:none; }
+    :root:not([data-theme="dark"]) .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
+  }
+</style>
+<script>/* light theme: the glow filters pass the drawing through unblurred, bloom draws nothing */
+(function () {
+  var root = document.documentElement, mq = matchMedia('(prefers-color-scheme: light)'), orig = {};
+  function apply() {
+    var t = root.dataset.theme, light = t === 'light' || (t !== 'dark' && mq.matches);
+    ['glow', 'soft', 'bloom'].forEach(function (id) {
+      var f = document.getElementById(id); if (!f) return;
+      if (!(id in orig)) orig[id] = f.innerHTML;
+      f.innerHTML = !light ? orig[id] : id === 'bloom' ? '<feFlood flood-opacity="0"/>' : '<feMerge><feMergeNode in="SourceGraphic"/></feMerge>';
+    });
+  }
+  new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  if (mq.addEventListener) mq.addEventListener('change', apply);
+  apply();
+})();
+</script>
+</body>
+</html>

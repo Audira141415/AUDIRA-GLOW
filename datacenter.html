@@ -1,0 +1,3614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DATA CENTER · 12 Hyperscale Tier IV Facilities</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg:#0c0d0e; --panel:#141516; --edge:#222426;
+    --line:#3d4144; --detail:#2b2e30; --body:#17181a; --deck:#1b1d1f;
+    --ink:#868b8f; --ink-hi:#e6e8e9; --live:#f4f5f5;
+    --glass:#0f1011; --glass-on:#1a1410; --recess:#0e0f10;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
+    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
+    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
+    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+  } }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
+    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
+    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
+    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--mono); font-size:13px; padding:20px 16px 32px; }
+  .wrap { max-width:1180px; margin-inline:auto; display:grid; gap:14px; }
+  .top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 18px; text-transform:uppercase; letter-spacing:.14em; padding:0 4px; }
+  .top .hi { color:var(--ink-hi); }
+  .top .dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); margin-right:10px; vertical-align:1px; }
+  .arrows { display:flex; gap:6px; }
+  .arrows button, nav button { font:inherit; color:inherit; background:none; border:1px solid var(--edge); border-radius:10px; cursor:pointer; }
+  .arrows button { padding:6px 12px; letter-spacing:.14em; text-transform:uppercase; }
+  .arrows button:hover { color:var(--ink-hi); border-color:var(--line); }
+  .top .hi { margin-right:auto; }
+  .swatches { display:flex; align-items:center; gap:4px; padding:4px; border:1px solid var(--edge); border-radius:999px; }
+  .swatches button { width:26px; height:26px; border-radius:50%; border:1px solid transparent; background:none; cursor:pointer; display:grid; place-items:center; padding:0; }
+  .swatches button i { width:12px; height:12px; border-radius:50%; background:var(--sw); border:1px solid var(--line); box-shadow:0 0 0 0 var(--sw); transition:box-shadow .2s, transform .2s; }
+  .swatches button:hover i { transform:scale(1.15); }
+  .swatches button[aria-checked="true"] { border-color:var(--line); }
+  .swatches button[aria-checked="true"] i { box-shadow:0 0 10px 1px var(--sw); }
+  .swatches button:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+  .layout { display:grid; grid-template-columns:230px minmax(0,1fr); grid-template-rows:auto 1fr; grid-template-areas:"nav fig" "credit fig"; gap:14px; align-items:start; }
+  .layout > nav { grid-area:nav; } .layout > figure { grid-area:fig; } .layout > .credit { grid-area:credit; }
+  .made-with { display:flex; justify-content:flex-end; padding:2px 6px 0; font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+  .made-with a { color:var(--line); text-decoration:none; transition:color .2s; }
+  .made-with a:hover { color:var(--ink); }
+  .credit { align-self:end; display:grid; gap:3px; padding:0 16px 22px; font-size:12px; line-height:1.5; letter-spacing:.04em; }
+  .credit a { color:var(--ink); text-decoration:none; width:fit-content; transition:color .2s; }
+  .credit a:hover { color:var(--ink-hi); }
+  .credit a:hover .ar { color:var(--accent); }
+  .credit .ar { color:var(--line); transition:color .2s; }
+  .credit .by { color:var(--line); }
+  .credit .nm { color:var(--ink); }
+  .credit .cr { color:var(--line); margin-top:8px; font-size:11px; display:grid; gap:1px; }
+  .credit .cr .hs { white-space:nowrap; }
+  .credit .cr a { color:var(--line); }
+  .credit .cr a:hover { color:var(--ink-hi); }
+  .credit .soc { display:flex; gap:12px; margin-top:4px; }
+  .credit .soc a { display:grid; place-items:center; width:16px; height:16px; }
+  .credit .soc svg { width:14px; height:14px; fill:currentColor; transition:fill .2s; }
+  .credit .soc a:hover svg { fill:var(--accent); }
+  .credit a:focus-visible { outline:1px solid var(--accent); outline-offset:2px; border-radius:3px; }
+  nav { display:grid; gap:4px; background:var(--panel); border:1px solid var(--edge); border-radius:22px; padding:14px; }
+  nav button { display:flex; gap:12px; align-items:center; text-align:left; padding:9px 12px; border-color:transparent; letter-spacing:.06em; }
+  nav button .n { color:var(--line); font-size:12px; transition:color .2s; }
+  nav button:hover { color:var(--ink-hi); }
+  nav button[aria-current="true"] { color:var(--ink-hi); border-color:var(--edge); background:var(--bg); }
+  nav button[aria-current="true"] .n { color:var(--accent); text-shadow:0 0 8px var(--accent); }
+  figure { margin:0; background:var(--panel); border:1px solid var(--edge); border-radius:22px; padding:22px 26px; display:grid; gap:6px; min-width:0; }
+  .cap { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 18px; text-transform:uppercase; letter-spacing:.14em; }
+  .cap .hi { color:var(--ink-hi); text-transform:none; letter-spacing:.05em; }
+  #stageHolder { aspect-ratio:4/3; border-radius:14px; transition:background .5s; background:radial-gradient(ellipse 50% 45% at 50% 52%, transparent, transparent); }
+  #stageHolder.glow { background:radial-gradient(ellipse 50% 45% at 50% 52%, var(--accent-dim), transparent 72%); }
+  #stage { width:100%; height:100%; display:block; touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+  #stage:focus { outline:none; }
+  #stage:focus-visible { outline:1px dashed var(--line); outline-offset:4px; border-radius:8px; }
+  .fx { position:absolute; width:0; height:0; overflow:hidden; }
+  @media (max-width: 820px) {
+    .layout { grid-template-columns:1fr; grid-template-rows:auto; grid-template-areas:"nav" "fig" "credit"; }
+    .credit { padding:4px 8px 0; display:flex; flex-wrap:wrap; align-items:center; gap:4px 14px; }
+    .credit .soc { margin-top:0; }
+    .credit .cr { margin-top:0; flex-basis:100%; }
+    nav { position:relative; top:0; display:flex; overflow-x:auto; border-radius:16px; padding:8px; scrollbar-width:none; }
+    nav button { flex:none; padding:8px 10px; }
+    figure { padding:16px; }
+  }
+
+  /* ---------- shared figure vocabulary ---------- */
+  #stage text { font-family:var(--mono); }
+  .face { fill:var(--body); stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linejoin:round; }
+  .face.top { fill:var(--deck); }
+  .face.recess { fill:var(--recess); }
+  .detail { fill:none; stroke:var(--detail); stroke-width:1; vector-effect:non-scaling-stroke; }
+  .label { fill:var(--ink); font-family:var(--mono); }
+  .glass { fill:var(--glass); transition:fill .3s, stroke .3s; }
+  .glass.hot { fill:var(--glass-on); stroke:var(--accent); }
+  .halo { fill:var(--accent); opacity:0; transition:opacity .4s; }
+  .halo.hot { opacity:.22; }
+  .scr { fill:var(--accent-hi); font-family:var(--mono); }
+  .scr-accent { fill:var(--accent); }
+  .led { fill:var(--detail); transition:fill .2s; }
+  .led.hot { fill:var(--accent); }
+  .wire { fill:none; stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linecap:round; stroke-linejoin:round; transition:stroke .4s; }
+  .wire.hot { stroke:var(--accent); }
+  .wire-under { fill:none; stroke:var(--panel); stroke-width:3.5; stroke-linecap:round; stroke-linejoin:round; }
+  .pulse { fill:none; stroke:var(--accent-hi); stroke-width:2.2; stroke-linecap:round; vector-effect:non-scaling-stroke;
+           stroke-dasharray:70 1200; stroke-dashoffset:70; opacity:0; }
+  .pulse.go { animation:flow .55s linear; }
+  @keyframes flow { 0% { stroke-dashoffset:70; opacity:1; } 90% { opacity:1; } 100% { stroke-dashoffset:-1000; opacity:0; } }
+  .press { cursor:pointer; transition:transform 60ms ease-out; }
+  .press.down { transform:translateY(3px); }
+  .press .face { transition:fill .6s ease-out, stroke .6s ease-out; }
+  .press.lit .face, .press.latched .face { fill:var(--accent); stroke:var(--accent-hi); transition:none; }
+  .press.lit .face.top, .press.latched .face.top { fill:var(--accent-hi); }
+  .press.lit { filter:url(#glow); }
+  .press.latched { filter:url(#soft); }
+  .press:hover .face.top { stroke:var(--ink); }
+  .blink { animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  @media (prefers-reduced-motion:reduce) {
+    .press, .glass, .halo, .press .face, .wire { transition:none; } .blink { animation:none; } .pulse.go { animation:none; }
+  }
+</style>
+<style>
+  :root { --dh-w: 1280px; }
+  body { padding-top: 74px !important; }
+  .dh { position:fixed; z-index:20; top:0; left:0; right:0; padding:12px 16px 10px; font:12px/1.45 "DM Mono", monospace; background:linear-gradient(var(--bg) 60%, rgba(12,13,14,0)); }
+  .dh-in { max-width:var(--dh-w, 1280px); margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:10px 18px; }
+  .dh-brand { flex:none; display:flex; align-items:center; gap:8px; color:var(--ink-hi); text-decoration:none; font-weight:500; font-size:12px; letter-spacing:.14em; text-transform:uppercase; }
+  .dh-brand .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
+  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:3px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:var(--panel); }
+  .dh-seg a { flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; padding:5px 13px; border-radius:999px; color:var(--ink); text-decoration:none; font-size:11px; letter-spacing:.06em; transition:all .2s; }
+  .dh-seg a:hover { color:var(--ink-hi); }
+  .dh-seg a.active { color:var(--ink-hi); background:var(--bg); box-shadow:0 0 0 1px var(--accent) inset; }
+  .dh-seg .n { opacity:.6; font-size:10px; }
+</style>
+</head>
+<body>
+
+<header class="dh">
+  <div class="dh-in">
+    <a class="dh-brand" href="index.html"><span class="dot"></span><span>AUDIRA GLOW</span></a>
+    <nav class="dh-seg" aria-label="Collections"><a href="audira-studio.html" class="">AUDIRA STUDIO <span class="n">5</span></a><a href="datacenter.html" class=" active">DATA CENTER <span class="n">12</span></a><a href="cyberlab.html" class="">CYBER LAB <span class="n">5</span></a><a href="objects.html" class="">OBJECTS <span class="n">10</span></a><a href="cities.html" class="">CITIES <span class="n">10</span></a><a href="lumen.html" class="">LUMEN <span class="n">12</span></a><a href="computer-demo.html" class="">DESK COMPUTER <span class="n">1</span></a><a href="assets/gallery-3d.html" class="">3D DEMO <span class="n">12</span></a></nav>
+  </div>
+</header>
+
+<svg class="fx" aria-hidden="true">
+  <defs>
+    <filter id="glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="soft" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="bloom" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+</svg>
+<div class="wrap">
+  <div class="top">
+    <span class="hi"><span class="dot"></span>DATA CENTER</span>
+    <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+    <div class="arrows"><button id="prev" aria-label="Previous figure">← Prev</button><button id="next" aria-label="Next figure">Next →</button></div>
+  </div>
+  <div class="layout">
+    <nav id="nav" aria-label="Figures"></nav>
+    <!-- optional: <aside class="credit">Made by … <a href="…">…</a></aside> (styles below) -->
+    <figure>
+      <div class="cap"><span class="hi" id="fignum">Fig 1</span><span id="figname"></span></div>
+      <div id="stageHolder"></div>
+      <div class="cap"><span id="hint"></span><span class="hi" id="readout"></span></div>
+    </figure>
+  </div>
+  <!-- Made-with credit: keep by default; delete this footer if you don't want it. -->
+  <footer class="made-with"><a href="https://iso-glow.vercel.app" target="_blank" rel="noopener">Made with ISO-GLOW ↗</a></footer>
+</div>
+<script>
+  // Gallery settings: palette 'ember' | 'city' | your own [[name, darkAccent, darkHi, lightAccent, lightHi], ...]
+  window.GALLERY = { palette: 'city', autoDemo: true, storageKey: 'iso-glow-accent' };
+  const FIGS = [];
+</script>
+<!-- FIGURES: one script per figure, each calling FIGS.push({...}). Order here = Fig 1, 2, 3 ... -->
+<script>
+/* Fig 5 — Audira Enterprise Data Center Rack & AI GPU Cluster */
+FIGS.push({
+  id: 'audira-datacenter',
+  name: 'Audira Data Center',
+  hint: 'Click server blades to toggle · Space triggers DDoS/AI benchmark · Keys 1–6',
+  aria: 'Isometric enterprise 42U data center server rack with AI GPU accelerator nodes, NVMe storage vault, liquid cooling manifold, and ToR fiber optic switches.',
+  css: `
+    [data-fig="audira-datacenter"] .dc-blade { cursor:pointer; }
+    [data-fig="audira-datacenter"] .dc-blade:hover .face.top { stroke:var(--accent); }
+    [data-fig="audira-datacenter"] .dc-blade.off .face { opacity:.35; }
+    [data-fig="audira-datacenter"] .dc-port { fill:var(--recess); stroke:var(--line); stroke-width:.8; vector-effect:non-scaling-stroke; }
+    [data-fig="audira-datacenter"] .dc-port.rx { fill:var(--accent); }
+    [data-fig="audira-datacenter"] .coolant-pipe { fill:none; stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; opacity:.85; filter:url(#soft); }
+    [data-fig="audira-datacenter"] .dc-fan-blade { stroke:var(--accent-hi) !important; stroke-width:2.2px !important; stroke-linecap:round; filter:url(#soft); }
+    [data-fig="audira-datacenter"] .bench-btn { cursor:pointer; }
+    [data-fig="audira-datacenter"] .bench-btn:hover .face.top { stroke:var(--accent-hi); }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [40, 30, 210], [280, 30, 210], [40, 230, 210], [280, 230, 210]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits, esc = api.iso.esc;
+
+    const PLZ = 7;
+    // Data Center 42U Cabinet dimensions
+    const RX = 70, RY = 45, RW = 200, RD = 140, RH = 180, RZ = PLZ;
+    const RT = RZ + RH, RF = RY + RD;
+    const UX = RX + 16, UY = RY + 12, UW = RW - 32, UD = RD - 18, UF = UY + UD;
+
+    let svg = `<defs>
+      <clipPath id="dc-mon-clip"><rect x="4" y="3" width="72" height="12" rx="2"/></clipPath>
+    </defs>`;
+
+    // Perforated Data Center Cold-Aisle Floor Tiles
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="324" height="244" rx="10"/>
+      <!-- Perforated airflow floor tiles in front of rack -->
+      ${Array.from({ length: 8 }, (_, r) =>
+      Array.from({ length: 16 }, (_, c) =>
+        `<circle class="face recess" cx="${80 + c * 11}" cy="${200 + r * 6}" r="1.3"/>`
+      ).join('')
+    ).join('')}
+      <!-- Ground demarcation lines -->
+      <line class="detail" x1="40" y1="30" x2="40" y2="240"/>
+      <line class="detail" x1="300" y1="30" x2="300" y2="240"/>
+      <text class="label" x="85" y="254" font-size="4" letter-spacing="1">COLD AISLE · AIRFLOW CONTAINMENT</text>
+    </g>`;
+
+    // Main 42U Rack Steel Skeleton Frame
+    svg += box(RX, RY, RZ, RW, RD, RH, 6);
+
+    // Overhead Cable Ladder / Fiber Duct (Top of rack)
+    svg += box(RX - 20, RY + 20, RT, RW + 40, 30, 8, 2);
+    svg += `<g transform="${TOP(RX - 20, RY + 20, RT + 8)}">
+      ${slits(6, RW + 34, 6, 2, 28, true)}
+      <text class="label" x="20" y="16" font-size="4.2" letter-spacing="1.5">FIBER TRAY 100G</text>
+    </g>`;
+
+    // Top Roof Exhaust Fan Pods
+    // Top Roof Exhaust Fan Pods with Rotating Blades
+    svg += box(RX + 30, RY + 60, RT, 60, 60, 6, 4);
+    svg += `<g transform="${TOP(RX + 30, RY + 60, RT + 6)}">
+      <circle class="face recess" cx="30" cy="30" r="24"/>
+      <circle class="led hot" id="dc-fan-led-1" filter="url(#soft)" cx="30" cy="30" r="3"/>
+      <g id="dc-fan-rotor-1">
+        <animateTransform attributeName="transform" type="rotate" from="0 30 30" to="360 30 30" dur="0.45s" repeatCount="indefinite"/>
+        ${Array.from({ length: 6 }, (_, i) => {
+          const rad = (i * 60 * Math.PI) / 180;
+          return `<line class="dc-fan-blade" x1="30" y1="30" x2="${(30 + 20 * Math.cos(rad)).toFixed(1)}" y2="${(30 + 20 * Math.sin(rad)).toFixed(1)}"/>`;
+        }).join('')}
+      </g>
+    </g>`;
+
+    svg += box(RX + 110, RY + 60, RT, 60, 60, 6, 4);
+    svg += `<g transform="${TOP(RX + 110, RY + 60, RT + 6)}">
+      <circle class="face recess" cx="30" cy="30" r="24"/>
+      <circle class="led hot" id="dc-fan-led-2" filter="url(#soft)" cx="30" cy="30" r="3"/>
+      <g id="dc-fan-rotor-2">
+        <animateTransform attributeName="transform" type="rotate" from="0 30 30" to="360 30 30" dur="0.65s" repeatCount="indefinite"/>
+        ${Array.from({ length: 6 }, (_, i) => {
+          const rad = (i * 60 * Math.PI) / 180;
+          return `<line class="dc-fan-blade" x1="30" y1="30" x2="${(30 + 20 * Math.cos(rad)).toFixed(1)}" y2="${(30 + 20 * Math.sin(rad)).toFixed(1)}"/>`;
+        }).join('')}
+      </g>
+    </g>`;
+
+    // Rack Side Panel (Ventilation grills & PDU conduits)
+    svg += `<g transform="${SIDE(RX + RW, RF, RT)}">
+      ${slits(16, 120, 3.2, 10, 50)}
+      ${slits(16, 120, 3.2, 70, 110)}
+      ${slits(16, 120, 3.2, 130, 170)}
+      <text class="label" x="18" y="60" font-size="5" letter-spacing="1">ZONE A · RACK 04</text>
+    </g>`;
+
+    // Rack Front Top Header (OLED Climate & Power Monitor)
+    svg += `<g transform="${FRONT(RX, RF, RT)}">
+      <rect class="face recess" x="14" y="4" width="${RW - 28}" height="18" rx="3"/>
+      <rect class="halo hot" x="16" y="6" width="80" height="14" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="16" y="6" width="80" height="14" rx="2"/>
+      <g clip-path="url(#dc-mon-clip)">
+        <text class="scr" x="20" y="14" font-size="4" letter-spacing=".5">PUE: 1.08 · 22.4°C</text>
+        <text class="scr-accent" id="dc-telemetry-pwr" x="20" y="19" font-size="3.8">38.2 kW [NORMAL]</text>
+      </g>
+      <text class="label" x="106" y="14" font-size="5.5" font-weight="500" letter-spacing="1.5">AUDIRA · DC-42U</text>
+    </g>`;
+
+    // SERVER BLADES SPECIFICATION (Stacked bottom to top)
+    const BLADES = [
+      { id: 0, name: 'UPS & REDUNDANT PDU', kind: 'pwr', h: 22, z: RZ + 4 },
+      { id: 1, name: 'SAN STORAGE VAULT', kind: 'nvme', h: 26, z: RZ + 30 },
+      { id: 2, name: 'K8S COMPUTE NODE 01', kind: 'node', h: 20, z: RZ + 60 },
+      { id: 3, name: 'K8S COMPUTE NODE 02', kind: 'node', h: 20, z: RZ + 84 },
+      { id: 4, name: 'AI HGX GPU ACCELERATOR', kind: 'gpu', h: 32, z: RZ + 108 },
+      { id: 5, name: 'TOP-OF-RACK 100G SWITCH', kind: 'tor', h: 18, z: RZ + 144 }
+    ];
+
+    BLADES.forEach(b => {
+      const topZ = b.z + b.h;
+      svg += `<g class="dc-blade" id="blade-${b.id}" data-id="${b.id}">`;
+      svg += box(UX, UY, b.z, UW, UD, b.h, 2);
+
+      // Front Face for this blade
+      svg += `<g transform="${FRONT(UX, UF, topZ)}">`;
+      svg += `<text class="label" x="8" y="10" font-size="3.8" letter-spacing=".5">${b.name}</text>`;
+      svg += `<circle class="led hot dc-blade-led" id="blade-led-${b.id}" filter="url(#soft)" cx="${UW - 12}" cy="8" r="1.5"/>`;
+
+      if (b.kind === 'pwr') {
+        // Dual power supplies & voltage LED readouts
+        svg += `<rect class="face recess" x="8" y="13" width="60" height="7" rx="1"/>`;
+        svg += `<text class="scr" x="12" y="18" font-size="3.5">230V A/B · 99.4% EFF</text>`;
+        svg += slits(80, UW - 20, 2.8, 12, b.h - 3);
+      } else if (b.kind === 'nvme') {
+        // 16 Hot-swap NVMe drive sleds with flickering LEDs
+        const cols = 8, rows = 2;
+        const dw = (UW - 24) / cols, dh = (b.h - 14) / rows;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const dx = 10 + c * dw, dy = 11 + r * (dh + 1);
+            svg += `<rect class="face recess" x="${dx}" y="${dy}" width="${dw - 2}" height="${dh}" rx=".6"/>`;
+            svg += `<circle class="led hot dc-drive-led" id="drive-${r * 8 + c}" filter="url(#soft)" cx="${dx + dw - 4}" cy="${dy + dh / 2}" r=".8"/>`;
+          }
+        }
+      } else if (b.kind === 'node') {
+        // Compute node: air vents, USB-C diagnostic, mini OLED
+        svg += slits(8, 80, 2.5, 12, b.h - 3);
+        svg += `<rect class="face recess" x="90" y="11" width="50" height="7" rx="1"/>`;
+        svg += `<text class="scr" x="93" y="16" font-size="3.2">CPU: 48% · 256GB</text>`;
+      } else if (b.kind === 'gpu') {
+        // Heavy GPU Node with dual liquid cooling intake ports & massive intake vents
+        svg += `<circle class="face recess" cx="16" cy="18" r="4.5"/>
+          <circle class="coolant-intake" filter="url(#soft)" cx="16" cy="18" r="2.5" fill="var(--accent)"/>
+          <circle class="face recess" cx="30" cy="18" r="4.5"/>
+          <circle class="coolant-outtake" filter="url(#soft)" cx="30" cy="18" r="2.5" fill="var(--accent-hi)"/>
+          <text class="label" x="40" y="20" font-size="3.5">8x TENSOR GPU · LIQUID MANIFOLD</text>`;
+        svg += slits(8, UW - 12, 2.2, 23, b.h - 2);
+      } else if (b.kind === 'tor') {
+        // 24-Port QSFP28 Fiber Switch
+        for (let p = 0; p < 18; p++) {
+          const px = 10 + p * 7.5;
+          svg += `<rect class="dc-port" id="dc-port-${p}" x="${px}" y="11" width="5" height="4" rx=".5"/>`;
+        }
+      }
+
+      svg += `</g>`;
+      svg += `</g>`;
+    });
+
+    // Vertical Liquid Coolant Pipes (Side manifold routing into GPU node)
+    const PIPE_X = RX + 10, PIPE_Y = RF - 4;
+    const P0 = [PIPE_X, PIPE_Y, RZ + 4];
+    const P1 = [PIPE_X, PIPE_Y + 12, RZ + 60];
+    const P2 = [UX + 16, UF, RZ + 118];
+    const pipeD = `M ${K.P(...P0).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...P1).map(v => v.toFixed(1)).join(' ')}, ${K.P(...P2).map(v => v.toFixed(1)).join(' ')}`;
+    svg += `<path class="coolant-pipe" d="${pipeD}"/>`;
+    svg += `<path class="coolant-stream" id="dc-coolant-stream" d="${pipeD}" fill="none" stroke="var(--accent-hi)" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="25 60" filter="url(#glow)">
+      <animate attributeName="stroke-dashoffset" from="170" to="0" dur="1.1s" repeatCount="indefinite"/>
+    </path>`;
+
+    // Benchmark / DDoS Simulation Button (Pill on front floor)
+    const BTN_X = RX + RW - 70, BTN_Y = RF + 15;
+    svg += `<g class="bench-btn" id="dc-bench-btn">
+      ${box(BTN_X, BTN_Y, PLZ, 60, 20, 5, 3)}
+      <g transform="${TOP(BTN_X, BTN_Y, PLZ + 5)}">
+        <text class="label" x="30" y="11.5" font-size="4" text-anchor="middle" letter-spacing="1">BENCHMARK / AI</text>
+      </g>
+    </g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- Logic & Real-Time Telemetry ---------- */
+    const st = {
+      bladesOn: [true, true, true, true, true, true],
+      highLoad: false,
+      pwrKw: 38.2,
+      tempC: 22.4,
+      packetCount: 0,
+      fanDeg: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function serverBeep(f, dur = 0.05) {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.18, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) { }
+    }
+
+    function toggleBlade(id) {
+      st.bladesOn[id] = !st.bladesOn[id];
+      const bladeEl = q(`#blade-${id}`);
+      if (bladeEl) bladeEl.classList.toggle('off', !st.bladesOn[id]);
+      const ledEl = q(`#blade-led-${id}`);
+      if (ledEl) ledEl.classList.toggle('hot', st.bladesOn[id]);
+      serverBeep(st.bladesOn[id] ? 750 : 320);
+      recalcTelemetry();
+    }
+
+    function recalcTelemetry() {
+      const activeCount = st.bladesOn.filter(Boolean).length;
+      st.pwrKw = (12.4 + activeCount * (st.highLoad ? 8.2 : 4.4)).toFixed(1);
+      st.tempC = (18.0 + activeCount * (st.highLoad ? 2.8 : 1.1)).toFixed(1);
+      const pwrEl = q('#dc-telemetry-pwr');
+      if (pwrEl) {
+        pwrEl.textContent = `${st.pwrKw} kW [${st.highLoad ? 'AI OVERDRIVE' : 'NORMAL'}]`;
+      }
+      render();
+    }
+
+    function triggerBenchmark() {
+      st.highLoad = !st.highLoad;
+      api.flash(q('#dc-bench-btn'), 260);
+      serverBeep(st.highLoad ? 1200 : 500, 0.2);
+      recalcTelemetry();
+    }
+
+    // Real-Time Flickering Drive Activity, Fiber Ports & Fan Rotation
+    st.timer = api.every(50, () => {
+      st.packetCount++;
+
+      // Real-time fan rotation
+      st.fanDeg = (st.fanDeg + (st.highLoad ? 24 : 14)) % 360;
+      const fan1 = q('#dc-fan-rotor-1');
+      if (fan1) fan1.setAttribute('transform', `rotate(${st.fanDeg} 30 30)`);
+      const fan2 = q('#dc-fan-rotor-2');
+      if (fan2) fan2.setAttribute('transform', `rotate(${st.fanDeg * 0.75} 30 30)`);
+
+      // Flickering NVMe drive LEDs
+      const driveLeds = stage.querySelectorAll('.dc-drive-led');
+      driveLeds.forEach((led, i) => {
+        const active = Math.random() > (st.highLoad ? 0.15 : 0.55);
+        led.classList.toggle('hot', active && st.bladesOn[1]);
+      });
+
+      // Flashing fiber optic ports
+      const ports = stage.querySelectorAll('.dc-port');
+      ports.forEach((p, i) => {
+        const active = (st.packetCount + i) % 3 === 0 || Math.random() > 0.65;
+        p.classList.toggle('rx', active && st.bladesOn[5]);
+      });
+
+      // Micro-fluctuation in temperature & power readout
+      if (st.packetCount % 6 === 0) {
+        const pwrEl = q('#dc-telemetry-pwr');
+        if (pwrEl) {
+          const jitter = (Math.sin(st.packetCount * 0.2) * 0.3).toFixed(1);
+          pwrEl.textContent = `${(parseFloat(st.pwrKw) + parseFloat(jitter)).toFixed(1)} kW [${st.highLoad ? 'AI OVERDRIVE' : 'NORMAL'}]`;
+        }
+      }
+    });
+
+    function render() {
+      api.power(true);
+      api.readout(
+        `DATA CENTER 42U · POWER: ${st.pwrKw} kW · TEMP: ${st.tempC}°C · STATUS: ${st.highLoad ? 'AI BENCHMARK' : 'OPTIMAL'}`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      const blade = e.target.closest('.dc-blade');
+      if (blade && blade.dataset.id) {
+        toggleBlade(+blade.dataset.id);
+        return;
+      }
+      if (e.target.closest('#dc-bench-btn')) {
+        triggerBenchmark();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          triggerBenchmark();
+          return true;
+        }
+        const num = parseInt(e.key, 10);
+        if (num >= 1 && num <= 6) {
+          toggleBlade(num - 1);
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        triggerBenchmark();
+      }
+    };
+  }
+});
+
+
+/* Fig 2 — Audira Liquid Cooling Distribution Unit (CDU & Chiller) */
+FIGS.push({
+  id: 'audira-chiller',
+  name: 'Liquid Chiller & CDU',
+  hint: 'Click pump switches to toggle · Click valve knob to regulate flow · Space purge',
+  aria: 'Isometric enterprise liquid cooling distribution unit (CDU) with dual redundant centrifugal pumps, flow rate display, analog pressure gauges, and radiator fans.',
+  css: `
+    [data-fig="audira-chiller"] .cdu-pump { cursor:pointer; }
+    [data-fig="audira-chiller"] .cdu-pump:hover .face.top { stroke:var(--accent); }
+    [data-fig="audira-chiller"] .cdu-valve { cursor:pointer; }
+    [data-fig="audira-chiller"] .cdu-valve:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-chiller"] .pressure-needle { stroke:var(--accent-hi); stroke-width:1.4; stroke-linecap:round; vector-effect:non-scaling-stroke; transition:transform .1s ease-out; }
+    [data-fig="audira-chiller"] .chiller-pipe { fill:none; stroke:var(--accent); stroke-width:2.5; stroke-linecap:round; filter:url(#soft); opacity:.85; }
+    [data-fig="audira-chiller"] .chiller-blade { stroke:var(--accent-hi) !important; stroke-width:2.2px !important; stroke-linecap:round; filter:url(#soft); }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 240, 0], [320, 0, 7], [320, 240, 0], [0, 0, 7],
+      [40, 30, 180], [280, 30, 180], [40, 210, 180], [280, 210, 180]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits, esc = api.iso.esc;
+
+    const PLZ = 7;
+    const BX = 50, BY = 35, BW = 220, BD = 170, BH = 110, BT = PLZ + BH, BF = BY + BD;
+
+    let svg = `<defs>
+      <clipPath id="cdu-lcd-clip"><rect x="4" y="3" width="76" height="18" rx="2"/></clipPath>
+      <clipPath id="gauge-clip-1"><rect x="4" y="4" width="32" height="32" rx="16"/></clipPath>
+      <clipPath id="gauge-clip-2"><rect x="4" y="4" width="32" height="32" rx="16"/></clipPath>
+    </defs>`;
+
+    // Floor Base Plate (Water containment bund)
+    svg += box(0, 0, 0, 320, 240, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="304" height="224" rx="10"/>
+      <rect class="face recess" x="30" y="25" width="260" height="190" rx="6"/>
+      <text class="label" x="38" y="228" font-size="4" letter-spacing="1.5">SECONDARY CONTAINMENT · LEAK SENSOR ACTIVE</text>
+    </g>`;
+
+    // Heavy Industrial Chiller Chassis
+    svg += box(BX, BY, PLZ, BW, BD, BH, 6);
+
+    // Top Radiator Exhaust Grille
+    svg += box(BX + 20, BY + 20, BT, 180, 130, 10, 4);
+    svg += `<g transform="${TOP(BX + 20, BY + 20, BT + 10)}">
+      <circle class="face recess" cx="45" cy="65" r="38"/>
+      <circle class="led hot" id="cdu-fan-1" filter="url(#soft)" cx="45" cy="65" r="3.5"/>
+      <g id="cdu-fan-rotor-1">
+        <animateTransform attributeName="transform" type="rotate" from="0 45 65" to="360 45 65" dur="0.4s" repeatCount="indefinite"/>
+        ${Array.from({ length: 8 }, (_, i) => {
+          const rad = (i * 45 * Math.PI) / 180;
+          return `<line class="chiller-blade" x1="45" y1="65" x2="${(45 + 32 * Math.cos(rad)).toFixed(1)}" y2="${(65 + 32 * Math.sin(rad)).toFixed(1)}"/>`;
+        }).join('')}
+      </g>
+
+      <circle class="face recess" cx="135" cy="65" r="38"/>
+      <circle class="led hot" id="cdu-fan-2" filter="url(#soft)" cx="135" cy="65" r="3.5"/>
+      <g id="cdu-fan-rotor-2">
+        <animateTransform attributeName="transform" type="rotate" from="360 135 65" to="0 135 65" dur="0.52s" repeatCount="indefinite"/>
+        ${Array.from({ length: 8 }, (_, i) => {
+          const rad = (i * 45 * Math.PI) / 180;
+          return `<line class="chiller-blade" x1="135" y1="65" x2="${(135 + 32 * Math.cos(rad)).toFixed(1)}" y2="${(65 + 32 * Math.sin(rad)).toFixed(1)}"/>`;
+        }).join('')}
+      </g>
+    </g>`;
+
+    // Front Control Panel & Manifold
+    svg += `<g transform="${FRONT(BX, BF, BT)}">
+      <!-- Title header -->
+      <text class="label" x="12" y="14" font-size="6" letter-spacing="1.5">AUDIRA · CDU CHILLER 500kW</text>
+      <circle class="led hot" filter="url(#soft)" cx="${BW - 16}" cy="12" r="2"/>
+
+      <!-- Digital Telemetry Screen -->
+      <rect class="face recess" x="12" y="20" width="84" height="24" rx="3"/>
+      <rect class="halo hot" x="14" y="22" width="80" height="20" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="14" y="22" width="80" height="20" rx="2"/>
+      <g clip-path="url(#cdu-lcd-clip)" transform="translate(14 22)">
+        <text class="scr" x="4" y="8" font-size="4">FLOW: 54.2 L/MIN</text>
+        <text class="scr-accent" id="cdu-temp-read" x="4" y="15" font-size="4.2">CHILLED: 16.4°C</text>
+      </g>
+
+      <!-- Dual Analog Pressure Gauges -->
+      <!-- Gauge 1: Intake Pressure -->
+      <g transform="translate(110 20)">
+        <circle class="face recess" cx="18" cy="18" r="16"/>
+        <path class="detail" d="M8 22 A12 12 0 1 1 28 22"/>
+        <line class="pressure-needle" id="gauge-needle-1" x1="18" y1="18" x2="18" y2="8" transform="rotate(-15 18 18)"/>
+        <circle class="face recess" cx="18" cy="18" r="2.5"/>
+        <text class="label" x="18" y="26" font-size="3" text-anchor="middle">BAR IN</text>
+      </g>
+
+      <!-- Gauge 2: Return Pressure -->
+      <g transform="translate(155 20)">
+        <circle class="face recess" cx="18" cy="18" r="16"/>
+        <path class="detail" d="M8 22 A12 12 0 1 1 28 22"/>
+        <line class="pressure-needle" id="gauge-needle-2" x1="18" y1="18" x2="18" y2="8" transform="rotate(25 18 18)"/>
+        <circle class="face recess" cx="18" cy="18" r="2.5"/>
+        <text class="label" x="18" y="26" font-size="3" text-anchor="middle">BAR OUT</text>
+      </g>
+
+      <!-- Airflow vents below -->
+      ${slits(12, BW - 12, 3, 56, BH - 12)}
+    </g>`;
+
+    // Dual Centrifugal Pumps on Front Deck
+    const PUMP_Y = BF;
+    const PUMPS = [
+      { id: '1', x: BX + 30, name: 'PUMP 01 (PRIMARY)' },
+      { id: '2', x: BX + 120, name: 'PUMP 02 (BACKUP)' }
+    ];
+
+    PUMPS.forEach(p => {
+      svg += `<g class="cdu-pump" id="cdu-pump-${p.id}" data-id="${p.id}">`;
+      svg += box(p.x, PUMP_Y, PLZ, 70, 35, 30, 4);
+      svg += `<g transform="${FRONT(p.x, PUMP_Y + 35, PLZ + 30)}">
+        <circle class="face recess" cx="20" cy="16" r="8"/>
+        <circle class="led hot" id="pump-led-${p.id}" filter="url(#soft)" cx="20" cy="16" r="2.5"/>
+        <text class="label" x="35" y="18" font-size="3.5">${p.name}</text>
+      </g>`;
+      svg += `</g>`;
+    });
+
+    // Rotary Valve Regulating Knob (Right Deck)
+    const VALVE_X = BX + BW - 45, VALVE_Y = BF + 6;
+    svg += `<g class="cdu-valve" id="cdu-valve">
+      ${box(VALVE_X, VALVE_Y, PLZ, 30, 30, 16, 15)}
+      <g transform="${TOP(VALVE_X, VALVE_Y, PLZ + 16)}">
+        <circle class="face recess" cx="15" cy="15" r="11"/>
+        <line class="detail" id="cdu-valve-ptr" x1="15" y1="15" x2="15" y2="4"/>
+        <text class="label" x="15" y="22" font-size="3.2" text-anchor="middle">VALVE</text>
+      </g>
+    </g>`;
+
+    // Heavy Coolant Loop Hoses (Side to Floor)
+    const H0 = [BX + 5, BF - 20, PLZ + 40];
+    const H1 = [BX - 25, BF + 20, 10];
+    const H2 = [BX + 60, BF + 50, 9];
+    const hoseD1 = `M ${K.P(...H0).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...H1).map(v => v.toFixed(1)).join(' ')}, ${K.P(...H2).map(v => v.toFixed(1)).join(' ')}`;
+    svg += `<path class="chiller-pipe" d="${hoseD1}"/>`;
+    svg += `<path id="cdu-stream-1" d="${hoseD1}" fill="none" stroke="var(--accent-hi)" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="30 70" filter="url(#glow)">
+      <animate attributeName="stroke-dashoffset" from="200" to="0" dur="1.2s" repeatCount="indefinite"/>
+    </path>`;
+
+    const H3 = [BX + 15, BF - 30, PLZ + 35];
+    const H4 = [BX - 35, BF + 10, 10];
+    const H5 = [BX + 150, BF + 50, 9];
+    const hoseD2 = `M ${K.P(...H3).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...H4).map(v => v.toFixed(1)).join(' ')}, ${K.P(...H5).map(v => v.toFixed(1)).join(' ')}`;
+    svg += `<path class="chiller-pipe" d="${hoseD2}"/>`;
+    svg += `<path id="cdu-stream-2" d="${hoseD2}" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="30 70" filter="url(#glow)">
+      <animate attributeName="stroke-dashoffset" from="200" to="0" dur="1.4s" repeatCount="indefinite"/>
+    </path>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Logic ---------- */
+    const st = {
+      pump1: true,
+      pump2: false,
+      flowRate: 54.2,
+      temp: 16.4,
+      valvePct: 65,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function chillerBeep(f, dur = 0.08) {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.2, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) { }
+    }
+
+    function togglePump(id) {
+      if (id === '1') st.pump1 = !st.pump1;
+      if (id === '2') st.pump2 = !st.pump2;
+      chillerBeep(st.pump1 || st.pump2 ? 600 : 250);
+      recalcCooling();
+    }
+
+    function recalcCooling() {
+      const activePumps = (st.pump1 ? 1 : 0) + (st.pump2 ? 1 : 0);
+      st.flowRate = (activePumps * (st.valvePct / 100) * 44 + 4).toFixed(1);
+      st.temp = (24.0 - activePumps * 4.2 - (st.valvePct / 100) * 3.4).toFixed(1);
+
+      const q1 = q('#pump-led-1');
+      if (q1) q1.classList.toggle('hot', st.pump1);
+      const q2 = q('#pump-led-2');
+      if (q2) q2.classList.toggle('hot', st.pump2);
+
+      const tEl = q('#cdu-temp-read');
+      if (tEl) tEl.textContent = `CHILLED: ${st.temp}°C`;
+
+      render();
+    }
+
+    let pulseTick = 0;
+    st.fanDeg = 0;
+    st.timer = api.every(45, () => {
+      pulseTick++;
+      // Needle deflection according to flow rate & pressure
+      const g1 = q('#gauge-needle-1'), g2 = q('#gauge-needle-2');
+      if (g1) {
+        const ang1 = -35 + (st.flowRate / 80) * 70 + Math.sin(pulseTick * 0.3) * 3;
+        g1.setAttribute('transform', `rotate(${ang1.toFixed(1)} 18 18)`);
+      }
+      if (g2) {
+        const ang2 = 5 + (st.flowRate / 80) * 55 + Math.cos(pulseTick * 0.35) * 3;
+        g2.setAttribute('transform', `rotate(${ang2.toFixed(1)} 18 18)`);
+      }
+
+      // Continuous radiator fan rotation
+      if (st.pump1 || st.pump2) {
+        st.fanDeg = (st.fanDeg + 20) % 360;
+        const f1 = q('#cdu-fan-rotor-1');
+        if (f1) f1.setAttribute('transform', `rotate(${st.fanDeg} 45 65)`);
+        const f2 = q('#cdu-fan-rotor-2');
+        if (f2) f2.setAttribute('transform', `rotate(${-st.fanDeg * 1.15} 135 65)`);
+      }
+    });
+
+    function render() {
+      api.power(st.pump1 || st.pump2);
+      api.readout(
+        `CDU CHILLER · FLOW: ${st.flowRate} L/MIN · TEMP: ${st.temp}°C · VALVE: ${st.valvePct}%`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      const p = e.target.closest('.cdu-pump');
+      if (p && p.dataset.id) {
+        togglePump(p.dataset.id);
+        return;
+      }
+      if (e.target.closest('#cdu-valve')) {
+        st.valvePct = (st.valvePct + 25) % 100;
+        if (st.valvePct === 0) st.valvePct = 30;
+        const ang = (st.valvePct / 100) * 270 - 135;
+        const ptr = q('#cdu-valve-ptr');
+        if (ptr) ptr.setAttribute('transform', `rotate(${ang} 15 15)`);
+        recalcCooling();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          st.valvePct = st.valvePct > 70 ? 40 : 95;
+          recalcCooling();
+          return true;
+        }
+        if (e.key === '1') { togglePump('1'); return true; }
+        if (e.key === '2') { togglePump('2'); return true; }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        togglePump('2');
+      }
+    };
+  }
+});
+
+
+/* Fig 3 — Audira Enterprise Modular UPS & Battery Vault */
+FIGS.push({
+  id: 'audira-ups',
+  name: 'Modular UPS Vault',
+  hint: 'Click transfer switch or Space to simulate grid blackout · Click EPO button',
+  aria: 'Isometric enterprise 120kVA modular UPS system with lithium battery storage drawers, static bypass switch, and live battery discharge telemetry.',
+  css: `
+    [data-fig="audira-ups"] .ups-switch { cursor:pointer; }
+    [data-fig="audira-ups"] .ups-switch:hover .face.top { stroke:var(--accent); }
+    [data-fig="audira-ups"] .epo-btn { cursor:pointer; }
+    [data-fig="audira-ups"] .epo-btn:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-ups"] .busbar-pipe { fill:none; stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; filter:url(#soft); opacity:.85; }
+    [data-fig="audira-ups"] .bat-cell { fill:var(--accent); opacity:.85; transition:opacity .15s ease-out; }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 240, 0], [320, 0, 7], [320, 240, 0], [0, 0, 7],
+      [40, 30, 190], [280, 30, 190], [40, 210, 190], [280, 210, 190]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits, esc = api.iso.esc;
+
+    const PLZ = 7;
+    const BX = 55, BY = 35, BW = 210, BD = 160, BH = 145, BT = PLZ + BH, BF = BY + BD;
+
+    let svg = `<defs>
+      <clipPath id="ups-mon-clip"><rect x="6" y="4" width="76" height="18" rx="2"/></clipPath>
+    </defs>`;
+
+    // Floor Base Plate
+    svg += box(0, 0, 0, 320, 240, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="304" height="224" rx="10"/>
+      <!-- Ground busbar grounding lines -->
+      <line class="detail" x1="20" y1="40" x2="20" y2="220"/>
+      <line class="detail" x1="300" y1="40" x2="300" y2="220"/>
+      <text class="label" x="40" y="230" font-size="4" letter-spacing="1.5">DC FACILITY POWER · 400V 3-PHASE N+1 REDUNDANCY</text>
+    </g>`;
+
+    // Main UPS Heavy Cabinet Frame
+    svg += box(BX, BY, PLZ, BW, BD, BH, 6);
+
+    // Side Ventilation & High-Voltage Busway Entry
+    svg += `<g transform="${SIDE(BX + BW, BF, BT)}">
+      ${slits(16, 110, 3.2, 10, 45)}
+      ${slits(16, 110, 3.2, 60, 95)}
+      ${slits(16, 110, 3.2, 110, 145)}
+      <text class="label" x="20" y="55" font-size="4.5" letter-spacing="1">HV INPUT A/B</text>
+    </g>`;
+
+    // Top Exhaust Fan Grille
+    svg += box(BX + 25, BY + 20, BT, 160, 120, 8, 3);
+    svg += `<g transform="${TOP(BX + 25, BY + 20, BT + 8)}">
+      ${slits(10, 150, 4, 10, 110, true)}
+      <text class="label" x="18" y="18" font-size="4.5" letter-spacing="1">HEAT EXHAUST</text>
+    </g>`;
+
+    // Front Control Panel Header
+    svg += `<g transform="${FRONT(BX, BF, BT)}">
+      <text class="label" x="12" y="14" font-size="6" font-weight="500" letter-spacing="1.5">AUDIRA · UPS-120kVA</text>
+      <circle class="led hot" id="ups-mains-led" filter="url(#soft)" cx="${BW - 16}" cy="12" r="2.5"/>
+
+      <!-- Digital Inverter Telemetry LCD -->
+      <rect class="face recess" x="12" y="20" width="86" height="26" rx="3"/>
+      <rect class="halo hot" x="14" y="22" width="82" height="22" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="14" y="22" width="82" height="22" rx="2"/>
+      <g clip-path="url(#ups-mon-clip)" transform="translate(14 22)">
+        <text class="scr" x="4" y="8" font-size="4">GRID: 400V · 50.0Hz</text>
+        <text class="scr-accent" id="ups-status-txt" x="4" y="15" font-size="4.2">MODE: ONLINE (MAINS)</text>
+      </g>
+
+      <!-- Battery Runtime & Capacity Bar -->
+      <rect class="face recess" x="110" y="20" width="86" height="26" rx="3"/>
+      <text class="label" x="115" y="28" font-size="3.5">LITHIUM RESERVE</text>
+      <rect class="face recess" x="115" y="32" width="76" height="8" rx="1.5"/>
+      <rect class="bat-cell" id="ups-charge-bar" x="115" y="32" width="76" height="8" rx="1.5"/>
+      <text class="scr" id="ups-runtime-txt" x="115" y="44" font-size="3.5">RUNTIME: 180 MIN [100%]</text>
+
+      <line class="detail" x1="12" y1="52" x2="${BW - 12}" y2="52"/>
+    </g>`;
+
+    // 4 Modular Lithium Battery Drawers (Stacked)
+    const BAT_H = 18, BAT_W = BW - 24, BAT_D = BD - 20;
+    const BAT_Z0 = PLZ + 6;
+    for (let b = 0; b < 4; b++) {
+      const bz = BAT_Z0 + b * 22;
+      svg += `<g class="ups-battery-pack" id="bat-pack-${b}">`;
+      svg += box(BX + 12, BY + 10, bz, BAT_W, BAT_D, BAT_H, 2);
+      svg += `<g transform="${FRONT(BX + 12, BF, bz + BAT_H)}">
+        <text class="label" x="8" y="11" font-size="3.5">BATTERY BANK 0${b + 1} · LiFePO4</text>
+        <!-- 8 Cell Status LEDs per drawer -->
+        ${Array.from({ length: 8 }, (_, c) =>
+        `<circle class="led hot ups-cell-led" id="cell-${b}-${c}" filter="url(#soft)" cx="${80 + c * 10}" cy="9" r="1.2"/>`
+      ).join('')}
+        <rect class="face recess" x="${BAT_W - 24}" y="6" width="16" height="7" rx="1.5"/>
+        <text class="label" x="${BAT_W - 16}" y="11" font-size="3" text-anchor="middle">48V</text>
+      </g>`;
+      svg += `</g>`;
+    }
+
+    // Heavy Rotary Static Transfer Switch (Floor left)
+    const SW_X = BX - 35, SW_Y = BF - 30;
+    svg += `<g class="ups-switch" id="ups-trans-sw">
+      ${box(SW_X, SW_Y, PLZ, 30, 30, 20, 15)}
+      <g transform="${TOP(SW_X, SW_Y, PLZ + 20)}">
+        <circle class="face recess" cx="15" cy="15" r="12"/>
+        <line class="detail" id="ups-sw-pointer" x1="15" y1="15" x2="15" y2="5"/>
+        <text class="label" x="15" y="24" font-size="3.2" text-anchor="middle">MAINS</text>
+      </g>
+    </g>`;
+
+    // Emergency Power Off (EPO) Big Push Button (Floor right)
+    const EPO_X = BX + BW + 6, EPO_Y = BF - 25;
+    svg += `<g class="epo-btn" id="ups-epo-btn">
+      ${box(EPO_X, EPO_Y, PLZ, 26, 26, 6, 4)}
+      ${box(EPO_X + 4, EPO_Y + 4, PLZ + 6, 18, 18, 10, 9)}
+      <g transform="${TOP(EPO_X + 4, EPO_Y + 4, PLZ + 16)}">
+        <circle class="led hot" filter="url(#glow)" cx="9" cy="9" r="6"/>
+        <text class="label" x="9" y="19" font-size="3" text-anchor="middle">EPO</text>
+      </g>
+    </g>`;
+
+    // High Current Busbars & Glowing Power Pulses
+    const P0 = [SW_X + 15, SW_Y + 15, PLZ + 10];
+    const P1 = [SW_X + 5, BF + 25, 9];
+    const P2 = [BX + 12, BF, PLZ + 15];
+    const busD = `M ${K.P(...P0).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...P1).map(v => v.toFixed(1)).join(' ')}, ${K.P(...P2).map(v => v.toFixed(1)).join(' ')}`;
+    svg += `<path class="busbar-pipe" d="${busD}"/>`;
+    svg += `<path id="ups-power-stream" d="${busD}" fill="none" stroke="var(--accent-hi)" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="25 60" filter="url(#glow)">
+      <animate attributeName="stroke-dashoffset" from="170" to="0" dur="1s" repeatCount="indefinite"/>
+    </path>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Logic ---------- */
+    const st = {
+      gridOnline: true,
+      batteryPct: 100,
+      runtimeMin: 180,
+      epoTripped: false,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function upsBeep(f, dur = 0.08, type = 'sine') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.22, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) { }
+    }
+
+    function toggleGrid() {
+      st.gridOnline = !st.gridOnline;
+      upsBeep(st.gridOnline ? 880 : 380, 0.25, 'sawtooth');
+
+      const swPtr = q('#ups-sw-pointer');
+      if (swPtr) {
+        swPtr.setAttribute('transform', st.gridOnline ? 'rotate(0 15 15)' : 'rotate(90 15 15)');
+      }
+
+      const stTxt = q('#ups-status-txt');
+      if (stTxt) {
+        stTxt.textContent = st.gridOnline ? 'MODE: ONLINE (MAINS)' : 'MODE: BATTERY INVERTER';
+      }
+
+      render();
+    }
+
+    function tripEPO() {
+      st.epoTripped = !st.epoTripped;
+      api.flash(q('#ups-epo-btn'), 300);
+      upsBeep(1400, 0.4, 'square');
+      st.gridOnline = !st.epoTripped;
+      render();
+    }
+
+    // Battery runtime & cascading LED wave
+    let tick = 0;
+    st.timer = api.every(70, () => {
+      tick++;
+
+      // Cascading battery cell LED chasing wave across all 4 banks
+      const step = tick % 8;
+      for (let b = 0; b < 4; b++) {
+        for (let c = 0; c < 8; c++) {
+          const led = q(`#cell-${b}-${c}`);
+          if (led) {
+            const isWave = (c === (step + b) % 8) || (c === (step + b + 1) % 8);
+            led.classList.toggle('hot', isWave || (st.gridOnline && c < 6));
+          }
+        }
+      }
+
+      if (!st.gridOnline && st.batteryPct > 5) {
+        st.batteryPct = Math.max(5, st.batteryPct - 0.2);
+        st.runtimeMin = Math.floor(st.batteryPct * 1.8);
+
+        const bar = q('#ups-charge-bar');
+        if (bar) bar.setAttribute('width', (st.batteryPct * 0.76).toFixed(1));
+
+        const rTxt = q('#ups-runtime-txt');
+        if (rTxt) rTxt.textContent = `RUNTIME: ${st.runtimeMin} MIN [${Math.floor(st.batteryPct)}%]`;
+
+        if (tick % 15 === 0) upsBeep(500, 0.08); // Outage alarm beep
+      } else if (st.gridOnline && st.batteryPct < 100) {
+        st.batteryPct = Math.min(100, st.batteryPct + 0.3);
+        st.runtimeMin = Math.floor(st.batteryPct * 1.8);
+        const bar = q('#ups-charge-bar');
+        if (bar) bar.setAttribute('width', (st.batteryPct * 0.76).toFixed(1));
+      }
+    });
+
+    function render() {
+      api.power(true);
+      const mainsLed = q('#ups-mains-led');
+      if (mainsLed) mainsLed.classList.toggle('hot', st.gridOnline);
+
+      api.readout(
+        st.gridOnline
+          ? `UPS ONLINE · MAINS 400V OK · BATTERY: ${Math.floor(st.batteryPct)}% (180 MIN)`
+          : `GRID BLACKOUT · ON BATTERY INVERTER · ${st.runtimeMin} MIN REMAINING`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      if (e.target.closest('#ups-trans-sw')) {
+        toggleGrid();
+        return;
+      }
+      if (e.target.closest('#ups-epo-btn')) {
+        tripEPO();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          toggleGrid();
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        toggleGrid();
+      }
+    };
+  }
+});
+
+
+/* Fig 4 — Audira Industrial PTZ Surveillance Camera System */
+FIGS.push({
+  id: 'audira-cctv',
+  name: 'CCTV Surveillance',
+  hint: 'Click controls or Space to steer PTZ · Keys 1–4 zoom & IR night vision · Click lens',
+  aria: 'Isometric industrial 4K motorized PTZ security surveillance camera with pan-tilt gimbal, optical zoom barrel, 12-point IR night vision illuminator ring, targeting laser beam, and local operator joystick console.',
+  css: `
+    [data-fig="audira-cctv"] .cctv-lens { cursor:pointer; }
+    [data-fig="audira-cctv"] .cctv-lens:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-cctv"] .ptz-btn { cursor:pointer; }
+    [data-fig="audira-cctv"] .ptz-btn:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-cctv"] .laser-beam { fill:none; stroke:var(--accent); stroke-width:1.8; stroke-dasharray:12 18; opacity:.85; filter:url(#glow); }
+    [data-fig="audira-cctv"] .laser-cone { fill:var(--accent); opacity:.14; filter:url(#bloom); transition:opacity .3s; }
+    [data-fig="audira-cctv"] .laser-cone.alert { opacity:.38; fill:var(--accent-hi); }
+    [data-fig="audira-cctv"] .ir-led { fill:var(--detail); transition:fill .2s; }
+    [data-fig="audira-cctv"] .ir-led.lit { fill:var(--accent-hi); filter:url(#soft); }
+    [data-fig="audira-cctv"] .rec-dot { animation:cctv-rec-blink 1s steps(1) infinite; }
+    @keyframes cctv-rec-blink { 50% { opacity:0; } }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [320, 0, 7], [320, 260, 0], [0, 0, 7],
+      [20, 20, 210], [300, 20, 210], [20, 240, 210], [300, 240, 210]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits;
+
+    const PLZ = 7;
+    let svg = `<defs>
+      <clipPath id="cam-lcd-clip"><rect x="4" y="3" width="72" height="16" rx="2"/></clipPath>
+      <clipPath id="feed-screen-clip"><rect x="4" y="4" width="76" height="50" rx="3"/></clipPath>
+    </defs>`;
+
+    // Base Floor Plate (Monitoring Zone demarcations)
+    svg += box(0, 0, 0, 320, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="304" height="244" rx="10"/>
+      <!-- CCTV Field-of-View Demarcation Cone on Floor -->
+      <path class="detail" d="M160 50 L70 230 L250 230 Z"/>
+      <!-- Floor Laser Target Grid Lines -->
+      <line class="laser-beam" id="cctv-floor-target" x1="100" y1="180" x2="220" y2="180">
+        <animate attributeName="stroke-dashoffset" from="60" to="0" dur="1s" repeatCount="indefinite"/>
+      </line>
+      <circle class="face recess" cx="160" cy="180" r="14"/>
+      <circle class="detail" cx="160" cy="180" r="8"/>
+      <text class="label" x="50" y="250" font-size="4" letter-spacing="1.5">PERIMETER CCTV SURVEILLANCE · OPTICAL TARGETING ZONE</text>
+    </g>`;
+
+    // Robust Wall Mount Plate & Arm (Left-Rear)
+    const WX = 26, WY = 20, WZ = PLZ + 60, WW = 16, WD = 50, WH = 100;
+    svg += box(WX, WY, WZ, WW, WD, WH, 4);
+    svg += `<g transform="${SIDE(WX + WW, WY + WD, WZ + WH)}">
+      ${slits(10, WD - 10, 4, 10, WH - 10)}
+      <text class="label" x="12" y="30" font-size="4.5" letter-spacing="1">CAM-04 · HIGH ELEVATION</text>
+      <!-- Heavy industrial mounting bolt heads -->
+      ${[15, 45, 75].map(y => `<circle class="face recess" cx="25" cy="${y}" r="3"/><circle class="face" cx="25" cy="${y}" r="1.5"/>`).join('')}
+    </g>`;
+
+    // Heavy Horizontal Tubular Support Boom Arm extending into center
+    const ARM_X = WX + WW, ARM_Y = WY + 18, ARM_Z = WZ + 65, ARM_L = 85, ARM_W = 18, ARM_H = 18;
+    svg += box(ARM_X, ARM_Y, ARM_Z, ARM_L, ARM_W, ARM_H, 4);
+    svg += `<g transform="${FRONT(ARM_X, ARM_Y + ARM_W, ARM_Z + ARM_H)}">
+      ${slits(6, ARM_L - 6, 4, 4, ARM_H - 4)}
+      <text class="label" x="14" y="11" font-size="3.5" letter-spacing="1">INTERNAL FIBER & 48V PoE++ CONDUIT</text>
+    </g>`;
+
+    // MOTORIZED PTZ TURRET GIMBAL ASSEMBLY
+    // 1. Pan Base Turret (Rotating horizontal disc under the arm)
+    const TURRET_X = ARM_X + ARM_L - 25, TURRET_Y = ARM_Y - 5, TURRET_Z = ARM_Z - 18;
+    const TURRET_W = 32, TURRET_D = 32, TURRET_H = 18;
+    svg += box(TURRET_X, TURRET_Y, TURRET_Z, TURRET_W, TURRET_D, TURRET_H, 15);
+    svg += `<g transform="${TOP(TURRET_X, TURRET_Y, TURRET_Z + TURRET_H)}">
+      <circle class="face recess" cx="16" cy="16" r="14"/>
+      <circle class="led hot" filter="url(#soft)" cx="16" cy="16" r="2.5"/>
+      <text class="label" x="16" y="24" font-size="3" text-anchor="middle">PAN 360°</text>
+    </g>`;
+
+    // 2. Dual Yoke / Fork Support Brackets
+    const FORK_X = TURRET_X + 2, FORK_Y = TURRET_Y + 2, FORK_Z = TURRET_Z - 26;
+    svg += box(FORK_X, FORK_Y, FORK_Z, 6, 28, 26, 2);
+    svg += box(FORK_X + 22, FORK_Y, FORK_Z, 6, 28, 26, 2);
+
+    // 3. Central Cylindrical Camera Housing (Gimbal suspended inside fork)
+    const CAM_CX = FORK_X + 6, CAM_CY = FORK_Y + 2, CAM_CZ = FORK_Z - 10;
+    const CAM_W = 16, CAM_D = 55, CAM_H = 34;
+
+    svg += `<g class="cctv-lens" id="cctv-body-rig">`;
+    svg += box(CAM_CX, CAM_CY, CAM_CZ, CAM_W, CAM_D, CAM_H, 8);
+
+    // Camera Top Sunshield & Status Display
+    svg += `<g transform="${TOP(CAM_CX, CAM_CY, CAM_CZ + CAM_H)}">
+      <rect class="face recess" x="2" y="4" width="${CAM_W - 4}" height="${CAM_D - 8}" rx="3"/>
+      <circle class="led hot rec-dot" cx="8" cy="12" r="1.8"/>
+      <text class="scr-accent" x="8" y="22" font-size="3" text-anchor="middle">REC</text>
+      <text class="label" x="8" y="34" font-size="2.6" text-anchor="middle">4K 60</text>
+      <text class="label" x="8" y="44" font-size="2.6" text-anchor="middle">32X</text>
+    </g>`;
+
+    // Front Camera Face with Big Optical Lens & 12 IR LEDs Ring
+    const FRONT_Z = CAM_CZ + CAM_H;
+    svg += `<g transform="${FRONT(CAM_CX, CAM_CY + CAM_D, FRONT_Z)}">
+      <!-- Outer Lens Bezel -->
+      <rect class="face recess" x="1" y="2" width="${CAM_W - 2}" height="${CAM_H - 4}" rx="5"/>
+      <circle class="face recess" cx="${CAM_W / 2}" cy="${CAM_H / 2}" r="12"/>
+      
+      <!-- 8-Point IR Night Vision Illuminator Array -->
+      ${Array.from({ length: 8 }, (_, i) => {
+        const rad = (i * 45 * Math.PI) / 180;
+        const lx = CAM_W / 2 + 9.5 * Math.cos(rad);
+        const ly = CAM_H / 2 + 9.5 * Math.sin(rad);
+        return `<circle class="ir-led lit" id="ir-${i}" cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="1.1"/>`;
+      }).join('')}
+
+      <!-- Center Coated Optical Glass Lens Element -->
+      <circle class="face glass hot" id="cctv-main-lens" filter="url(#glow)" cx="${CAM_W / 2}" cy="${CAM_H / 2}" r="6"/>
+      <circle class="face" cx="${CAM_W / 2}" cy="${CAM_H / 2}" r="3"/>
+      <circle class="led hot" id="cctv-laser-diode" cx="${CAM_W / 2}" cy="${CAM_H / 2}" r="1.2"/>
+    </g>`;
+    svg += `</g>`; // end cctv-lens
+
+    // 4. Sweeping Optical Targeting Laser Cone extending to floor
+    const LENS_TIP = [CAM_CX + CAM_W / 2, CAM_CY + CAM_D + 2, CAM_CZ + CAM_H / 2];
+    const beamPts = [
+      LENS_TIP,
+      [120, 200, PLZ + 2],
+      [200, 200, PLZ + 2],
+      LENS_TIP
+    ];
+    const beamD = path(beamPts) + 'Z';
+    svg += `<path class="laser-cone" id="cctv-laser-cone" d="${beamD}">
+      <animate attributeName="opacity" values="0.14; 0.35; 0.14" dur="2s" repeatCount="indefinite"/>
+    </path>`;
+
+    // LOCAL CCTV OPERATOR MONITOR & PTZ CONSOLE (Bottom Right Floor)
+    const MON_X = 200, MON_Y = 140, MON_W = 85, MON_D = 60, MON_H = 14, MON_T = PLZ + MON_H;
+    svg += box(MON_X, MON_Y, PLZ, MON_W, MON_D, MON_H, 4);
+    svg += `<g transform="${TOP(MON_X, MON_Y, MON_T)}">
+      <rect class="face recess" x="4" y="4" width="${MON_W - 8}" height="${MON_D - 8}" rx="3"/>
+      <!-- Live CCTV Video Monitor Feed -->
+      <rect class="halo hot" x="6" y="6" width="${MON_W - 12}" height="32" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="6" y="6" width="${MON_W - 12}" height="32" rx="2"/>
+      
+      <g clip-path="url(#feed-screen-clip)" transform="translate(4 4)">
+        <!-- Video OSD (On-Screen Display) -->
+        <text class="scr-accent" x="6" y="8" font-size="3.5">CAM 04 · LIVE FEED</text>
+        <circle class="led hot rec-dot" cx="62" cy="7" r="1.5"/>
+        <text class="scr" x="66" y="8" font-size="3">REC</text>
+        <!-- Targeting Crosshairs -->
+        <line class="detail" stroke="var(--accent)" x1="28" y1="20" x2="48" y2="20"/>
+        <line class="detail" stroke="var(--accent)" x1="38" y1="12" x2="38" y2="28"/>
+        <circle class="detail" stroke="var(--accent)" cx="38" cy="20" r="5"/>
+        <text class="scr" id="cctv-osd-coords" x="6" y="30" font-size="3">AZ: 142° · EL: -24° · 12.4X</text>
+      </g>
+
+      <!-- Hardware PTZ Steering Control Buttons on console deck -->
+      ${[
+        { id: 'pan-l',  x: 10, y: 42, lbl: '◀ PAN' },
+        { id: 'tilt-u', x: 28, y: 42, lbl: '▲ TILT' },
+        { id: 'zoom',   x: 48, y: 42, lbl: 'ZOOM' },
+        { id: 'night',  x: 64, y: 42, lbl: 'IR NITE' }
+      ].map(b => `
+        <g class="ptz-btn" id="ptz-btn-${b.id}" data-btn="${b.id}">
+          <rect class="face recess" x="${b.x}" y="${b.y}" width="16" height="11" rx="1.5"/>
+          <text class="label" x="${b.x + 8}" y="${b.y + 7}" font-size="2.6" text-anchor="middle">${b.lbl}</text>
+        </g>
+      `).join('')}
+    </g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Real-Time Motion Logic ---------- */
+    const st = {
+      panAngle: 0,
+      tiltAngle: -24,
+      zoomLevel: 12.4,
+      nightVision: true,
+      alarmLocked: false,
+      panDir: 1,
+      tick: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function ptzBeep(f, dur = 0.05, type = 'sine') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.18, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function toggleNightVision() {
+      st.nightVision = !st.nightVision;
+      ptzBeep(st.nightVision ? 880 : 440, 0.1);
+      const irLeds = stage.querySelectorAll('.ir-led');
+      irLeds.forEach(l => l.classList.toggle('lit', st.nightVision));
+      render();
+    }
+
+    function stepZoom() {
+      st.zoomLevel = st.zoomLevel >= 32 ? 4 : st.zoomLevel + 8;
+      ptzBeep(700 + st.zoomLevel * 15, 0.08);
+      render();
+    }
+
+    function triggerLock() {
+      st.alarmLocked = !st.alarmLocked;
+      ptzBeep(st.alarmLocked ? 1200 : 520, 0.25, 'sawtooth');
+      const cone = q('#cctv-laser-cone');
+      if (cone) cone.classList.toggle('alert', st.alarmLocked);
+      render();
+    }
+
+    // Continuous Motorized PTZ Scanning Animation
+    st.timer = api.every(45, () => {
+      st.tick++;
+
+      // Pan sweeping
+      if (!st.alarmLocked) {
+        st.panAngle += st.panDir * 0.8;
+        if (st.panAngle > 35) st.panDir = -1;
+        if (st.panAngle < -35) st.panDir = 1;
+      }
+
+      // Smooth laser target cone ground movement
+      const cone = q('#cctv-laser-cone');
+      if (cone) {
+        const sweepX = Math.sin(st.tick * 0.05) * 35;
+        const bPts = [
+          LENS_TIP,
+          [120 + sweepX, 200, PLZ + 2],
+          [200 + sweepX, 200, PLZ + 2],
+          LENS_TIP
+        ];
+        cone.setAttribute('d', path(bPts) + 'Z');
+      }
+
+      // Move floor target circle
+      const floorTgt = q('#cctv-floor-target');
+      if (floorTgt) {
+        const sweepX = Math.sin(st.tick * 0.05) * 35;
+        floorTgt.setAttribute('x1', (100 + sweepX).toFixed(1));
+        floorTgt.setAttribute('x2', (220 + sweepX).toFixed(1));
+      }
+
+      // Update OSD coordinates on screen
+      if (st.tick % 6 === 0) {
+        const osd = q('#cctv-osd-coords');
+        if (osd) {
+          const az = (142 + st.panAngle).toFixed(0);
+          osd.textContent = `AZ: ${az}° · EL: ${st.tiltAngle}° · ${st.zoomLevel}X`;
+        }
+      }
+    });
+
+    function render() {
+      api.power(true);
+      api.readout(
+        st.alarmLocked
+          ? `CCTV ALERT · TARGET LOCKED · ${st.zoomLevel}X OPTICAL ZOOM · IR NIGHT ON`
+          : `CCTV MONITORING · PTZ SWEEPING · 4K 60FPS · ZOOM: ${st.zoomLevel}X · IR: ${st.nightVision ? 'ON' : 'OFF'}`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      const btn = e.target.closest('.ptz-btn');
+      if (btn && btn.dataset.btn) {
+        const b = btn.dataset.btn;
+        if (b === 'pan-l') { st.panDir = -st.panDir; ptzBeep(600, 0.05); }
+        else if (b === 'tilt-u') { st.tiltAngle = st.tiltAngle === -24 ? -10 : -24; ptzBeep(650, 0.05); }
+        else if (b === 'zoom') stepZoom();
+        else if (b === 'night') toggleNightVision();
+        render();
+        return;
+      }
+      if (e.target.closest('#cctv-body-rig')) {
+        triggerLock();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          triggerLock();
+          return true;
+        }
+        if (e.key === '1') { st.panDir = -st.panDir; render(); return true; }
+        if (e.key === '2') { stepZoom(); return true; }
+        if (e.key === '3') { toggleNightVision(); return true; }
+        if (e.key === '4') { triggerLock(); return true; }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        triggerLock();
+      }
+    };
+  }
+});
+
+
+/* Fig 5 — Audira DCIM Data Center Infrastructure & Traffic Monitoring Center */
+FIGS.push({
+  id: 'audira-dcim',
+  name: 'DCIM Traffic & Monitor',
+  hint: 'Click screens or buttons to toggle metrics · Space triggers traffic spike · Keys 1–4',
+  aria: 'Isometric DCIM data center infrastructure monitoring station with triple-display video wall showing live network bandwidth traffic waveforms, packet flow analysis, thermal cold-aisle heatmap, and facility PUE power telemetry.',
+  css: `
+    [data-fig="audira-dcim"] .dcim-screen { cursor:pointer; }
+    [data-fig="audira-dcim"] .dcim-screen:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-dcim"] .dcim-btn { cursor:pointer; }
+    [data-fig="audira-dcim"] .dcim-btn:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-dcim"] .traffic-wave { fill:none; stroke:var(--accent); stroke-width:1.6; stroke-linecap:round; filter:url(#soft); }
+    [data-fig="audira-dcim"] .traffic-stream { fill:none; stroke:var(--accent-hi); stroke-width:2.2; stroke-linecap:round; stroke-dasharray:8 14; filter:url(#glow); }
+    [data-fig="audira-dcim"] .heat-rack { cursor:pointer; transition:fill .25s ease-out, stroke .25s ease-out; }
+    [data-fig="audira-dcim"] .heat-rack:hover { stroke:var(--accent-hi); stroke-width:1.5; }
+    [data-fig="audira-dcim"] .strobe-beacon { animation:dcim-beacon-spin 2.2s ease-in-out infinite; }
+    @keyframes dcim-beacon-spin { 0%, 100% { opacity:.3; filter:url(#soft); } 50% { opacity:1; filter:url(#glow); } }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [20, 20, 210], [320, 20, 210], [20, 240, 210], [320, 240, 210]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits;
+
+    const PLZ = 7;
+    let svg = `<defs>
+      <clipPath id="main-traffic-clip"><rect x="4" y="4" width="132" height="74" rx="3"/></clipPath>
+      <clipPath id="side-therm-clip"><rect x="4" y="4" width="72" height="62" rx="3"/></clipPath>
+      <clipPath id="side-pwr-clip"><rect x="4" y="4" width="72" height="62" rx="3"/></clipPath>
+    </defs>`;
+
+    // Base Floor Plate (NOC Control Room Tiles)
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="324" height="244" rx="10"/>
+      <!-- Raised access floor grid demarcations -->
+      <line class="detail" x1="20" y1="30" x2="320" y2="30"/>
+      <line class="detail" x1="20" y1="120" x2="320" y2="120"/>
+      <line class="detail" x1="20" y1="210" x2="320" y2="210"/>
+      <text class="label" x="35" y="250" font-size="4" letter-spacing="1.5">DATA CENTER INFRASTRUCTURE MANAGEMENT (DCIM) · 24/7 NOC MONITORING</text>
+    </g>`;
+
+    // NOC Curved Multi-Display Stand Framework
+    const STAND_X = 35, STAND_Y = 25, STAND_Z = PLZ, STAND_W = 270, STAND_D = 120, STAND_H = 35;
+    svg += box(STAND_X, STAND_Y, STAND_Z, STAND_W, STAND_D, STAND_H, 6);
+    svg += `<g transform="${FRONT(STAND_X, STAND_Y + STAND_D, STAND_Z + STAND_H)}">
+      ${slits(16, 90, 3, 6, 24)}
+      <text class="label" x="100" y="20" font-size="6" letter-spacing="2">AUDIRA · DCIM OPS WALL</text>
+      ${slits(210, 254, 3, 6, 24)}
+    </g>`;
+
+    // TRIPLE MONITOR VIDEO WALL (Mounted elevated on desk)
+    const SCR_Z = STAND_Z + STAND_H + 4;
+
+    // 1. CENTER SCREEN: High-Bandwidth Network Traffic & Packet Analyzer
+    const CW_X = STAND_X + 65, CW_Y = STAND_Y + 14, CW_W = 140, CW_D = 82, CW_H = 6;
+    svg += `<g class="dcim-screen" id="scr-traffic" data-scr="traffic">`;
+    svg += box(CW_X, CW_Y, SCR_Z, CW_W, CW_D, CW_H, 4);
+    svg += `<g transform="${TOP(CW_X, CW_Y, SCR_Z + CW_H)}">
+      <rect class="face recess" x="4" y="4" width="${CW_W - 8}" height="${CW_D - 8}" rx="4"/>
+      <rect class="halo hot" x="6" y="6" width="${CW_W - 12}" height="${CW_D - 12}" rx="3" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="6" y="6" width="${CW_W - 12}" height="${CW_D - 12}" rx="3"/>
+
+      <g clip-path="url(#main-traffic-clip)" transform="translate(4 4)">
+        <!-- Header -->
+        <text class="scr" x="6" y="11" font-size="4.2" letter-spacing="1">NETWORK TRAFFIC & BANDWIDTH FLOW</text>
+        <text class="scr-accent" id="dcim-thruput-head" x="80" y="11" font-size="4">LIVE: 3.42 Tbps</text>
+        <line class="detail" x1="6" y1="15" x2="126" y2="15"/>
+
+        <!-- Real-Time Bandwidth Waveform Graph -->
+        <text class="label" x="6" y="24" font-size="3">EAST-WEST FABRIC (CLOS)</text>
+        <path class="traffic-wave" id="dcim-traffic-wave-1" d="M6 35 Q20 22, 35 34 T65 24 T95 32 T126 26"/>
+        <path class="traffic-stream" id="dcim-traffic-stream-1" d="M6 35 Q20 22, 35 34 T65 24 T95 32 T126 26">
+          <animate attributeName="stroke-dashoffset" from="120" to="0" dur="1s" repeatCount="indefinite"/>
+        </path>
+
+        <text class="label" x="6" y="46" font-size="3">NORTH-SOUTH EDGE (TRANSIT 400G)</text>
+        <path class="traffic-wave" id="dcim-traffic-wave-2" d="M6 56 Q25 48, 45 57 T80 47 T105 55 T126 50"/>
+        <path class="traffic-stream" id="dcim-traffic-stream-2" d="M6 56 Q25 48, 45 57 T80 47 T105 55 T126 50">
+          <animate attributeName="stroke-dashoffset" from="120" to="0" dur="1.4s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- Dynamic Packet Throughput Bar Columns -->
+        ${Array.from({ length: 14 }, (_, i) => {
+          const bx = 10 + i * 8.2;
+          const bh = 8 + (i % 5) * 2.5;
+          return `<rect class="oled-bar" id="traffic-bar-${i}" x="${bx}" y="${70 - bh}" width="4.5" height="${bh}" rx=".8" fill="var(--accent)"/>`;
+        }).join('')}
+      </g>
+    </g>`;
+    svg += `</g>`;
+
+    // 2. LEFT SCREEN: Facility Thermal & Environment Heatmap
+    const LW_X = STAND_X + 6, LW_Y = STAND_Y + 22, LW_W = 54, LW_D = 72, LW_H = 6;
+    svg += `<g class="dcim-screen" id="scr-thermal" data-scr="thermal">`;
+    svg += box(LW_X, LW_Y, SCR_Z, LW_W, LW_D, LW_H, 4);
+    svg += `<g transform="${TOP(LW_X, LW_Y, SCR_Z + LW_H)}">
+      <rect class="face recess" x="3" y="3" width="${LW_W - 6}" height="${LW_D - 6}" rx="3"/>
+      <rect class="halo hot" x="5" y="5" width="${LW_W - 10}" height="${LW_D - 10}" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="5" y="5" width="${LW_W - 10}" height="${LW_D - 10}" rx="2"/>
+
+      <g clip-path="url(#side-therm-clip)" transform="translate(3 3)">
+        <text class="scr" x="4" y="9" font-size="3.5">THERMAL MAP</text>
+        <line class="detail" x1="4" y1="12" x2="${LW_W - 10}" y2="12"/>
+
+        <!-- 3 Rows of 3 Rack Cells on Thermal Grid -->
+        ${[0, 1, 2].map(r => `
+          ${[0, 1, 2].map(c => `
+            <rect class="heat-rack" id="dcim-rack-${r}-${c}" x="${6 + c * 14}" y="${16 + r * 13}" width="11" height="9" rx="1.5" fill="var(--deck)" stroke="var(--accent)" stroke-width="1"/>
+          `).join('')}
+        `).join('')}
+        <text class="scr-accent" id="dcim-cold-txt" x="4" y="58" font-size="3">COLD: 18.2°C</text>
+      </g>
+    </g>`;
+    svg += `</g>`;
+
+    // 3. RIGHT SCREEN: Power PUE & Energy Telemetry
+    const RW_X = CW_X + CW_W + 5, RW_Y = STAND_Y + 22, RW_W = 54, RW_D = 72, RW_H = 6;
+    svg += `<g class="dcim-screen" id="scr-power" data-scr="power">`;
+    svg += box(RW_X, RW_Y, SCR_Z, RW_W, RW_D, RW_H, 4);
+    svg += `<g transform="${TOP(RW_X, RW_Y, SCR_Z + RW_H)}">
+      <rect class="face recess" x="3" y="3" width="${RW_W - 6}" height="${RW_D - 6}" rx="3"/>
+      <rect class="halo hot" x="5" y="5" width="${RW_W - 10}" height="${RW_D - 10}" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="5" y="5" width="${RW_W - 10}" height="${RW_D - 10}" rx="2"/>
+
+      <g clip-path="url(#side-pwr-clip)" transform="translate(3 3)">
+        <text class="scr" x="4" y="9" font-size="3.5">FACILITY PUE</text>
+        <line class="detail" x1="4" y1="12" x2="${RW_W - 10}" y2="12"/>
+
+        <!-- Circular PUE Meter -->
+        <circle class="face recess" cx="24" cy="28" r="14"/>
+        <circle class="detail" cx="24" cy="28" r="11"/>
+        <text class="scr-accent" id="dcim-pue-num" x="24" y="30" font-size="5" text-anchor="middle" font-weight="500">1.08</text>
+
+        <!-- Power Bar -->
+        <text class="label" x="4" y="48" font-size="2.8">LOAD: 480 kW</text>
+        <rect class="face recess" x="4" y="51" width="38" height="4" rx="1"/>
+        <rect class="oled-bar" id="dcim-load-bar" x="4" y="51" width="30" height="4" rx="1" fill="var(--accent-hi)"/>
+      </g>
+    </g>`;
+    svg += `</g>`;
+
+    // BOTTOM OPERATOR CONSOLE CONTROLS & STROBE ALARM BEACON
+    // Front control table extension
+    const TBL_X = STAND_X + 20, TBL_Y = STAND_Y + STAND_D + 8, TBL_W = 230, TBL_D = 45, TBL_H = 14;
+    svg += box(TBL_X, TBL_Y, PLZ, TBL_W, TBL_D, TBL_H, 4);
+    svg += `<g transform="${TOP(TBL_X, TBL_Y, PLZ + TBL_H)}">
+      <rect class="face recess" x="4" y="4" width="${TBL_W - 8}" height="${TBL_D - 8}" rx="3"/>
+      <text class="label" x="12" y="14" font-size="4" letter-spacing="1">DCIM TELEMETRY FOCUS & CONTROLS</text>
+      
+      <!-- Interactive Metric Focus Buttons -->
+      ${[
+        { id: 'traffic', x: 10,  lbl: '1: TRAFFIC' },
+        { id: 'thermal', x: 55,  lbl: '2: THERMAL' },
+        { id: 'power',   x: 100, lbl: '3: POWER' },
+        { id: 'burst',   x: 145, lbl: '4: TRAFFIC SPIKE' }
+      ].map(b => `
+        <g class="dcim-btn" id="dcim-btn-${b.id}" data-id="${b.id}">
+          <rect class="face recess" x="${b.x}" y="20" width="40" height="18" rx="2"/>
+          <text class="label" x="${b.x + 20}" y="31" font-size="3.2" text-anchor="middle">${b.lbl}</text>
+        </g>
+      `).join('')}
+
+      <!-- Strobe Alarm Beacon on Right Desk -->
+      <g class="strobe-beacon" id="dcim-alarm-strobe" transform="translate(198 12)">
+        <circle class="face recess" cx="12" cy="12" r="10"/>
+        <circle class="led hot" filter="url(#glow)" cx="12" cy="12" r="6">
+          <animate attributeName="r" values="4; 7; 4" dur="1.2s" repeatCount="indefinite"/>
+        </circle>
+        <text class="label" x="12" y="27" font-size="2.6" text-anchor="middle">STATUS</text>
+      </g>
+    </g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Real-Time Traffic Logic ---------- */
+    const st = {
+      focus: 'traffic',
+      trafficSpike: false,
+      thruputTbps: 3.42,
+      pue: 1.08,
+      coldTemp: 18.2,
+      tick: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function dcimBeep(f, dur = 0.05, type = 'sine') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.18, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function setFocus(mode) {
+      st.focus = mode;
+      dcimBeep(700, 0.06);
+      render();
+    }
+
+    function triggerSpike() {
+      st.trafficSpike = !st.trafficSpike;
+      api.flash(q('#dcim-btn-burst'), 260);
+      dcimBeep(st.trafficSpike ? 1300 : 500, 0.2, 'sawtooth');
+      render();
+    }
+
+    // Continuous Real-Time Traffic Waveform & Telemetry Jitter
+    st.timer = api.every(45, () => {
+      st.tick++;
+
+      // Waveform 1 dynamic oscillation
+      const w1 = q('#dcim-traffic-wave-1');
+      if (w1) {
+        const amp = st.trafficSpike ? 16 : 8;
+        const y1 = 35 + Math.sin(st.tick * 0.2) * amp;
+        const y2 = 24 + Math.cos(st.tick * 0.25) * amp;
+        w1.setAttribute('d', `M6 35 Q20 ${y1.toFixed(1)}, 35 34 T65 ${y2.toFixed(1)} T95 32 T126 26`);
+      }
+
+      // Dynamic throughput packet bar columns
+      for (let i = 0; i < 14; i++) {
+        const b = q(`#traffic-bar-${i}`);
+        if (b) {
+          const mult = st.trafficSpike ? 1.6 : 1.0;
+          const h = (6 + Math.abs(Math.sin(st.tick * 0.3 + i * 0.5)) * 14 * mult).toFixed(1);
+          b.setAttribute('height', h);
+          b.setAttribute('y', (70 - h).toFixed(1));
+        }
+      }
+
+      // Live throughput numbers
+      if (st.tick % 5 === 0) {
+        const base = st.trafficSpike ? 6.84 : 3.42;
+        const jitter = (Math.sin(st.tick * 0.2) * 0.12).toFixed(2);
+        st.thruputTbps = (base + parseFloat(jitter)).toFixed(2);
+        const hEl = q('#dcim-thruput-head');
+        if (hEl) hEl.textContent = `LIVE: ${st.thruputTbps} Tbps [${st.trafficSpike ? 'PEAK BURST' : 'STABLE'}]`;
+      }
+
+      // Live PUE micro-jitter
+      if (st.tick % 6 === 0) {
+        const pueEl = q('#dcim-pue-num');
+        if (pueEl) {
+          const jitter = (Math.sin(st.tick * 0.15) * 0.015).toFixed(2);
+          pueEl.textContent = (st.pue + parseFloat(jitter)).toFixed(2);
+        }
+      }
+
+      // Thermal Heatmap Rack cell breathing
+      if (st.tick % 3 === 0) {
+        const r = Math.floor(Math.random() * 3);
+        const c = Math.floor(Math.random() * 3);
+        const cell = q(`#dcim-rack-${r}-${c}`);
+        if (cell) {
+          cell.style.fill = st.trafficSpike ? 'var(--accent)' : 'var(--accent-dim)';
+          cell.style.stroke = 'var(--accent-hi)';
+          setTimeout(() => {
+            if (cell) {
+              cell.style.fill = 'var(--deck)';
+              cell.style.stroke = 'var(--accent)';
+            }
+          }, 400);
+        }
+      }
+    });
+
+    function render() {
+      api.power(true);
+      api.readout(
+        st.trafficSpike
+          ? `DCIM TRAFFIC SPIKE · ${st.thruputTbps} Tbps · PACKET LOAD 94% · PUE: ${st.pue}`
+          : `DCIM MONITORING · TRAFFIC: ${st.thruputTbps} Tbps · PUE: ${st.pue} · COLD AISLE: ${st.coldTemp}°C`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      const scr = e.target.closest('.dcim-screen');
+      if (scr && scr.dataset.scr) {
+        setFocus(scr.dataset.scr);
+        return;
+      }
+      const btn = e.target.closest('.dcim-btn');
+      if (btn && btn.dataset.id) {
+        const id = btn.dataset.id;
+        if (id === 'burst') triggerSpike();
+        else setFocus(id);
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          triggerSpike();
+          return true;
+        }
+        if (e.key === '1') { setFocus('traffic'); return true; }
+        if (e.key === '2') { setFocus('thermal'); return true; }
+        if (e.key === '3') { setFocus('power'); return true; }
+        if (e.key === '4') { triggerSpike(); return true; }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        triggerSpike();
+      }
+    };
+  }
+});
+
+
+/* Fig 6 — Audira Spine-Leaf Clos Network Fabric & 800G Optical Cross-Connect */
+FIGS.push({
+  id: 'audira-spineleaf',
+  name: 'Spine-Leaf Network',
+  hint: 'Click switches to inspect routing · Space triggers RoCEv2 AI burst · Keys 1–6',
+  aria: 'Isometric enterprise Spine-Leaf Clos network fabric with dual 800G Spine switches, 4 Top-of-Rack Leaf switches, full-mesh optical fiber harnesses with streaming photons, and BGP EVPN telemetry display.',
+  css: `
+    [data-fig="audira-spineleaf"] .switch-box { cursor:pointer; }
+    [data-fig="audira-spineleaf"] .switch-box:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-spineleaf"] .switch-box.selected .face.top { stroke:var(--accent-hi); stroke-width:1.5; }
+    [data-fig="audira-spineleaf"] .fiber-link { fill:none; stroke:var(--line); stroke-width:1.2; stroke-linecap:round; opacity:.55; transition:stroke .3s, opacity .3s; }
+    [data-fig="audira-spineleaf"] .fiber-link.active { stroke:var(--accent); opacity:.9; }
+    [data-fig="audira-spineleaf"] .fiber-photon { fill:none; stroke:var(--accent-hi); stroke-width:2.2; stroke-linecap:round; stroke-dasharray:14 45; filter:url(#glow); }
+    [data-fig="audira-spineleaf"] .qsfp-port { fill:var(--recess); stroke:var(--line); stroke-width:.6; }
+    [data-fig="audira-spineleaf"] .qsfp-port.txrx { fill:var(--accent); }
+    [data-fig="audira-spineleaf"] .burst-btn { cursor:pointer; }
+    [data-fig="audira-spineleaf"] .burst-btn:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-spineleaf"] .status-tag { fill:var(--deck); stroke:var(--line); stroke-width:.8; }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [20, 20, 210], [320, 20, 210], [20, 240, 210], [320, 240, 210]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits;
+
+    const PLZ = 7;
+    let svg = `<defs>
+      <clipPath id="net-mon-clip"><rect x="4" y="3" width="94" height="20" rx="2"/></clipPath>
+    </defs>`;
+
+    // Base Floor Plate (Perforated Network Room Tiles)
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="324" height="244" rx="10"/>
+      <!-- Demarcation cable duct channels -->
+      <line class="detail" x1="30" y1="30" x2="310" y2="30"/>
+      <line class="detail" x1="30" y1="130" x2="310" y2="130"/>
+      <line class="detail" x1="30" y1="230" x2="310" y2="230"/>
+      <text class="label" x="40" y="248" font-size="4" letter-spacing="1.5">HYPERSCALE FABRIC · 3.2 Tbps NON-BLOCKING CLOS ARCHITECTURE</text>
+    </g>`;
+
+    // SWITCH CHASSIS COORDINATES
+    // Spine Layer: Upper Tier (Z = 135)
+    // 2 High-Radix Spine Switches
+    const SPINES = [
+      { id: 'spine-1', name: 'SPINE-01 (800G)', x: 70,  y: 35, z: 135, w: 90, d: 55, h: 22 },
+      { id: 'spine-2', name: 'SPINE-02 (800G)', x: 180, y: 35, z: 135, w: 90, d: 55, h: 22 }
+    ];
+
+    // Leaf Layer: Lower Tier (Z = 30)
+    // 4 Top-of-Rack Leaf Switches
+    const LEAFS = [
+      { id: 'leaf-1', name: 'LEAF-01 · TOR-A', x: 26,  y: 145, z: 30, w: 66, d: 50, h: 18 },
+      { id: 'leaf-2', name: 'LEAF-02 · TOR-B', x: 104, y: 145, z: 30, w: 66, d: 50, h: 18 },
+      { id: 'leaf-3', name: 'LEAF-03 · TOR-C', x: 182, y: 145, z: 30, w: 66, d: 50, h: 18 },
+      { id: 'leaf-4', name: 'LEAF-04 · TOR-D', x: 260, y: 145, z: 30, w: 66, d: 50, h: 18 }
+    ];
+
+    // ALL SWITCHES
+    const ALL_SWITCHES = [
+      ...SPINES.map(s => ({ ...s, type: 'spine' })),
+      ...LEAFS.map(l => ({ ...l, type: 'leaf' }))
+    ];
+
+    // Draw Overhead Support Trusses & Structural Racks
+    // Vertical mounting rails
+    [40, 300].forEach(rx => {
+      svg += box(rx, 30, PLZ, 12, 12, 160, 2);
+    });
+    // Horizontal crossbars
+    svg += box(40, 32, PLZ + 155, 272, 8, 8, 2);
+    svg += box(40, 142, PLZ + 50, 272, 8, 8, 2);
+
+    // DRAW FULL-MESH OPTICAL FIBER CABLING (Every Leaf -> Every Spine)
+    const FIBER_LINKS = [];
+    SPINES.forEach((sp, sIdx) => {
+      LEAFS.forEach((lf, lIdx) => {
+        const linkId = `${sp.id}-${lf.id}`;
+        // Output port on Spine front-bottom
+        const pSpine = [sp.x + 20 + lIdx * 14, sp.y + sp.d, sp.z + 6];
+        // Input port on Leaf front-top
+        const pLeaf = [lf.x + 18 + sIdx * 20, lf.y, lf.z + lf.h + 2];
+        // Midpoint arch in 3D space
+        const pMid = [
+          (pSpine[0] + pLeaf[0]) / 2 + (sIdx === 0 ? -12 : 12),
+          (pSpine[1] + pLeaf[1]) / 2 - 10,
+          Math.max(pSpine[2], pLeaf[2]) + 15
+        ];
+
+        const dCurve = `M ${K.P(...pSpine).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...pMid).map(v => v.toFixed(1)).join(' ')}, ${K.P(...pLeaf).map(v => v.toFixed(1)).join(' ')}`;
+        FIBER_LINKS.push({ id: linkId, spine: sp.id, leaf: lf.id, d: dCurve });
+
+        // Base cable path
+        svg += `<path class="fiber-link active" id="link-${linkId}" d="${dCurve}"/>`;
+        // High-speed photon pulse stream (Native SMIL SVG animate)
+        const dur = (0.7 + (sIdx * 0.15) + (lIdx * 0.1)).toFixed(2);
+        svg += `<path class="fiber-photon" id="photon-${linkId}" d="${dCurve}">
+          <animate attributeName="stroke-dashoffset" from="140" to="0" dur="${dur}s" repeatCount="indefinite"/>
+        </path>`;
+      });
+    });
+
+    // DRAW SWITCH BOXES
+    ALL_SWITCHES.forEach(sw => {
+      const isSpine = sw.type === 'spine';
+      svg += `<g class="switch-box" id="sw-${sw.id}" data-id="${sw.id}">`;
+      svg += box(sw.x, sw.y, sw.z, sw.w, sw.d, sw.h, 3);
+
+      // Top Lid Details
+      svg += `<g transform="${TOP(sw.x, sw.y, sw.z + sw.h)}">
+        <rect class="face recess" x="4" y="4" width="${sw.w - 8}" height="${sw.d - 8}" rx="2"/>
+        ${slits(8, sw.w - 8, 3, 6, sw.d - 6)}
+        <circle class="led hot" filter="url(#soft)" cx="10" cy="10" r="1.5"/>
+        <text class="label" x="16" y="12" font-size="3.2" letter-spacing=".8">${sw.name}</text>
+      </g>`;
+
+      // Front Face (Port Matrix & Status LEDs)
+      svg += `<g transform="${FRONT(sw.x, sw.y + sw.d, sw.z + sw.h)}">
+        <rect class="face recess" x="4" y="4" width="${sw.w - 8}" height="${sw.h - 8}" rx="2"/>
+        <!-- QSFP-DD / OSFP 800G Optical Ports -->
+        ${Array.from({ length: isSpine ? 12 : 8 }, (_, p) => {
+          const px = 6 + p * (isSpine ? 6.8 : 7.2);
+          return `<rect class="qsfp-port txrx" id="port-${sw.id}-${p}" x="${px}" y="6" width="4.8" height="6" rx=".6"/>
+                  <circle class="led hot" filter="url(#soft)" cx="${px + 2.4}" cy="14" r=".8"/>`;
+        }).join('')}
+        <text class="scr-accent" x="6" y="${sw.h - 3}" font-size="2.6">${isSpine ? '800G OSFP' : '400G TOR'}</text>
+      </g>`;
+      svg += `</g>`;
+    });
+
+    // Central Fabric Telemetry OLED Display Console (Center Front Floor)
+    const O_X = 110, O_Y = 210, O_W = 120, O_D = 38, O_H = 16, O_T = PLZ + O_H;
+    svg += box(O_X, O_Y, PLZ, O_W, O_D, O_H, 4);
+    svg += `<g transform="${TOP(O_X, O_Y, O_T)}">
+      <rect class="face recess" x="4" y="4" width="${O_W - 8}" height="${O_D - 8}" rx="3"/>
+      <rect class="halo hot" x="6" y="6" width="${O_W - 12}" height="${O_D - 12}" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="6" y="6" width="${O_W - 12}" height="${O_D - 12}" rx="2"/>
+
+      <g clip-path="url(#net-mon-clip)" transform="translate(6 6)">
+        <text class="scr" x="4" y="8" font-size="4">FABRIC: BGP EVPN · ECMP 100%</text>
+        <text class="scr-accent" id="net-thruput-txt" x="4" y="16" font-size="4.2">TRAFFIC: 1.84 Tbps [NON-BLOCKING]</text>
+      </g>
+    </g>`;
+
+    // RoCEv2 AI Burst Simulation Button (Pill button on right floor)
+    const B_X = 245, B_Y = 215;
+    svg += `<g class="burst-btn" id="net-burst-btn">
+      ${box(B_X, B_Y, PLZ, 70, 26, 6, 3)}
+      <g transform="${TOP(B_X, B_Y, PLZ + 6)}">
+        <text class="label" x="35" y="15" font-size="3.8" text-anchor="middle" letter-spacing="1">RoCEv2 AI BURST</text>
+      </g>
+    </g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Real-Time Logic ---------- */
+    const st = {
+      selectedSw: 'spine-1',
+      burstMode: false,
+      throughputTbps: 1.84,
+      packetLoss: '0.000%',
+      latencyNs: 420,
+      tick: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function netChirp(f, dur = 0.04, type = 'sawtooth') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        osc.frequency.exponentialRampToValueAtTime(f * 1.5, t + dur);
+        g.gain.setValueAtTime(0.15, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function selectSwitch(id) {
+      st.selectedSw = id;
+      netChirp(840, 0.06);
+
+      // Highlight links connected to this switch
+      FIBER_LINKS.forEach(l => {
+        const active = l.spine === id || l.leaf === id;
+        const el = q(`#link-${l.id}`);
+        if (el) el.classList.toggle('active', active);
+        const pEl = q(`#photon-${l.id}`);
+        if (pEl) pEl.style.opacity = active ? '1' : '0.25';
+      });
+
+      render();
+    }
+
+    function triggerBurst() {
+      st.burstMode = !st.burstMode;
+      api.flash(q('#net-burst-btn'), 260);
+      netChirp(st.burstMode ? 1400 : 600, 0.2, 'square');
+
+      // Increase photon animation speeds
+      FIBER_LINKS.forEach((l, idx) => {
+        const pEl = q(`#photon-${l.id}`);
+        if (pEl) {
+          const anim = pEl.querySelector('animate');
+          if (anim) {
+            anim.setAttribute('dur', st.burstMode ? '0.25s' : `${(0.7 + (idx % 3) * 0.2).toFixed(2)}s`);
+          }
+        }
+      });
+
+      render();
+    }
+
+    // Real-Time Optical Transceiver Jitter & Packet Activity
+    st.timer = api.every(45, () => {
+      st.tick++;
+
+      // Flash QSFP ports on all switches
+      const ports = stage.querySelectorAll('.qsfp-port');
+      ports.forEach((p, idx) => {
+        const tx = Math.random() > (st.burstMode ? 0.1 : 0.45);
+        p.classList.toggle('txrx', tx);
+      });
+
+      // Micro-fluctuation in throughput telemetry
+      if (st.tick % 5 === 0) {
+        const base = st.burstMode ? 3.12 : 1.84;
+        const jitter = (Math.sin(st.tick * 0.25) * 0.08).toFixed(2);
+        st.throughputTbps = (base + parseFloat(jitter)).toFixed(2);
+        const tEl = q('#net-thruput-txt');
+        if (tEl) {
+          tEl.textContent = `TRAFFIC: ${st.throughputTbps} Tbps [${st.burstMode ? 'AI ALL-REDUCE BURST' : 'NON-BLOCKING'}]`;
+        }
+      }
+    });
+
+    function render() {
+      api.power(true);
+      const sw = ALL_SWITCHES.find(s => s.id === st.selectedSw) || ALL_SWITCHES[0];
+      api.readout(
+        st.burstMode
+          ? `RoCEv2 BURST · ${st.throughputTbps} Tbps · LOSS: ${st.packetLoss} · 420ns LATENCY`
+          : `FABRIC ONLINE · ${sw.name} · BGP EVPN SYNC · CLOS NON-BLOCKING`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      const sw = e.target.closest('.switch-box');
+      if (sw && sw.dataset.id) {
+        selectSwitch(sw.dataset.id);
+        return;
+      }
+      if (e.target.closest('#net-burst-btn')) {
+        triggerBurst();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          triggerBurst();
+          return true;
+        }
+        const num = parseInt(e.key, 10);
+        if (num >= 1 && num <= ALL_SWITCHES.length) {
+          selectSwitch(ALL_SWITCHES[num - 1].id);
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        triggerBurst();
+      }
+    };
+  }
+});
+
+
+/* Fig 7 — Audira 2.5 MVA Industrial Diesel Backup Generator & ATS */
+FIGS.push({
+  id: 'audira-generator',
+  name: 'Diesel Generator 2.5MVA',
+  hint: 'Click ATS Switch or Space to simulate mains grid failure · Click engine to inspect',
+  aria: 'Isometric 2.5 MVA industrial data center backup diesel generator with V16 engine block, overhead dual exhaust mufflers, high-output cooling radiator fan, day fuel tank, and automatic transfer switch cabinet.',
+  css: `
+    [data-fig="audira-generator"] .gen-engine { cursor:pointer; }
+    [data-fig="audira-generator"] .gen-engine:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-generator"] .ats-switch { cursor:pointer; }
+    [data-fig="audira-generator"] .ats-switch:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-generator"] .fan-blade { stroke:var(--accent-hi) !important; stroke-width:2.4px !important; stroke-linecap:round; filter:url(#soft); }
+    [data-fig="audira-generator"] .exhaust-puff { fill:none; stroke:var(--accent); stroke-width:1.8; opacity:.7; filter:url(#glow); }
+    [data-fig="audira-generator"] .fuel-line { fill:none; stroke:var(--accent-hi); stroke-width:2.2; stroke-linecap:round; stroke-dasharray:10 20; filter:url(#glow); }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [20, 20, 200], [320, 20, 200], [20, 240, 200], [320, 240, 200]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits;
+
+    const PLZ = 7;
+    let svg = `<defs>
+      <clipPath id="gen-lcd-clip"><rect x="4" y="3" width="76" height="18" rx="2"/></clipPath>
+    </defs>`;
+
+    // Heavy Concrete Skid Base Plate
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="324" height="244" rx="10"/>
+      <!-- Vibration isolation dampener mount pads -->
+      ${[40, 140, 240].map(x => `
+        <circle class="face recess" cx="${x}" cy="45" r="5"/>
+        <circle class="face recess" cx="${x}" cy="195" r="5"/>
+      `).join('')}
+      <text class="label" x="40" y="248" font-size="4" letter-spacing="1.5">EMERGENCY POWER SYSTEM · 2500 kVA V16 TURBOCHARGED STANDBY GENERATOR</text>
+    </g>`;
+
+    // DIESEL GENERATOR ASSEMBLY (X=40, Y=35, W=210, D=160)
+    const GX = 40, GY = 35;
+
+    // 1. Heavy Base Fuel Day Tank (Sub-base belly tank)
+    const TANK_H = 22;
+    svg += box(GX, GY, PLZ, 210, 160, TANK_H, 6);
+    svg += `<g transform="${FRONT(GX, GY + 160, PLZ + TANK_H)}">
+      <rect class="face recess" x="12" y="5" width="60" height="12" rx="2"/>
+      <text class="scr-accent" id="gen-fuel-txt" x="16" y="13" font-size="3.5">DIESEL: 4,200 L [94%]</text>
+      ${slits(80, 195, 3, 5, TANK_H - 5)}
+    </g>`;
+
+    // 2. High-Efficiency Radiator Cooling Fan Housing (Front of Generator)
+    const RAD_X = GX + 140, RAD_Y = GY + 10, RAD_Z = PLZ + TANK_H;
+    const RAD_W = 60, RAD_D = 140, RAD_H = 95;
+    svg += box(RAD_X, RAD_Y, RAD_Z, RAD_W, RAD_D, RAD_H, 4);
+    svg += `<g transform="${SIDE(RAD_X + RAD_W, RAD_Y + RAD_D, RAD_Z + RAD_H)}">
+      <!-- Big Radiator Fan Shroud -->
+      <circle class="face recess" cx="70" cy="48" r="42"/>
+      <circle class="led hot" id="gen-fan-hub" filter="url(#soft)" cx="70" cy="48" r="5"/>
+      <!-- Rotating Industrial Radiator Fan Blades -->
+      <g id="gen-fan-rotor">
+        <animateTransform attributeName="transform" type="rotate" from="0 70 48" to="360 70 48" dur="0.4s" repeatCount="indefinite"/>
+        ${Array.from({ length: 8 }, (_, i) => {
+          const rad = (i * 45 * Math.PI) / 180;
+          return `<line class="fan-blade" x1="70" y1="48" x2="${(70 + 36 * Math.cos(rad)).toFixed(1)}" y2="${(48 + 36 * Math.sin(rad)).toFixed(1)}"/>`;
+        }).join('')}
+      </g>
+    </g>`;
+
+    // 3. V16 Heavy Diesel Engine Block & Cylinder Heads (Center)
+    const ENG_X = GX + 25, ENG_Y = GY + 25, ENG_Z = PLZ + TANK_H;
+    const ENG_W = 110, ENG_D = 110, ENG_H = 75;
+    svg += `<g class="gen-engine" id="gen-engine-block">`;
+    svg += box(ENG_X, ENG_Y, ENG_Z, ENG_W, ENG_D, ENG_H, 8);
+    svg += `<g transform="${TOP(ENG_X, ENG_Y, ENG_Z + ENG_H)}">
+      <!-- Dual V-Bank Valve Covers -->
+      <rect class="face recess" x="8" y="12" width="${ENG_W - 16}" height="32" rx="3"/>
+      ${slits(12, ENG_W - 12, 4, 16, 40)}
+      <rect class="face recess" x="8" y="66" width="${ENG_W - 16}" height="32" rx="3"/>
+      ${slits(12, ENG_W - 12, 4, 70, 94)}
+      <text class="label" x="55" y="58" font-size="4" text-anchor="middle" letter-spacing="1">V16 DIESEL · 1500 RPM</text>
+    </g>`;
+    svg += `</g>`;
+
+    // 4. Dual Overhead Industrial Exhaust Mufflers & Rain Caps
+    [ENG_Y + 28, ENG_Y + 76].forEach((my, idx) => {
+      const MZ = ENG_Z + ENG_H;
+      // Vertical exhaust riser pipes
+      svg += box(ENG_X + 25, my, MZ, 16, 16, 28, 7);
+      // Silencer body
+      svg += box(ENG_X + 15, my - 4, MZ + 28, 36, 24, 20, 8);
+      // Exhaust Puff Animation
+      svg += `<circle class="exhaust-puff" id="gen-exhaust-${idx}" cx="${K.P(ENG_X + 25, my + 8, MZ + 55)[0]}" cy="${K.P(ENG_X + 25, my + 8, MZ + 55)[1]}" r="4">
+        <animate attributeName="r" values="3; 9; 3" dur="0.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.8; 0.1; 0.8" dur="0.8s" repeatCount="indefinite"/>
+      </circle>`;
+    });
+
+    // 5. Fuel Delivery Line from Sub-base Tank
+    const F0 = [GX + 20, GY + 140, PLZ + 10];
+    const F1 = [GX + 10, GY + 100, PLZ + 45];
+    const F2 = [ENG_X + 10, ENG_Y + 20, ENG_Z + 15];
+    const fuelD = `M ${K.P(...F0).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...F1).map(v => v.toFixed(1)).join(' ')}, ${K.P(...F2).map(v => v.toFixed(1)).join(' ')}`;
+    svg += `<path class="detail" stroke="var(--line)" stroke-width="2" d="${fuelD}"/>`;
+    svg += `<path class="fuel-line" d="${fuelD}">
+      <animate attributeName="stroke-dashoffset" from="60" to="0" dur="1s" repeatCount="indefinite"/>
+    </path>`;
+
+    // 6. Automatic Transfer Switch (ATS) Cabinet (Mounted on Right Skid)
+    const ATS_X = 265, ATS_Y = 50, ATS_Z = PLZ, ATS_W = 55, ATS_D = 130, ATS_H = 125;
+    svg += `<g class="ats-switch" id="ats-cabinet">`;
+    svg += box(ATS_X, ATS_Y, ATS_Z, ATS_W, ATS_D, ATS_H, 4);
+
+    // Front Control Panel of ATS
+    svg += `<g transform="${FRONT(ATS_X, ATS_Y + ATS_D, ATS_Z + ATS_H)}">
+      <text class="label" x="8" y="14" font-size="4.5" letter-spacing="1">ATS CONTROLLER</text>
+      <!-- Mode & Frequency LCD -->
+      <rect class="face recess" x="6" y="20" width="43" height="24" rx="2"/>
+      <rect class="halo hot" x="8" y="22" width="39" height="20" rx="1.5" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="8" y="22" width="39" height="20" rx="1.5"/>
+      <g clip-path="url(#gen-lcd-clip)" transform="translate(6 20)">
+        <text class="scr" x="4" y="8" font-size="3.2">GRID: 400V 50Hz</text>
+        <text class="scr-accent" id="ats-status-txt" x="4" y="16" font-size="3.4">STATUS: STANDBY</text>
+      </g>
+
+      <!-- Big Rotary Utility / Generator Selector -->
+      <circle class="face recess" cx="27" cy="62" r="14"/>
+      <line class="detail" id="ats-switch-arm" stroke="var(--accent-hi)" stroke-width="2.4" stroke-linecap="round" x1="27" y1="62" x2="27" y2="52"/>
+      <text class="label" x="12" y="84" font-size="3">PLN</text>
+      <text class="label" x="42" y="84" font-size="3" text-anchor="end">GEN</text>
+
+      <!-- Indicator Lights -->
+      <circle class="led hot" id="led-mains" filter="url(#soft)" cx="14" cy="94" r="2.5"/>
+      <circle class="led" id="led-gen" cx="40" cy="94" r="2.5"/>
+      ${slits(6, 49, 3, 102, ATS_H - 10)}
+    </g>`;
+    svg += `</g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Real-Time Logic ---------- */
+    const st = {
+      mainsOnline: true,
+      genRunning: false,
+      rpm: 0,
+      kwOutput: 0,
+      fuelPct: 94,
+      fanDeg: 0,
+      tick: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function genAudio(f, dur = 0.08, type = 'sawtooth') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.2, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function togglePowerFail() {
+      st.mainsOnline = !st.mainsOnline;
+      st.genRunning = !st.mainsOnline;
+
+      genAudio(st.genRunning ? 220 : 880, 0.35, 'sawtooth');
+
+      const arm = q('#ats-switch-arm');
+      if (arm) arm.setAttribute('transform', st.genRunning ? 'rotate(45 27 62)' : 'rotate(-45 27 62)');
+
+      const lMains = q('#led-mains'), lGen = q('#led-gen');
+      if (lMains) lMains.classList.toggle('hot', st.mainsOnline);
+      if (lGen) lGen.classList.toggle('hot', st.genRunning);
+
+      const stTxt = q('#ats-status-txt');
+      if (stTxt) stTxt.textContent = st.genRunning ? 'STATUS: DIESEL ON' : 'STATUS: MAINS OK';
+
+      render();
+    }
+
+    // Engine Rotation & Telemetry Vibration Loop
+    st.timer = api.every(45, () => {
+      st.tick++;
+
+      if (st.genRunning) {
+        st.rpm = 1500 + Math.floor(Math.sin(st.tick * 0.4) * 12);
+        st.kwOutput = 1840 + Math.floor(Math.sin(st.tick * 0.3) * 35);
+        st.fanDeg = (st.fanDeg + 25) % 360;
+        const fRotor = q('#gen-fan-rotor');
+        if (fRotor) fRotor.setAttribute('transform', `rotate(${st.fanDeg} 70 48)`);
+      } else {
+        st.rpm = 0;
+        st.kwOutput = 0;
+        st.fanDeg = (st.fanDeg + 6) % 360; // idle wind down
+        const fRotor = q('#gen-fan-rotor');
+        if (fRotor) fRotor.setAttribute('transform', `rotate(${st.fanDeg} 70 48)`);
+      }
+    });
+
+    function render() {
+      api.power(true);
+      api.readout(
+        st.genRunning
+          ? `GRID OUTAGE · DIESEL GEN V16 ACTIVE · ${st.rpm} RPM · 2.5 MVA LOAD: ${st.kwOutput} kW`
+          : `MAINS UTILITY ONLINE · ATS STANDBY · GEN COOLDOWN READY · FUEL: ${st.fuelPct}%`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      if (e.target.closest('#ats-cabinet') || e.target.closest('#gen-engine-block')) {
+        togglePowerFail();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          togglePowerFail();
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        togglePowerFail();
+      }
+    };
+  }
+});
+
+
+/* Fig 8 — Audira Precision CRAC / CRAH In-Row Computer Room Air Handler */
+FIGS.push({
+  id: 'audira-crac',
+  name: 'CRAC Air Handler',
+  hint: 'Click blowers to step EC fan speed · Space triggers thermal boost · Keys 1–3',
+  aria: 'Isometric enterprise downflow computer room air handler (CRAH/CRAC) unit with dual centrifugal EC fan impellers, chilled water heat exchanger coil, micro-climate ΔT controller, and subfloor plenum airflow.',
+  css: `
+    [data-fig="audira-crac"] .crac-blower { cursor:pointer; }
+    [data-fig="audira-crac"] .crac-blower:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-crac"] .crac-valve { cursor:pointer; }
+    [data-fig="audira-crac"] .crac-valve:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-crac"] .blower-fin { stroke:var(--accent-hi) !important; stroke-width:2.2px !important; stroke-linecap:round; filter:url(#soft); }
+    [data-fig="audira-crac"] .airflow-stream { fill:none; stroke:var(--accent); stroke-width:2.2; stroke-linecap:round; stroke-dasharray:12 24; filter:url(#glow); }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [30, 20, 210], [310, 20, 210], [30, 240, 210], [310, 240, 210]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits;
+
+    const PLZ = 7;
+    let svg = `<defs>
+      <clipPath id="crac-lcd-clip"><rect x="4" y="3" width="76" height="18" rx="2"/></clipPath>
+    </defs>`;
+
+    // Base Floor Plate (Perforated Cold-Aisle Floor Plenum)
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="324" height="244" rx="10"/>
+      <!-- Perforated floor grilles where cold air exhausts -->
+      ${Array.from({ length: 7 }, (_, r) =>
+        Array.from({ length: 18 }, (_, c) =>
+          `<circle class="face recess" cx="${65 + c * 12}" cy="${180 + r * 7}" r="1.4"/>`
+        ).join('')
+      ).join('')}
+      <text class="label" x="40" y="248" font-size="4" letter-spacing="1.5">SUBFLOOR AIRFLOW PLENUM · DOWNFLOW DISCHARGE 18,500 CFM</text>
+    </g>`;
+
+    // CRAC CHASSIS (Tall precision cooling tower: X=80, Y=35, W=180, D=130, H=170)
+    const CX = 80, CY = 35, CW = 180, CD = 130, CH = 170, CZ = PLZ;
+    const CT = CZ + CH, CF = CY + CD;
+
+    // Main Steel Housing
+    svg += box(CX, CY, CZ, CW, CD, CH, 6);
+
+    // Top Air Intake Louver Grille (Warm return air suction)
+    svg += box(CX + 15, CY + 15, CT, CW - 30, CD - 30, 10, 4);
+    svg += `<g transform="${TOP(CX + 15, CY + 15, CT + 10)}">
+      ${slits(10, CW - 40, 3.5, 10, CD - 40, true)}
+      <text class="label" x="18" y="18" font-size="4.2" letter-spacing="1">WARM RETURN AIR INTAKE · 24.5°C</text>
+    </g>`;
+
+    // Front Control Header (Digital Climate Microprocessor)
+    svg += `<g transform="${FRONT(CX, CF, CT)}">
+      <rect class="face recess" x="12" y="8" width="84" height="26" rx="3"/>
+      <rect class="halo hot" x="14" y="10" width="80" height="22" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="14" y="10" width="80" height="22" rx="2"/>
+      <g clip-path="url(#crac-lcd-clip)" transform="translate(14 10)">
+        <text class="scr" x="4" y="8" font-size="3.8">SUPPLY: 17.2°C · ΔT 7.3°C</text>
+        <text class="scr-accent" id="crac-cfm-txt" x="4" y="16" font-size="4">EC FANS: 85% · 18,500 CFM</text>
+      </g>
+      <text class="label" x="106" y="20" font-size="5" font-weight="500" letter-spacing="1.5">AUDIRA · CRAC-200</text>
+      <circle class="led hot" filter="url(#soft)" cx="${CW - 16}" cy="18" r="2.5"/>
+    </g>`;
+
+    // Lower Inspection Window / Viewing Bay (Dual Centrifugal EC Impeller Fans)
+    const FAN_Y = CY + CD;
+    svg += `<g transform="${FRONT(CX, FAN_Y, CZ + 70)}">
+      <rect class="face recess" x="12" y="4" width="${CW - 24}" height="58" rx="4"/>
+      <rect class="halo hot" x="16" y="8" width="${CW - 32}" height="50" rx="3" filter="url(#bloom)"/>
+      
+      <!-- Impeller 1 Housing (Left) -->
+      <circle class="face recess" cx="48" cy="33" r="24"/>
+      <circle class="led hot" filter="url(#soft)" cx="48" cy="33" r="3"/>
+      <g id="crac-rotor-1">
+        <animateTransform attributeName="transform" type="rotate" from="0 48 33" to="360 48 33" dur="0.38s" repeatCount="indefinite"/>
+        ${Array.from({ length: 8 }, (_, i) => {
+          const rad = (i * 45 * Math.PI) / 180;
+          return `<line class="blower-fin" x1="48" y1="33" x2="${(48 + 22 * Math.cos(rad)).toFixed(1)}" y2="${(33 + 22 * Math.sin(rad)).toFixed(1)}"/>`;
+        }).join('')}
+      </g>
+
+      <!-- Impeller 2 Housing (Right) -->
+      <circle class="face recess" cx="112" cy="33" r="24"/>
+      <circle class="led hot" filter="url(#soft)" cx="112" cy="33" r="3"/>
+      <g id="crac-rotor-2">
+        <animateTransform attributeName="transform" type="rotate" from="360 112 33" to="0 112 33" dur="0.42s" repeatCount="indefinite"/>
+        ${Array.from({ length: 8 }, (_, i) => {
+          const rad = (i * 45 * Math.PI) / 180;
+          return `<line class="blower-fin" x1="112" y1="33" x2="${(112 + 22 * Math.cos(rad)).toFixed(1)}" y2="${(33 + 22 * Math.sin(rad)).toFixed(1)}"/>`;
+        }).join('')}
+      </g>
+    </g>`;
+
+    // Downflow Airflow Streaming Lines emerging from base into floor
+    [CX + 35, CX + 75, CX + 115, CX + 145].forEach((ax, idx) => {
+      const A0 = [ax, CF - 4, CZ + 10];
+      const A1 = [ax, CF + 20, 10];
+      const A2 = [ax, CF + 55, 9];
+      const airD = `M ${K.P(...A0).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...A1).map(v => v.toFixed(1)).join(' ')}, ${K.P(...A2).map(v => v.toFixed(1)).join(' ')}`;
+      svg += `<path class="airflow-stream" d="${airD}">
+        <animate attributeName="stroke-dashoffset" from="60" to="0" dur="${(0.7 + idx * 0.15).toFixed(2)}s" repeatCount="indefinite"/>
+      </path>`;
+    });
+
+    // Side Chilled Water Supply & Return Actuator Valve
+    const V_X = CX - 25, V_Y = CY + 40, V_Z = PLZ;
+    svg += box(V_X, V_Y, V_Z, 20, 45, 55, 3);
+    svg += `<g class="crac-valve" id="crac-actuator-valve">
+      ${box(V_X - 6, V_Y + 12, V_Z + 55, 32, 22, 18, 6)}
+      <g transform="${TOP(V_X - 6, V_Y + 12, V_Z + 73)}">
+        <circle class="face recess" cx="16" cy="11" r="8"/>
+        <line class="detail" id="crac-valve-ptr" stroke="var(--accent-hi)" stroke-width="2" x1="16" y1="11" x2="16" y2="3"/>
+        <text class="label" x="16" y="19" font-size="2.6" text-anchor="middle">VALVE</text>
+      </g>
+    </g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Logic ---------- */
+    const st = {
+      fanSpeedPct: 85,
+      cfm: 18500,
+      supplyTemp: 17.2,
+      returnTemp: 24.5,
+      deltaT: 7.3,
+      fanDeg: 0,
+      tick: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function cracAudio(f, dur = 0.06, type = 'sine') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.18, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function stepFanSpeed() {
+      st.fanSpeedPct = st.fanSpeedPct === 100 ? 50 : st.fanSpeedPct === 85 ? 100 : 85;
+      st.cfm = Math.floor(st.fanSpeedPct * 218);
+      st.supplyTemp = (20.5 - (st.fanSpeedPct / 100) * 3.8).toFixed(1);
+      st.deltaT = (st.returnTemp - st.supplyTemp).toFixed(1);
+
+      cracAudio(500 + st.fanSpeedPct * 4, 0.08);
+
+      const cfmEl = q('#crac-cfm-txt');
+      if (cfmEl) cfmEl.textContent = `EC FANS: ${st.fanSpeedPct}% · ${st.cfm.toLocaleString()} CFM`;
+
+      render();
+    }
+
+    // Continuous Impeller Rotation & Telemetry Loop
+    st.timer = api.every(45, () => {
+      st.tick++;
+      st.fanDeg = (st.fanDeg + (st.fanSpeedPct / 100) * 28) % 360;
+
+      const r1 = q('#crac-rotor-1'), r2 = q('#crac-rotor-2');
+      if (r1) r1.setAttribute('transform', `rotate(${st.fanDeg} 48 33)`);
+      if (r2) r2.setAttribute('transform', `rotate(${-st.fanDeg * 1.1} 112 33)`);
+    });
+
+    function render() {
+      api.power(true);
+      api.readout(
+        `CRAC PRECISION COOLING · EC BLOWER: ${st.fanSpeedPct}% · ${st.cfm.toLocaleString()} CFM · SUPPLY: ${st.supplyTemp}°C · ΔT: ${st.deltaT}°C`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      stepFanSpeed();
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ' || e.key === '1') {
+          stepFanSpeed();
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        stepFanSpeed();
+      }
+    };
+  }
+});
+
+
+/* Fig 9 — Audira Clean Agent Gas Fire Suppression & VESDA Laser Detection */
+FIGS.push({
+  id: 'audira-fire',
+  name: 'Fire Suppression & VESDA',
+  hint: 'Click Manual Release or Space to simulate clean agent discharge drill · Click cylinders',
+  aria: 'Isometric clean agent gas fire suppression system with 4 high-pressure FM-200 cylinders, overhead discharge manifold nozzles, VESDA laser smoke aspirating detector, and emergency abort/release station.',
+  css: `
+    [data-fig="audira-fire"] .gas-cylinder { cursor:pointer; }
+    [data-fig="audira-fire"] .gas-cylinder:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-fire"] .pull-station { cursor:pointer; }
+    [data-fig="audira-fire"] .pull-station:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-fire"] .manifold-pipe { fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round; filter:url(#soft); }
+    [data-fig="audira-fire"] .vesda-pipe { fill:none; stroke:var(--line); stroke-width:1.6; }
+    [data-fig="audira-fire"] .vesda-laser { fill:none; stroke:var(--accent-hi); stroke-width:2; stroke-linecap:round; stroke-dasharray:8 14; filter:url(#glow); }
+    [data-fig="audira-fire"] .gas-spray { fill:none; stroke:var(--accent-hi); stroke-width:1.6; opacity:0; filter:url(#glow); transition:opacity .3s; }
+    [data-fig="audira-fire"] .gas-spray.discharging { opacity:.9; }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [20, 20, 210], [320, 20, 210], [20, 240, 210], [320, 240, 210]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits;
+
+    const PLZ = 7;
+    let svg = `<defs>
+      <clipPath id="vesda-lcd-clip"><rect x="4" y="3" width="62" height="18" rx="2"/></clipPath>
+    </defs>`;
+
+    // Base Floor Plate (Fire Protection Zone boundary)
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="324" height="244" rx="10"/>
+      <!-- Hazard zone perimeter demarcation stripes -->
+      <line class="detail" x1="40" y1="40" x2="300" y2="40"/>
+      <line class="detail" x1="40" y1="210" x2="300" y2="210"/>
+      <text class="label" x="40" y="248" font-size="4" letter-spacing="1.5">CLEAN AGENT FIRE SUPPRESSION · NOVEC 1230 / FM-200 · NON-CONDUCTIVE GAS</text>
+    </g>`;
+
+    // BACK WALL & STEEL MOUNTING RACK
+    const WX = 35, WY = 30, WZ = PLZ, WW = 12, WD = 200, WH = 175;
+    svg += box(WX, WY, WZ, WW, WD, WH, 4);
+    svg += `<g transform="${SIDE(WX + WW, WY + WD, WZ + WH)}">
+      ${slits(16, WD - 16, 4, 15, WH - 15)}
+      <text class="label" x="20" y="45" font-size="5" letter-spacing="1">ZONE 01 · CLEAN AGENT BANK</text>
+    </g>`;
+
+    // 4 HIGH-PRESSURE GAS CYLINDERS (Mounted along back wall)
+    // Cylinders: X=60 to 180, Y=65 to 185
+    const CYL_R = 14, CYL_H = 100, CYL_Z = PLZ + 6;
+    [65, 105, 145, 185].forEach((cy, idx) => {
+      const cx = WX + WW + 14;
+      svg += `<g class="gas-cylinder" id="cyl-${idx}">`;
+      // Cylinder Base Platform
+      svg += box(cx, cy, CYL_Z, 28, 28, CYL_H, 14);
+
+      // Top Dome & Brass Discharge Solenoid Valve Head
+      const TOP_Z = CYL_Z + CYL_H;
+      svg += box(cx + 4, cy + 4, TOP_Z, 20, 20, 16, 8);
+      svg += `<g transform="${TOP(cx + 4, cy + 4, TOP_Z + 16)}">
+        <!-- Pressure Gauge Manometer -->
+        <circle class="face recess" cx="10" cy="10" r="7"/>
+        <line class="detail" stroke="var(--accent-hi)" stroke-width="1.8" x1="10" y1="10" x2="10" y2="4"/>
+        <text class="label" x="10" y="18" font-size="2.4" text-anchor="middle">50 BAR</text>
+      </g>`;
+      // Front Cylinder Label
+      svg += `<g transform="${SIDE(cx + 28, cy + 28, TOP_Z)}">
+        <text class="label" x="10" y="35" font-size="3.5" letter-spacing="1">FM-200 · 180L</text>
+        <circle class="led hot" filter="url(#soft)" cx="14" cy="45" r="1.5"/>
+      </g>`;
+      svg += `</g>`;
+
+      // High-pressure flexible discharge hose to overhead manifold
+      const H_TOP = [cx + 14, cy + 14, TOP_Z + 16];
+      const H_MID = [cx + 35, cy + 14, TOP_Z + 35];
+      const H_MANI = [cx + 60, cy + 14, PLZ + 140];
+      const hoseD = `M ${K.P(...H_TOP).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...H_MID).map(v => v.toFixed(1)).join(' ')}, ${K.P(...H_MANI).map(v => v.toFixed(1)).join(' ')}`;
+      svg += `<path class="detail" stroke="var(--accent-hi)" stroke-width="2.2" d="${hoseD}"/>`;
+    });
+
+    // OVERHEAD DISCHARGE STEEL MANIFOLD PIPE (Z = PLZ + 140)
+    const MANI_X = WX + WW + 74, MANI_Y0 = 55, MANI_Y1 = 195, MANI_Z = PLZ + 140;
+    const maniD = `M ${K.P(MANI_X, MANI_Y0, MANI_Z).map(v => v.toFixed(1)).join(' ')} L ${K.P(MANI_X, MANI_Y1, MANI_Z).map(v => v.toFixed(1)).join(' ')}`;
+    svg += `<path class="manifold-pipe" d="${maniD}"/>`;
+
+    // 3 Ceiling Overhead Discharge Nozzles spraying downward
+    [80, 125, 170].forEach((ny, idx) => {
+      // Nozzle drop tube
+      const N0 = [MANI_X, ny, MANI_Z];
+      const N1 = [MANI_X + 30, ny, MANI_Z - 20];
+      const nozD = `M ${K.P(...N0).map(v => v.toFixed(1)).join(' ')} L ${K.P(...N1).map(v => v.toFixed(1)).join(' ')}`;
+      svg += `<path class="manifold-pipe" stroke-width="2" d="${nozD}"/>`;
+
+      // Conical Gas Spray Cloud (Activated during drill)
+      const S_TIP = N1;
+      const sprayPts = [
+        S_TIP,
+        [MANI_X + 10, ny - 25, PLZ + 10],
+        [MANI_X + 50, ny + 25, PLZ + 10],
+        S_TIP
+      ];
+      svg += `<path class="gas-spray" id="spray-${idx}" d="${path(sprayPts)}Z"/>`;
+    });
+
+    // VESDA LASER SMOKE ASPIRATING DETECTION MODULE (Mounted on wall left)
+    const VX = WX + WW + 8, VY = 25, VZ = PLZ + 105, VW = 32, VD = 28, VH = 40;
+    svg += box(VX, VY, VZ, VW, VD, VH, 4);
+    svg += `<g transform="${FRONT(VX, VY + VD, VZ + VH)}">
+      <rect class="face recess" x="3" y="4" width="${VW - 6}" height="${VH - 8}" rx="2"/>
+      <circle class="led hot" filter="url(#soft)" cx="10" cy="12" r="2"/>
+      <text class="label" x="15" y="14" font-size="3.2">VESDA VLI</text>
+      <!-- Aspirating Smoke Obscuration Display -->
+      <g clip-path="url(#vesda-lcd-clip)" transform="translate(3 18)">
+        <text class="scr-accent" id="vesda-ppm-txt" x="2" y="8" font-size="2.8">0.000% OBS/M</text>
+        <text class="scr" x="2" y="14" font-size="2.6">LASER: ARMED</text>
+      </g>
+    </g>`;
+
+    // Sampling Air Pipe running across room with animated photon laser sampling stream
+    const S0 = [VX + 16, VY + 10, VZ + VH - 5];
+    const S1 = [VX + 120, VY + 10, VZ + VH + 10];
+    const S2 = [VX + 180, VY + 140, VZ + VH + 5];
+    const sampD = `M ${K.P(...S0).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...S1).map(v => v.toFixed(1)).join(' ')}, ${K.P(...S2).map(v => v.toFixed(1)).join(' ')}`;
+    svg += `<path class="vesda-pipe" d="${sampD}"/>`;
+    svg += `<path class="vesda-laser" d="${sampD}">
+      <animate attributeName="stroke-dashoffset" from="60" to="0" dur="1.2s" repeatCount="indefinite"/>
+    </path>`;
+
+    // EMERGENCY MANUAL PULL / ABORT STATION (Front Floor Pedestal)
+    const PULL_X = 220, PULL_Y = 175, PULL_Z = PLZ, PULL_W = 38, PULL_D = 28, PULL_H = 55;
+    svg += `<g class="pull-station" id="fire-pull-station">`;
+    svg += box(PULL_X, PULL_Y, PULL_Z, PULL_W, PULL_D, PULL_H, 3);
+    svg += `<g transform="${FRONT(PULL_X, PULL_Y + PULL_D, PULL_Z + PULL_H)}">
+      <rect class="face recess" x="4" y="6" width="${PULL_W - 8}" height="${PULL_H - 12}" rx="2"/>
+      <!-- Dual Buttons: Abort and Manual Release -->
+      <circle class="led hot" id="fire-strobe-led" filter="url(#glow)" cx="19" cy="16" r="3.5">
+        <animate attributeName="r" values="2.5; 4.5; 2.5" dur="1s" repeatCount="indefinite"/>
+      </circle>
+      <rect class="face glass hot" x="8" y="24" width="22" height="12" rx="2"/>
+      <text class="scr-accent" x="19" y="32" font-size="2.6" text-anchor="middle">MANUAL</text>
+      <text class="label" x="19" y="44" font-size="2.8" text-anchor="middle">RELEASE</text>
+    </g>`;
+    svg += `</g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Logic ---------- */
+    const st = {
+      discharging: false,
+      countdown: 30,
+      smokePpm: 0.000,
+      pressureBar: 50,
+      tick: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function fireAudio(f, dur = 0.08, type = 'sawtooth') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.25, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function triggerDischarge() {
+      st.discharging = !st.discharging;
+      fireAudio(st.discharging ? 1600 : 400, 0.35, 'square');
+
+      const sprays = stage.querySelectorAll('.gas-spray');
+      sprays.forEach(s => s.classList.toggle('discharging', st.discharging));
+
+      render();
+    }
+
+    // VESDA Air Sampling Jitter & Countdown Loop
+    st.timer = api.every(50, () => {
+      st.tick++;
+
+      if (st.discharging) {
+        st.smokePpm = (0.045 + Math.sin(st.tick * 0.3) * 0.01).toFixed(3);
+        const pTxt = q('#vesda-ppm-txt');
+        if (pTxt) pTxt.textContent = `ALERT: ${st.smokePpm}%`;
+      } else {
+        st.smokePpm = (0.001 + Math.abs(Math.sin(st.tick * 0.1)) * 0.002).toFixed(3);
+        const pTxt = q('#vesda-ppm-txt');
+        if (pTxt && st.tick % 8 === 0) pTxt.textContent = `${st.smokePpm}% OBS/M`;
+      }
+    });
+
+    function render() {
+      api.power(true);
+      api.readout(
+        st.discharging
+          ? `FIRE ALARM DISCHARGE ACTIVE · FM-200 RELEASED (50 BAR) · HALON REPLACEMENT`
+          : `FIRE SYSTEM ARMED · VESDA LASER SENSORS OK (0 PPM) · 4x CYLINDERS 50 BAR`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      if (e.target.closest('#fire-pull-station') || e.target.closest('.gas-cylinder')) {
+        triggerDischarge();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ' || e.key === '1') {
+          triggerDischarge();
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        triggerDischarge();
+      }
+    };
+  }
+});
+
+
+/* Fig 10 — Audira Smart PDU & Static Transfer Switch (STS) Power Distribution */
+FIGS.push({
+  id: 'audira-pdu',
+  name: 'Smart PDU & STS',
+  hint: 'Click circuit breakers to toggle branch feeds · Space triggers overload test · Keys 1–6',
+  aria: 'Isometric enterprise power distribution unit (PDU) and static transfer switch cabinet with internal 3-phase isolation transformer, branch circuit breaker matrix, and power quality analyzer display.',
+  css: `
+    [data-fig="audira-pdu"] .pdu-breaker { cursor:pointer; }
+    [data-fig="audira-pdu"] .pdu-breaker:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-pdu"] .pdu-breaker.tripped .face { opacity:.35; }
+    [data-fig="audira-pdu"] .copper-coil { fill:none; stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; filter:url(#soft); }
+    [data-fig="audira-pdu"] .bus-conduit { fill:none; stroke:var(--accent-hi); stroke-width:2.5; stroke-dasharray:10 20; filter:url(#glow); }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [30, 20, 200], [310, 20, 200], [30, 240, 200], [310, 240, 200]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits;
+
+    const PLZ = 7;
+    let svg = `<defs>
+      <clipPath id="pdu-lcd-clip"><rect x="4" y="3" width="82" height="24" rx="2"/></clipPath>
+    </defs>`;
+
+    // Base Floor Plate (Electrical room demarcations)
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="324" height="244" rx="10"/>
+      <!-- Electrical rubber safety matting outline -->
+      <rect class="face recess" x="45" y="160" width="250" height="75" rx="6"/>
+      <text class="label" x="50" y="248" font-size="4" letter-spacing="1.5">ELECTRICAL DISTRIBUTION · 3-PHASE 400V / 230V · BRANCH CIRCUIT MONITORING</text>
+    </g>`;
+
+    // PDU CABINET CHASSIS (X=70, Y=35, W=200, D=135, H=160)
+    const PX = 70, PY = 35, PW = 200, PD = 135, PH = 160, PZ = PLZ;
+    const PT = PZ + PH, PF = PY + PD;
+
+    // Outer Cabinet Housing
+    svg += box(PX, PY, PZ, PW, PD, PH, 6);
+
+    // Top Overhead Cable Busway Duct
+    svg += box(PX - 15, PY + 25, PT, PW + 30, 32, 10, 3);
+    svg += `<g transform="${TOP(PX - 15, PY + 25, PT + 10)}">
+      ${slits(6, PW + 24, 4, 4, 28, true)}
+      <text class="label" x="14" y="18" font-size="4" letter-spacing="1">OVERHEAD 400A BUSWAY RUNNER</text>
+    </g>`;
+
+    // Upper Front Door Panel (Power Quality Meter LCD & Main Breaker)
+    svg += `<g transform="${FRONT(PX, PF, PT)}">
+      <!-- Digital Power Quality Analyzer -->
+      <rect class="face recess" x="14" y="8" width="90" height="32" rx="3"/>
+      <rect class="halo hot" x="16" y="10" width="86" height="28" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="16" y="10" width="86" height="28" rx="2"/>
+
+      <g clip-path="url(#pdu-lcd-clip)" transform="translate(16 10)">
+        <text class="scr" x="4" y="8" font-size="3.5">PHASE A: 231V · 284A</text>
+        <text class="scr" x="4" y="14" font-size="3.5">PHASE B: 230V · 276A</text>
+        <text class="scr-accent" id="pdu-load-txt" x="4" y="21" font-size="3.8">TOTAL: 194 kW [PF 0.99]</text>
+      </g>
+
+      <text class="label" x="115" y="18" font-size="5" font-weight="500" letter-spacing="1.5">AUDIRA · SMART PDU</text>
+      <circle class="led hot" filter="url(#soft)" cx="${PW - 16}" cy="16" r="2.5"/>
+
+      <!-- Main Input 400A Molded Case Circuit Breaker (MCCB) -->
+      <rect class="face recess" x="115" y="26" width="60" height="18" rx="2"/>
+      <line class="detail" id="pdu-main-arm" stroke="var(--accent-hi)" stroke-width="2.5" stroke-linecap="round" x1="130" y1="35" x2="160" y2="35"/>
+      <text class="label" x="145" y="42" font-size="2.8" text-anchor="middle">MAIN 400A</text>
+    </g>`;
+
+    // Lower Front Bay: 18 Miniature Branch Circuit Breakers (3-Phase Matrix)
+    const B_Y = PF;
+    svg += `<g transform="${FRONT(PX, B_Y, PZ + 95)}">
+      <rect class="face recess" x="10" y="4" width="${PW - 20}" height="84" rx="4"/>
+      <text class="label" x="14" y="12" font-size="3.2" letter-spacing=".8">BRANCH CIRCUIT DISTRIBUTION PANEL (42 POLE)</text>
+      
+      <!-- 3 Rows of 6 Breakers -->
+      ${[0, 1, 2].map(r => `
+        <text class="label" x="14" y="${28 + r * 22}" font-size="3">PH-${String.fromCharCode(65 + r)}</text>
+        ${Array.from({ length: 6 }, (_, c) => {
+          const bx = 34 + c * 24;
+          const by = 18 + r * 22;
+          const bId = r * 6 + c;
+          return `<g class="pdu-breaker" id="breaker-${bId}" data-id="${bId}">
+            <rect class="face" x="${bx}" y="${by}" width="18" height="15" rx="1.5"/>
+            <circle class="led hot breaker-led" id="bled-${bId}" filter="url(#soft)" cx="${bx + 9}" cy="${by + 5}" r="1.3"/>
+            <text class="label" x="${bx + 9}" y="${by + 13}" font-size="2.2" text-anchor="middle">${c + 1}</text>
+          </g>`;
+        }).join('')}
+      `).join('')}
+    </g>`;
+
+    // Sub-feed bus conduit cables running out to floor
+    const C0 = [PX + 30, PF - 4, PZ + 10];
+    const C1 = [PX + 30, PF + 25, 10];
+    const C2 = [PX + 120, PF + 60, 9];
+    const busD = `M ${K.P(...C0).map(v => v.toFixed(1)).join(' ')} Q ${K.P(...C1).map(v => v.toFixed(1)).join(' ')}, ${K.P(...C2).map(v => v.toFixed(1)).join(' ')}`;
+    svg += `<path class="detail" stroke="var(--line)" stroke-width="2.5" d="${busD}"/>`;
+    svg += `<path class="bus-conduit" d="${busD}">
+      <animate attributeName="stroke-dashoffset" from="60" to="0" dur="0.9s" repeatCount="indefinite"/>
+    </path>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Logic ---------- */
+    const st = {
+      breakers: Array(18).fill(true),
+      overloaded: false,
+      totalKw: 194,
+      totalAmps: 284,
+      tick: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function pduAudio(f, dur = 0.05, type = 'sine') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.2, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function toggleBreaker(id) {
+      st.breakers[id] = !st.breakers[id];
+      pduAudio(st.breakers[id] ? 720 : 280, 0.06);
+
+      const bEl = q(`#breaker-${id}`);
+      if (bEl) bEl.classList.toggle('tripped', !st.breakers[id]);
+      const lEl = q(`#bled-${id}`);
+      if (lEl) lEl.classList.toggle('hot', st.breakers[id]);
+
+      recalcPower();
+    }
+
+    function recalcPower() {
+      const activeCount = st.breakers.filter(Boolean).length;
+      st.totalKw = Math.floor(activeCount * 11.2);
+      st.totalAmps = Math.floor(activeCount * 16.4);
+
+      const lTxt = q('#pdu-load-txt');
+      if (lTxt) lTxt.textContent = `TOTAL: ${st.totalKw} kW [PF 0.99]`;
+
+      render();
+    }
+
+    function triggerOverload() {
+      st.overloaded = !st.overloaded;
+      pduAudio(st.overloaded ? 1100 : 600, 0.25, 'sawtooth');
+
+      // Trip half the breakers if overloaded
+      st.breakers.forEach((b, idx) => {
+        if (st.overloaded && idx % 2 === 1) {
+          st.breakers[idx] = false;
+          const bEl = q(`#breaker-${idx}`);
+          if (bEl) bEl.classList.add('tripped');
+          const lEl = q(`#bled-${idx}`);
+          if (lEl) lEl.classList.remove('hot');
+        } else if (!st.overloaded) {
+          st.breakers[idx] = true;
+          const bEl = q(`#breaker-${idx}`);
+          if (bEl) bEl.classList.remove('tripped');
+          const lEl = q(`#bled-${idx}`);
+          if (lEl) lEl.classList.add('hot');
+        }
+      });
+
+      recalcPower();
+    }
+
+    // Power Micro-Jitter Loop
+    st.timer = api.every(50, () => {
+      st.tick++;
+      if (st.tick % 6 === 0) {
+        const jitter = (Math.sin(st.tick * 0.2) * 1.5).toFixed(0);
+        const lTxt = q('#pdu-load-txt');
+        if (lTxt) lTxt.textContent = `TOTAL: ${st.totalKw + parseInt(jitter, 10)} kW [PF 0.99]`;
+      }
+    });
+
+    function render() {
+      api.power(true);
+      const active = st.breakers.filter(Boolean).length;
+      api.readout(
+        st.overloaded
+          ? `PDU OVERLOAD TRIP · ${active}/18 BREAKERS CLOSED · LOAD: ${st.totalKw} kW · 3-PHASE OK`
+          : `SMART PDU ONLINE · ${active}/18 BRANCHES ACTIVE · ${st.totalKw} kW · 400V 50Hz`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      const brk = e.target.closest('.pdu-breaker');
+      if (brk && brk.dataset.id) {
+        toggleBreaker(+brk.dataset.id);
+        return;
+      }
+      if (e.target.closest('#pdu-main-arm')) {
+        triggerOverload();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          triggerOverload();
+          return true;
+        }
+        const num = parseInt(e.key, 10);
+        if (num >= 1 && num <= 6) {
+          toggleBreaker(num - 1);
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        triggerOverload();
+      }
+    };
+  }
+});
+
+
+/* Fig 11 — Audira Automated Robotic Tape Library & LTO Cold Archive Vault */
+FIGS.push({
+  id: 'audira-tape',
+  name: 'Robotic Tape Library',
+  hint: 'Click tape slots to pick cartridge · Space triggers robot inventory sweep · Keys 1–4',
+  aria: 'Isometric enterprise robotic tape library archive vault with dual motorized picker robotics moving on precision rails, hundreds of LTO-9 tape slots, barcode laser scanner, and high-speed tape drive bays.',
+  css: `
+    [data-fig="audira-tape"] .tape-slot { cursor:pointer; }
+    [data-fig="audira-tape"] .tape-slot:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-tape"] .tape-drive { cursor:pointer; }
+    [data-fig="audira-tape"] .tape-drive:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-tape"] .robot-laser { fill:none; stroke:var(--accent); stroke-width:1.8; stroke-dasharray:8 12; opacity:.9; filter:url(#glow); }
+    [data-fig="audira-tape"] .cartridge { fill:var(--deck); stroke:var(--line); stroke-width:.8; }
+    [data-fig="audira-tape"] .cartridge.loaded { fill:var(--accent-dim); stroke:var(--accent); }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [20, 20, 210], [320, 20, 210], [20, 240, 210], [320, 240, 210]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits;
+
+    const PLZ = 7;
+    let svg = `<defs>
+      <clipPath id="tape-lcd-clip"><rect x="4" y="3" width="76" height="18" rx="2"/></clipPath>
+    </defs>`;
+
+    // Base Floor Plate (Clean Storage Archive Room)
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="324" height="244" rx="10"/>
+      <text class="label" x="40" y="248" font-size="4" letter-spacing="1.5">COLD STORAGE ARCHIVE · AUTOMATED LTO-9 ROBOTIC TAPE LIBRARY (18 TB / CART)</text>
+    </g>`;
+
+    // TAPE LIBRARY HIGH CABINET (X=50, Y=35, W=240, D=140, H=170)
+    const TX = 50, TY = 35, TW = 240, TD = 140, TH = 170, TZ = PLZ;
+    const TT = TZ + TH, TF = TY + TD;
+
+    // Outer Cabinet Housing
+    svg += box(TX, TY, TZ, TW, TD, TH, 6);
+
+    // Top Header (Status Display & Air Filtration)
+    svg += `<g transform="${FRONT(TX, TF, TT)}">
+      <rect class="face recess" x="14" y="6" width="80" height="24" rx="3"/>
+      <rect class="halo hot" x="16" y="8" width="76" height="20" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="16" y="8" width="76" height="20" rx="2"/>
+
+      <g clip-path="url(#tape-lcd-clip)" transform="translate(16 8)">
+        <text class="scr" x="4" y="8" font-size="3.5">LTO-9 VAULT · 18TB CARTS</text>
+        <text class="scr-accent" id="tape-status-txt" x="4" y="16" font-size="3.8">ROBOT: READY [SLOT A-04]</text>
+      </g>
+      <text class="label" x="104" y="18" font-size="5" font-weight="500" letter-spacing="1.5">AUDIRA · TAPE-VAULT</text>
+      <circle class="led hot" filter="url(#soft)" cx="${TW - 16}" cy="16" r="2.5"/>
+    </g>`;
+
+    // Central Glass Viewing Window (Shows the Cartridge Grid & Robotic Picker)
+    const WIN_Y = TF;
+    svg += `<g transform="${FRONT(TX, WIN_Y, TZ + 140)}">
+      <rect class="face recess" x="12" y="4" width="${TW - 24}" height="130" rx="4"/>
+      <rect class="face glass" x="14" y="6" width="${TW - 28}" height="126" rx="3"/>
+
+      <!-- Matrix of LTO Tape Cartridge Cells (6 Rows x 12 Cols) -->
+      ${Array.from({ length: 6 }, (_, r) =>
+        Array.from({ length: 12 }, (_, c) => {
+          const sx = 20 + c * 15.5;
+          const sy = 14 + r * 16;
+          const sId = `slot-${r}-${c}`;
+          return `<rect class="cartridge tape-slot" id="${sId}" data-row="${r}" data-col="${c}" x="${sx}" y="${sy}" width="12" height="11" rx="1"/>
+                  <line class="detail" x1="${sx + 2}" y1="${sy + 5}" x2="${sx + 10}" y2="${sy + 5}"/>`;
+        }).join('')
+      ).join('')}
+
+      <!-- Vertical & Horizontal Precision Guide Rails for Robot -->
+      <line class="detail" stroke="var(--line)" stroke-width="2" x1="16" y1="112" x2="${TW - 16}" y2="112"/>
+      <line class="detail" stroke="var(--line)" stroke-width="2" id="robot-v-rail" x1="110" y1="12" x2="110" y2="112"/>
+
+      <!-- Motorized Robotic Picker Head Carriage -->
+      <g id="tape-robot-picker" transform="translate(100 45)">
+        <rect class="face" x="0" y="0" width="20" height="16" rx="2" fill="var(--body)" stroke="var(--accent-hi)" stroke-width="1.2"/>
+        <circle class="led hot" filter="url(#soft)" cx="10" cy="8" r="2"/>
+        <!-- Optical Barcode Laser Scanner Beam -->
+        <line class="robot-laser" x1="10" y1="8" x2="10" y2="28">
+          <animate attributeName="stroke-dashoffset" from="30" to="0" dur="0.6s" repeatCount="indefinite"/>
+        </line>
+      </g>
+    </g>`;
+
+    // High-Speed LTO-9 Tape Drive Bays (Bottom Right Bay)
+    const DRV_X = TX + TW - 65, DRV_Y = TF, DRV_Z = TZ + 6;
+    svg += `<g class="tape-drive" id="tape-drive-bay">`;
+    svg += box(DRV_X, DRV_Y, DRV_Z, 55, 30, 24, 2);
+    svg += `<g transform="${FRONT(DRV_X, DRV_Y + 30, DRV_Z + 24)}">
+      <rect class="face recess" x="4" y="4" width="47" height="16" rx="2"/>
+      <circle class="led hot" filter="url(#soft)" cx="10" cy="12" r="2"/>
+      <!-- Dual Tape Spools -->
+      <circle class="face recess" cx="24" cy="12" r="5"/>
+      <circle class="face recess" cx="38" cy="12" r="5"/>
+      <text class="label" x="4" y="22" font-size="2.6">DRIVE 01: MOUNTED</text>
+    </g>`;
+    svg += `</g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Logic ---------- */
+    const st = {
+      targetRow: 2,
+      targetCol: 5,
+      robotX: 100,
+      robotY: 45,
+      sweeping: false,
+      tick: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function tapeAudio(f, dur = 0.05, type = 'sine') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.18, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function moveRobotTo(row, col) {
+      st.targetRow = row;
+      st.targetCol = col;
+      const targetX = 20 + col * 15.5 - 4;
+      const targetY = 14 + row * 16 - 2;
+
+      tapeAudio(640, 0.08);
+
+      const picker = q('#tape-robot-picker');
+      if (picker) {
+        picker.style.transition = 'transform .4s cubic-bezier(.2,.8,.3,1)';
+        picker.setAttribute('transform', `translate(${targetX} ${targetY})`);
+      }
+
+      const vRail = q('#robot-v-rail');
+      if (vRail) {
+        vRail.setAttribute('x1', targetX + 10);
+        vRail.setAttribute('x2', targetX + 10);
+      }
+
+      const rowName = String.fromCharCode(65 + row);
+      const colNum = String(col + 1).padStart(2, '0');
+      const stTxt = q('#tape-status-txt');
+      if (stTxt) stTxt.textContent = `ROBOT: PICKED [${rowName}-${colNum}]`;
+
+      render();
+    }
+
+    function triggerSweep() {
+      st.sweeping = !st.sweeping;
+      tapeAudio(st.sweeping ? 1200 : 480, 0.2);
+
+      let step = 0;
+      const sweepTimer = setInterval(() => {
+        if (step >= 6) {
+          clearInterval(sweepTimer);
+          return;
+        }
+        moveRobotTo(step % 6, (step * 2) % 12);
+        step++;
+      }, 450);
+    }
+
+    // Gentle robot laser jitter
+    st.timer = api.every(60, () => {
+      st.tick++;
+    });
+
+    function render() {
+      api.power(true);
+      const rName = String.fromCharCode(65 + st.targetRow);
+      const cNum = String(st.targetCol + 1).padStart(2, '0');
+      api.readout(
+        `LTO TAPE ROBOT · ACTIVE SLOT: ${rName}-${cNum} · 18 TB CARTRIDGE · 480 MB/s TRANSFER`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      const slot = e.target.closest('.tape-slot');
+      if (slot && slot.dataset.row) {
+        moveRobotTo(+slot.dataset.row, +slot.dataset.col);
+        return;
+      }
+      if (e.target.closest('#tape-drive-bay')) {
+        triggerSweep();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          triggerSweep();
+          return true;
+        }
+        const num = parseInt(e.key, 10);
+        if (num >= 1 && num <= 6) {
+          moveRobotTo(num - 1, (num * 2) % 12);
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        triggerSweep();
+      }
+    };
+  }
+});
+
+
+/* Fig 12 — Audira Cold Aisle Containment Pod & Biometric Sliding Airflow Corridor */
+FIGS.push({
+  id: 'audira-containment',
+  name: 'Cold Aisle Containment',
+  hint: 'Click sliding doors or Space to toggle motorized pod doors · Click aisle floor',
+  aria: 'Isometric dual-row cold aisle containment pod with opposing 42U server racks, transparent poly-carbonate ceiling roof canopy, motorized optical sliding doors, and subfloor cold airflow circulation.',
+  css: `
+    [data-fig="audira-containment"] .pod-door { cursor:pointer; }
+    [data-fig="audira-containment"] .pod-door:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-containment"] .sliding-glass { fill:var(--accent-dim); stroke:var(--accent-hi); stroke-width:1.2; opacity:.75; transition:transform .35s cubic-bezier(.2,.8,.3,1); }
+    [data-fig="audira-containment"] .canopy-roof { fill:var(--glass); stroke:var(--accent); stroke-width:1; opacity:.6; filter:url(#soft); }
+    [data-fig="audira-containment"] .aisle-stream { fill:none; stroke:var(--accent-hi); stroke-width:1.8; stroke-dasharray:8 18; filter:url(#glow); }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [20, 20, 210], [320, 20, 210], [20, 240, 210], [320, 240, 210]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits;
+
+    const PLZ = 7;
+    let svg = `<defs>
+      <clipPath id="pod-lcd-clip"><rect x="4" y="3" width="76" height="18" rx="2"/></clipPath>
+    </defs>`;
+
+    // Base Floor Plate (Contained Room Perimeter)
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="8" y="8" width="324" height="244" rx="10"/>
+      <!-- Perforated Cold Aisle Center Floor Tiles -->
+      ${Array.from({ length: 6 }, (_, r) =>
+        Array.from({ length: 8 }, (_, c) =>
+          `<circle class="face recess" cx="${125 + c * 12}" cy="${55 + r * 25}" r="1.5"/>`
+        ).join('')
+      ).join('')}
+      <text class="label" x="35" y="248" font-size="4" letter-spacing="1.5">CONTAINMENT POD · SEPARATED COLD AISLE (18.0°C) VS EXHAUST HOT AISLE (32.5°C)</text>
+    </g>`;
+
+    // DUAL-ROW OPPOSING RACKS
+    // Row 1 (Left Rack Bank): X=45, Y=40, W=70, D=150, H=160
+    const R1_X = 45, R1_Y = 40, RW = 70, RD = 150, RH = 160, RZ = PLZ;
+    svg += box(R1_X, R1_Y, RZ, RW, RD, RH, 4);
+    svg += `<g transform="${SIDE(R1_X + RW, R1_Y + RD, RZ + RH)}">
+      <!-- Inward facing rack mesh doors facing cold corridor -->
+      ${slits(12, RD - 12, 3.2, 10, RH - 15)}
+      <text class="label" x="18" y="40" font-size="4.5">ROW A · SERVER NODES</text>
+    </g>`;
+
+    // Row 2 (Right Rack Bank): X=225, Y=40, W=70, D=150, H=160
+    const R2_X = 225, R2_Y = 40;
+    svg += box(R2_X, R2_Y, RZ, RW, RD, RH, 4);
+    svg += `<g transform="${SIDE(R2_X, R2_Y + RD, RZ + RH)}">
+      ${slits(12, RD - 12, 3.2, 10, RH - 15)}
+      <text class="label" x="18" y="40" font-size="4.5">ROW B · AI CLUSTERS</text>
+    </g>`;
+
+    // CENTER COLD AISLE (Corridor between Row 1 and Row 2): X=115 to 225 (Width 110)
+    const CORR_X = R1_X + RW, CORR_Y = R1_Y, CORR_W = R2_X - (R1_X + RW), CORR_D = RD;
+
+    // Overhead Clear Polycarbonate Canopy Roof (Traps cold air)
+    const ROOF_Z = RZ + RH;
+    svg += `<g class="canopy-roof">`;
+    svg += box(CORR_X, CORR_Y, ROOF_Z, CORR_W, CORR_D, 6, 2);
+    svg += `<g transform="${TOP(CORR_X, CORR_Y, ROOF_Z + 6)}">
+      ${[25, 60, 95, 130].map(y => `<line class="detail" stroke="var(--accent)" stroke-width="1.2" x1="4" y1="${y}" x2="${CORR_W - 4}" y2="${y}"/>`).join('')}
+      <text class="label" x="55" y="75" font-size="4" text-anchor="middle" letter-spacing="1">CLEAR CANOPY ROOF</text>
+    </g>`;
+    svg += `</g>`;
+
+    // Front Motorized Optical Sliding Doors (Entrance to Pod)
+    const DOOR_Y = CORR_Y + CORR_D;
+    svg += `<g class="pod-door" id="pod-door-assembly">`;
+    // Door outer arch frame
+    svg += box(CORR_X, DOOR_Y, RZ, CORR_W, 14, RH, 4);
+
+    // Door Header with Status Display & Biometric Reader
+    svg += `<g transform="${FRONT(CORR_X, DOOR_Y + 14, RZ + RH)}">
+      <rect class="face recess" x="12" y="6" width="${CORR_W - 24}" height="22" rx="3"/>
+      <rect class="halo hot" x="14" y="8" width="${CORR_W - 28}" height="18" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="14" y="8" width="${CORR_W - 28}" height="18" rx="2"/>
+
+      <g clip-path="url(#pod-lcd-clip)" transform="translate(14 8)">
+        <text class="scr" x="4" y="8" font-size="3.5">AISLE 01 · CONTAINED</text>
+        <text class="scr-accent" id="pod-status-txt" x="4" y="15" font-size="3.8">DOORS: SEALED [18.0°C]</text>
+      </g>
+      <!-- Biometric scanner light -->
+      <circle class="led hot" id="door-bio-led" filter="url(#soft)" cx="${CORR_W - 20}" cy="17" r="2.5"/>
+    </g>`;
+
+    // Left and Right Motorized Optical Sliding Glass Panels
+    const GLASS_H = RH - 35, GLASS_W = (CORR_W - 20) / 2;
+    svg += `<g transform="${FRONT(CORR_X, DOOR_Y + 10, RZ + GLASS_H + 4)}">
+      <rect class="sliding-glass" id="glass-left" x="10" y="4" width="${GLASS_W}" height="${GLASS_H}" rx="2"/>
+      <rect class="sliding-glass" id="glass-right" x="${10 + GLASS_W}" y="4" width="${GLASS_W}" height="${GLASS_H}" rx="2"/>
+    </g>`;
+    svg += `</g>`; // end pod-door
+
+    // Rising Cold Airflow Particle Streams inside the contained corridor
+    [CORR_X + 25, CORR_X + 55, CORR_X + 85].forEach((ax, idx) => {
+      const A0 = [ax, CORR_Y + 30 + idx * 30, PLZ + 6];
+      const A1 = [ax, CORR_Y + 30 + idx * 30, PLZ + 80];
+      const A2 = [ax, CORR_Y + 30 + idx * 30, PLZ + 145];
+      const airD = `M ${K.P(...A0).map(v => v.toFixed(1)).join(' ')} L ${K.P(...A2).map(v => v.toFixed(1)).join(' ')}`;
+      svg += `<path class="aisle-stream" d="${airD}">
+        <animate attributeName="stroke-dashoffset" from="60" to="0" dur="${(0.9 + idx * 0.2).toFixed(2)}s" repeatCount="indefinite"/>
+      </path>`;
+    });
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Logic ---------- */
+    const st = {
+      doorsOpen: false,
+      coldTemp: 18.0,
+      hotTemp: 32.5,
+      deltaT: 14.5,
+      pue: 1.05,
+      tick: 0,
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function podAudio(f, dur = 0.08, type = 'sine') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.2, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function toggleDoors() {
+      st.doorsOpen = !st.doorsOpen;
+      podAudio(st.doorsOpen ? 720 : 380, 0.25);
+
+      const gl = q('#glass-left'), gr = q('#glass-right');
+      if (gl) gl.style.transform = st.doorsOpen ? 'translateX(-36px)' : '';
+      if (gr) gr.style.transform = st.doorsOpen ? 'translateX(36px)' : '';
+
+      const stTxt = q('#pod-status-txt');
+      if (stTxt) stTxt.textContent = st.doorsOpen ? 'DOORS: OPEN [LEAKAGE]' : 'DOORS: SEALED [18.0°C]';
+
+      const bioLed = q('#door-bio-led');
+      if (bioLed) bioLed.classList.toggle('hot', !st.doorsOpen);
+
+      render();
+    }
+
+    // Temperature Micro-Jitter Loop
+    st.timer = api.every(50, () => {
+      st.tick++;
+      if (st.doorsOpen) {
+        st.coldTemp = Math.min(24.0, (parseFloat(st.coldTemp) + 0.04)).toFixed(1);
+      } else {
+        st.coldTemp = Math.max(18.0, (parseFloat(st.coldTemp) - 0.05)).toFixed(1);
+      }
+    });
+
+    function render() {
+      api.power(true);
+      api.readout(
+        st.doorsOpen
+          ? `POD DOORS OPEN · THERMAL MIXING · COLD AISLE: ${st.coldTemp}°C · HOT: ${st.hotTemp}°C`
+          : `COLD AISLE SEALED · PUE: 1.05 OPTIMAL · COLD: ${st.coldTemp}°C · HOT: ${st.hotTemp}°C (ΔT 14.5°C)`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      toggleDoors();
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ' || e.key === '1') {
+          toggleDoors();
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        toggleDoors();
+      }
+    };
+  }
+});
+
+</script>
+<!-- CORE: kernel, api, navigation, palette picker. Keep after the figures. -->
+<script>
+/* ============================================================
+   iso gallery core: kernel, shared api, navigation.
+   Figures register with FIGS.push({...}) — see CONTRACT below.
+   ============================================================ */
+// FIGS is declared inline in the page before the figure scripts
+
+const ISO = (() => {
+  const C = Math.cos(Math.PI / 6), S = Math.sin(Math.PI / 6);
+  function kernel(OX, OY) {
+    const P = (x,y,z) => [(x-y)*C + OX, (x+y)*S - z + OY];
+    const D = (x,y,z) => [(x-y)*C, (x+y)*S - z];
+    const plane = (O,U,V) => { const o=P(...O), u=D(...U), v=D(...V);
+      return `matrix(${u[0]} ${u[1]} ${v[0]} ${v[1]} ${o[0]} ${o[1]})`; };
+    const TOP   = (x,y,z) => plane([x,y,z],[1,0,0],[0,1,0]);
+    const FRONT = (x,y,z) => plane([x,y,z],[1,0,0],[0,0,-1]);
+    const SIDE  = (x,y,z) => plane([x,y,z],[0,-1,0],[0,0,-1]);
+    const rect = (t,w,h,r=0,cls='face') => `<g transform="${t}"><rect class="${cls}" width="${w}" height="${h}" rx="${r}"/></g>`;
+    // Rounded box: one rounded top plus one continuous side wall along the visible part of the
+    // outline, so the corners meet cleanly. r = 0 keeps the classic three flat faces.
+    const rounded = (x,y,z,w,d,h,r,cls) => {
+      r = Math.min(r, w/2, d/2);
+      const n = 10, z1 = z + h, q = Math.PI/4, H = Math.PI/2, c = cls ? ' ' + cls : '';
+      const arc = (cx,cy,a0,a1) => { const o = []; for (let i = 0; i <= n; i++) { const a = a0 + (a1-a0)*i/n; o.push([cx + r*Math.cos(a), cy + r*Math.sin(a)]); } return o; };
+      const ring = [...arc(x+w-r,y+r,-H,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,2*H), ...arc(x+r,y+r,2*H,3*H)];
+      const vis  = [...arc(x+w-r,y+r,-q,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,3*q)];
+      const d3 = pts => 'M' + pts.map(p => P(...p).map(v => v.toFixed(2)).join(' ')).join('L') + 'Z';
+      const wall = [...vis.map(([a,b]) => [a,b,z]), ...vis.slice().reverse().map(([a,b]) => [a,b,z1])];
+      return `<path class="face${c}" d="${d3(wall)}"/><path class="face top${c}" d="${d3(ring.map(([a,b]) => [a,b,z1]))}"/>`;
+    };
+    const box = (x,y,z,w,d,h,r=0) => r > 0 ? rounded(x,y,z,w,d,h,r,'') :
+      rect(SIDE(x+w,y+d,z+h), d,h) + rect(FRONT(x,y+d,z+h), w,h) + rect(TOP(x,y,z+h), w,d,0,'face top');
+    const boxc = (x,y,z,w,d,h,r,cls) => r > 0 ? rounded(x,y,z,w,d,h,r,cls) :
+      rect(SIDE(x+w,y+d,z+h), d,h,0,'face '+cls) + rect(FRONT(x,y+d,z+h), w,h,0,'face '+cls) + rect(TOP(x,y,z+h), w,d,0,'face top '+cls);
+    // 3D polyline -> SVG path "d"
+    const path = pts => 'M' + pts.map(p => P(...p).map(n => n.toFixed(2)).join(' ')).join('L');
+    return { C, S, P, D, plane, TOP, FRONT, SIDE, rect, box, boxc, path };
+  }
+  // Frame a scene: pass its extreme 3D corners. Returns kernel + viewBox padded to ~4:3.
+  function frame(points, margin = 0.09, aspect = 4 / 3) {
+    const d = points.map(([x,y,z]) => [(x-y)*C, (x+y)*S - z]);
+    let x0 = Math.min(...d.map(p => p[0])), x1 = Math.max(...d.map(p => p[0]));
+    let y0 = Math.min(...d.map(p => p[1])), y1 = Math.max(...d.map(p => p[1]));
+    const m = margin * Math.max(x1 - x0, y1 - y0);
+    let w = x1 - x0 + 2*m, h = y1 - y0 + 2*m;
+    let ox = m - x0, oy = m - y0;
+    if (w / h < aspect) { const nw = h * aspect; ox += (nw - w) / 2; w = nw; }
+    else { const nh = w / aspect; oy += (nh - h) / 2; h = nh; }
+    return { ...kernel(ox, oy), viewBox: `0 0 ${w.toFixed(1)} ${h.toFixed(1)}`, W: w, H: h };
+  }
+  // repeated detail lines in a face-local group
+  const slits = (a0, a1, step, b0, b1, vertical = true, cls = 'detail') => {
+    let s = ''; for (let a = a0; a <= a1 + 1e-6; a += step)
+      s += vertical ? `<line class="${cls}" x1="${a}" y1="${b0}" x2="${a}" y2="${b1}"/>` : `<line class="${cls}" x1="${b0}" y1="${a}" x2="${b1}" y2="${a}"/>`;
+    return s;
+  };
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return { kernel, frame, slits, esc };
+})();
+
+/* ---------- shared audio (created on first user gesture) ---------- */
+const AUDIO = (() => {
+  let ctx = null, out = null, analyser = null;
+  return () => {
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      out = ctx.createGain(); out.gain.value = 0.5;
+      analyser = ctx.createAnalyser(); analyser.fftSize = 1024;
+      out.connect(analyser); analyser.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return { ctx, out, analyser };
+  };
+})();
+
+/* ---------- app ---------- */
+(function app() {
+  const $ = id => document.getElementById(id);
+  const CFG = window.GALLERY || {};
+  const holder = $('stageHolder'), readoutEl = $('readout'), hintEl = $('hint'), numEl = $('fignum'), nameEl = $('figname');
+  const nav = $('nav');
+  let active = null, handle = null, timers = [], frames = [], idx = 0;
+
+  const api = {
+    iso: ISO,
+    readout: s => { readoutEl.textContent = s; },
+    hint: s => { hintEl.textContent = s; },
+    audio: AUDIO,
+    after: (ms, fn) => { const t = setTimeout(fn, ms); timers.push(t); return t; },
+    every: (ms, fn) => { const t = setInterval(fn, ms); timers.push(t); return t; },
+    loop: fn => { let alive = true; const f = ts => { if (!alive) return; fn(ts); requestAnimationFrame(f); };
+      requestAnimationFrame(f); const stop = () => { alive = false; }; frames.push(stop); return stop; },
+    // light a pressable briefly (orange flash + glow, then fade)
+    flash: (el, ms = 160) => { if (!el) return; el.classList.add('down', 'lit'); clearTimeout(el._f1); clearTimeout(el._f2);
+      el._f1 = setTimeout(() => el.classList.remove('down'), 110); el._f2 = setTimeout(() => el.classList.remove('lit'), ms); },
+    // restart a one-shot CSS animation class (e.g. '.pulse' -> 'go')
+    replay: (el, cls = 'go') => { if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); },
+    power: on => { holder.classList.toggle('glow', !!on); },
+  };
+
+  function mount(i) {
+    if (handle && handle.unmount) handle.unmount();
+    timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = [];
+    frames.forEach(stop => stop()); frames = [];
+    idx = (i + FIGS.length) % FIGS.length; active = FIGS[idx];
+    holder.classList.remove('glow');
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('id', 'stage'); svg.setAttribute('role', 'img'); svg.setAttribute('tabindex', '0');
+    svg.setAttribute('aria-label', active.aria || active.name);
+    svg.dataset.fig = active.id;
+    holder.replaceChildren(svg);
+    numEl.textContent = `Fig ${idx + 1}`; nameEl.textContent = active.name;
+    hintEl.textContent = active.hint || ''; readoutEl.textContent = '';
+    document.title = `Fig ${idx + 1} · ${active.name}`;
+    [...nav.querySelectorAll('button[data-i]')].forEach(b => b.setAttribute('aria-current', +b.dataset.i === idx ? 'true' : 'false'));
+    const cur = nav.querySelector(`button[data-i="${idx}"]`);
+    if (cur && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2, behavior: 'smooth' });
+    if (location.hash.slice(1) !== active.id) history.replaceState(null, '', '#' + active.id);
+    handle = active.mount(svg, api) || {};
+    // demo(): runs on arrival unless ?still is in the URL
+    const runDemo = !/still/.test(location.search);
+    if (runDemo && handle.demo) setTimeout(() => handle.demo(), 120);
+  }
+
+  // ---------- glow colour choice ----------
+  const PALETTES = {
+    // [name, dark accent, dark hi, light accent, light hi]
+    ember: [['Ember','#ff7a1a','#ffb070','#ff7a1a','#ffb070'], ['Cyan','#22d3ee','#9beefa','#22d3ee','#9beefa'], ['Lime','#a3e635','#d6f79f','#a3e635','#d6f79f'],
+            ['Violet','#a78bfa','#d6caff','#a78bfa','#d6caff'], ['Rose','#fb7185','#fdb8c2','#fb7185','#fdb8c2'], ['Ice','#dfe9ef','#ffffff','#1f2937','#3b4656']],
+    city:  [['Sodium','#ff9a2e','#ffc77a','#ff9a2e','#ffc77a'], ['Tungsten','#ffd166','#ffe7a8','#ffd166','#ffe7a8'], ['Neon','#ff4fa3','#ff9fcb','#ff4fa3','#ff9fcb'],
+            ['Signal','#3ee8a0','#a3f5cf','#3ee8a0','#a3f5cf'], ['Dusk','#6f9dff','#b5ccff','#6f9dff','#b5ccff'], ['Moon','#dfe7f5','#ffffff','#273246','#3d4a61']],
+  };
+  const ACCENTS = Array.isArray(CFG.palette) ? CFG.palette : (PALETTES[CFG.palette] || PALETTES.ember);
+  const vars = (a, hi, dark) => `--accent:${a}; --accent-hi:${hi}; --accent-dim:color-mix(in srgb, ${a} 10%, transparent);` +
+    ` --glass-on:color-mix(in srgb, ${a} ${dark ? 9 : 12}%, ${dark ? '#101112' : '#eef0f0'});`;
+  const accentCss = ACCENTS.map(([n, da, dh, la, lh]) => { const k = n.toLowerCase();
+    return `:root[data-accent="${k}"] { ${vars(da, dh, true)} }
+@media (prefers-color-scheme: light) { :root[data-accent="${k}"]:not([data-theme="dark"]) { ${vars(la, lh, false)} } }
+:root[data-accent="${k}"][data-theme="light"] { ${vars(la, lh, false)} }`; }).join('\n');
+  const accentStyle = document.createElement('style'); accentStyle.textContent = accentCss; document.head.appendChild(accentStyle);
+  const sw = $('swatches');
+  sw.innerHTML = ACCENTS.map(([n, da]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${da}"><i></i></button>`).join('');
+  function setAccent(k) {
+    if (!ACCENTS.some(a => a[0].toLowerCase() === k)) k = ACCENTS[0][0].toLowerCase();
+    document.documentElement.dataset.accent = k;
+    sw.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
+    try { localStorage.setItem((CFG.storageKey || 'iso-glow-accent'), k); } catch (e) {}
+  }
+  let saved = null; try { saved = localStorage.getItem((CFG.storageKey || 'iso-glow-accent')); } catch (e) {}
+  setAccent(saved || ACCENTS[0][0].toLowerCase());
+  sw.addEventListener('click', e => { const b = e.target.closest('button[data-accent]'); if (b) { setAccent(b.dataset.accent); const s = $('stage'); if (s) s.focus({ preventScroll: true }); } });
+
+  // per-figure css
+  FIGS.forEach(f => { if (f.css) { const st = document.createElement('style'); st.textContent = f.css; document.head.appendChild(st); } });
+
+  // navigation markup
+  nav.innerHTML = FIGS.map((f, i) =>
+    `<button data-i="${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="t">${f.name}</span></button>`).join('');
+  // after a nav click, hand keyboard focus to the figure so space/enter go to it, not the button
+  const focusStage = () => { const s = $('stage'); if (s) s.focus({ preventScroll: true }); };
+  nav.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) { mount(+b.dataset.i); focusStage(); } });
+  $('prev').addEventListener('click', () => { mount(idx - 1); focusStage(); });
+  $('next').addEventListener('click', () => { mount(idx + 1); focusStage(); });
+  window.addEventListener('hashchange', () => { const i = FIGS.findIndex(f => f.id === location.hash.slice(1)); if (i >= 0 && i !== idx) mount(i); });
+
+  window.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target.closest && e.target.closest('button') && (e.key === 'Enter' || e.key === ' ')) return;
+    if (handle && handle.key && handle.key(e)) { e.preventDefault(); return; }
+    if (e.key === 'PageDown') mount(idx + 1);
+    if (e.key === 'PageUp') mount(idx - 1);
+  });
+  window.addEventListener('keyup', e => { if (handle && handle.keyup) handle.keyup(e); });
+  window.addEventListener('blur', () => { if (handle && handle.blur) handle.blur(); });
+
+  if (!FIGS.length) {   // nothing registered yet (figures still being built)
+    holder.innerHTML = '<p style="display:grid;place-items:center;height:100%;margin:0;letter-spacing:.14em;text-transform:uppercase">No figures yet</p>';
+    numEl.textContent = 'Fig —'; return;
+  }
+  const start = FIGS.findIndex(f => f.id === location.hash.slice(1));
+  mount(start >= 0 ? start : 0);
+})();
+
+</script>
+<style>/* light theme: the same accent as the dark theme, but no ambient glow (halos, bloom, light pools, soft blur) */
+  :root[data-theme="light"] .halo, :root[data-theme="light"] #lamp-pool, :root[data-theme="light"] #lamp-bookpool, :root[data-theme="light"] #lamp-cone { display:none !important; }
+  :root[data-theme="light"] .top .dot { box-shadow:none; }
+  :root[data-theme="light"] .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .halo, :root:not([data-theme="dark"]) #lamp-pool, :root:not([data-theme="dark"]) #lamp-bookpool, :root:not([data-theme="dark"]) #lamp-cone { display:none !important; }
+    :root:not([data-theme="dark"]) .top .dot { box-shadow:none; }
+    :root:not([data-theme="dark"]) .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
+  }
+</style>
+<script>/* light theme: the glow filters pass the drawing through unblurred, bloom draws nothing */
+(function () {
+  var root = document.documentElement, mq = matchMedia('(prefers-color-scheme: light)'), orig = {};
+  function apply() {
+    var t = root.dataset.theme, light = t === 'light' || (t !== 'dark' && mq.matches);
+    ['glow', 'soft', 'bloom'].forEach(function (id) {
+      var f = document.getElementById(id); if (!f) return;
+      if (!(id in orig)) orig[id] = f.innerHTML;
+      f.innerHTML = !light ? orig[id] : id === 'bloom' ? '<feFlood flood-opacity="0"/>' : '<feMerge><feMergeNode in="SourceGraphic"/></feMerge>';
+    });
+  }
+  new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  if (mq.addEventListener) mq.addEventListener('change', apply);
+  apply();
+})();
+</script>
+</body>
+</html>

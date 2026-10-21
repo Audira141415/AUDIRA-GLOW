@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUDIRA GLOW · Interactive Isometric Systems & Frontier Technology</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@400;500;600;700;800&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg:#090a0b; --bg-card:#111214; --panel:#141517; --edge:#222528;
+    --line:#383c40; --detail:#242729; --body:#151618; --deck:#1a1c1e;
+    --ink:#888e93; --ink-hi:#f0f2f4; --live:#ffffff;
+    --glass:#0f1012; --glass-on:#1c1712; --recess:#0d0e0f;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.12);
+    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+    --sans:"Outfit",system-ui,-apple-system,sans-serif;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.55;
+    padding-top:72px;
+    overflow-x:hidden;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--accent-dim), transparent 70%),
+      linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 48px 48px, 48px 48px;
+  }
+
+  /* TOP NAVIGATION HEADER */
+  .dh { position:fixed; z-index:40; top:0; left:0; right:0; padding:12px 24px; font:12px/1.45 var(--mono); background:linear-gradient(var(--bg) 65%, rgba(9,10,11,0)); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+  .dh-in { max-width:1320px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .dh-brand { flex:none; display:flex; align-items:center; gap:10px; color:var(--ink-hi); text-decoration:none; font-weight:600; font-size:13px; letter-spacing:.14em; text-transform:uppercase; }
+  .dh-brand .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
+  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:4px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); }
+  .dh-seg a { flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; padding:6px 14px; border-radius:999px; color:var(--ink); text-decoration:none; font-size:11px; letter-spacing:.06em; transition:all .2s; }
+  .dh-seg a:hover { color:var(--ink-hi); }
+  .dh-seg a.active { color:var(--ink-hi); background:var(--bg); box-shadow:0 0 0 1px var(--accent) inset; }
+  .dh-seg .n { opacity:.6; font-size:10px; }
+
+  /* SWATCHES PALETTE SELECTOR */
+  .swatches { display:flex; align-items:center; gap:4px; padding:3px 6px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); }
+  .swatches button { width:22px; height:22px; border-radius:50%; border:1px solid transparent; background:none; cursor:pointer; display:grid; place-items:center; padding:0; }
+  .swatches button i { width:10px; height:10px; border-radius:50%; background:var(--sw); border:1px solid var(--line); transition:all .2s; }
+  .swatches button:hover i { transform:scale(1.2); }
+  .swatches button[aria-checked="true"] { border-color:var(--line); }
+  .swatches button[aria-checked="true"] i { box-shadow:0 0 10px 1px var(--sw); transform:scale(1.15); }
+
+  /* CONTAINER WRAPPER */
+  .container { max-width:1320px; margin:0 auto; padding:0 24px; }
+
+  /* HERO SECTION */
+  .hero { padding:48px 0 32px; display:grid; gap:36px; text-align:center; position:relative; }
+  .hero-tag { display:inline-flex; align-items:center; gap:8px; padding:6px 16px; border-radius:999px; border:1px solid var(--edge); background:rgba(20,21,23,0.7); font:500 11px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--accent); width:fit-content; margin:0 auto; box-shadow:0 0 20px -5px var(--accent-dim); }
+  .hero-tag .pulse-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); animation:live-pulse 1.8s infinite; }
+  @keyframes live-pulse { 0%, 100% { opacity:1; transform:scale(1); } 50% { opacity:0.3; transform:scale(0.8); } }
+
+  .hero-title { font-family:var(--sans); font-size:clamp(38px, 6vw, 68px); font-weight:800; line-height:1.06; letter-spacing:-0.03em; color:var(--ink-hi); max-width:960px; margin:0 auto; }
+  .hero-title span.glow { color:transparent; background:linear-gradient(135deg, var(--live) 30%, var(--accent) 90%); -webkit-background-clip:text; background-clip:text; }
+  .hero-desc { font-size:clamp(15px, 1.8vw, 19px); color:var(--ink); max-width:760px; margin:0 auto; font-weight:400; line-height:1.6; }
+
+  /* HERO CTA BUTTONS */
+  .hero-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:14px; margin-top:8px; font-family:var(--mono); font-size:12px; letter-spacing:.08em; }
+  .btn-primary { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; border-radius:12px; background:var(--accent); color:#000000; font-weight:600; text-decoration:none; text-transform:uppercase; transition:all .2s; box-shadow:0 4px 20px -2px var(--accent); }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px -2px var(--accent); color:#000000; }
+  .btn-secondary { display:inline-flex; align-items:center; gap:8px; padding:14px 26px; border-radius:12px; background:var(--panel); border:1px solid var(--edge); color:var(--ink-hi); font-weight:500; text-decoration:none; text-transform:uppercase; transition:all .2s; }
+  .btn-secondary:hover { border-color:var(--accent); color:var(--live); transform:translateY(-2px); }
+
+  /* HERO LIVE INTERACTIVE SHOWCASE STAGE */
+  .hero-stage-card {
+    background:var(--bg-card);
+    border:1px solid var(--edge);
+    border-radius:24px;
+    padding:24px;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,0.8), 0 0 80px -40px var(--accent-dim);
+    display:grid;
+    gap:16px;
+    margin-top:16px;
+    text-align:left;
+  }
+  .stage-header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; padding-bottom:14px; border-bottom:1px solid var(--edge); }
+  .stage-tabs { display:flex; flex-wrap:wrap; gap:6px; }
+  .stage-tab-btn { font:inherit; color:var(--ink); background:transparent; border:1px solid var(--edge); border-radius:8px; padding:6px 14px; cursor:pointer; transition:all .2s; }
+  .stage-tab-btn:hover { color:var(--ink-hi); border-color:var(--line); }
+  .stage-tab-btn.active { color:var(--ink-hi); border-color:var(--accent); background:rgba(255,255,255,0.04); box-shadow:0 0 12px -2px var(--accent-dim); }
+
+  #stageHolder {
+    aspect-ratio:16/10;
+    max-height:580px;
+    border-radius:16px;
+    background:radial-gradient(ellipse 60% 50% at 50% 55%, var(--accent-dim), transparent 75%), var(--panel);
+    border:1px solid var(--edge);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+  }
+  #stage { width:100%; height:100%; display:block; touch-action:manipulation; user-select:none; }
+  #stage:focus { outline:none; }
+
+  .stage-footer { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; font-family:var(--mono); font-size:11px; }
+  .stage-hint { color:var(--ink); display:flex; align-items:center; gap:8px; }
+  .stage-readout { color:var(--accent-hi); font-weight:500; letter-spacing:.05em; text-transform:uppercase; }
+
+  /* STATS BANNER */
+  .stats-banner { display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:18px; padding:36px 0 64px; }
+  .stat-item { background:rgba(20,21,23,0.5); border:1px solid var(--edge); border-radius:16px; padding:20px 24px; text-align:center; transition:border-color .2s; }
+  .stat-item:hover { border-color:var(--line); }
+  .stat-num { font-family:var(--sans); font-size:38px; font-weight:800; color:var(--ink-hi); line-height:1; }
+  .stat-num span { color:var(--accent); }
+  .stat-lbl { font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink); margin-top:6px; }
+
+  /* SECTION HEADINGS */
+  .sec-heading { display:grid; gap:8px; margin-bottom:32px; text-align:left; }
+  .sec-tag { font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); font-weight:500; }
+  .sec-title { font-family:var(--sans); font-size:clamp(28px, 3.5vw, 42px); font-weight:700; color:var(--ink-hi); letter-spacing:-0.02em; }
+  .sec-desc { font-size:15px; color:var(--ink); max-width:640px; }
+
+  /* COLLECTIONS GRID */
+  .collections-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:24px; margin-bottom:72px; }
+  .col-card {
+    background:var(--bg-card);
+    border:1px solid var(--edge);
+    border-radius:20px;
+    padding:32px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:20px;
+    text-decoration:none;
+    color:inherit;
+    transition:all .28s cubic-bezier(0.16, 1, 0.3, 1);
+    position:relative;
+    overflow:hidden;
+  }
+  .col-card::before {
+    content:''; position:absolute; inset:0; border-radius:20px; padding:1px;
+    background:linear-gradient(135deg, transparent, rgba(255,255,255,0.06), transparent);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none;
+  }
+  .col-card:hover {
+    transform:translateY(-6px);
+    border-color:var(--line);
+    box-shadow:0 20px 45px -15px rgba(0,0,0,0.8), 0 0 35px -15px var(--accent-dim);
+  }
+  .col-badge { display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); }
+  .col-title { font-family:var(--sans); font-size:24px; font-weight:700; color:var(--ink-hi); margin:8px 0 6px; }
+  .col-desc { font-size:14px; color:var(--ink); line-height:1.6; }
+  .col-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+  .col-tag-item { font-family:var(--mono); font-size:10px; letter-spacing:.06em; padding:4px 10px; border-radius:6px; background:rgba(255,255,255,0.04); border:1px solid var(--edge); color:var(--ink); }
+  .col-footer { display:flex; align-items:center; justify-content:space-between; padding-top:18px; border-top:1px solid var(--edge); font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-hi); }
+  .col-footer .arr { color:var(--accent); transition:transform .2s; }
+  .col-card:hover .col-footer .arr { transform:translateX(5px); }
+
+  /* PILLARS / ARCHITECTURE SECTION */
+  .pillars-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:80px; }
+  .pillar-card { background:rgba(20,21,23,0.6); border:1px solid var(--edge); border-radius:16px; padding:26px; display:grid; gap:10px; }
+  .pillar-icon { font-family:var(--mono); font-size:14px; font-weight:bold; color:var(--accent); }
+  .pillar-title { font-family:var(--sans); font-size:18px; font-weight:600; color:var(--ink-hi); }
+  .pillar-desc { font-size:13px; color:var(--ink); line-height:1.6; }
+
+  /* FOOTER */
+  footer { border-top:1px solid var(--edge); padding:48px 0 64px; font-family:var(--mono); font-size:12px; }
+  .foot-in { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:20px; }
+  .foot-brand { display:flex; align-items:center; gap:8px; color:var(--ink-hi); font-weight:600; text-transform:uppercase; letter-spacing:.12em; text-decoration:none; }
+  .foot-links { display:flex; flex-wrap:wrap; gap:18px; }
+  .foot-links a { color:var(--ink); text-decoration:none; transition:color .2s; }
+  .foot-links a:hover { color:var(--ink-hi); }
+  .foot-status { display:flex; align-items:center; gap:8px; color:var(--accent); font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+
+  /* SVG FILTER DEFS */
+  .fx { position:absolute; width:0; height:0; overflow:hidden; }
+
+  @media (max-width: 768px) {
+    body { padding-top:60px; }
+    .hero { padding:32px 0 20px; gap:24px; }
+    .hero-stage-card { padding:14px; }
+    .collections-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG Glow Filters -->
+<svg class="fx" aria-hidden="true">
+  <defs>
+    <filter id="glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="soft" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="bloom" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+</svg>
+
+<!-- Fixed Header Navigation -->
+<header class="dh">
+  <div class="dh-in">
+    <a class="dh-brand" href="index.html"><span class="dot"></span><span>AUDIRA GLOW</span></a>
+    <nav class="dh-seg" aria-label="Collections">
+      <a href="index.html" class="active">OVERVIEW <span class="n">38+</span></a>
+      <a href="datacenter.html">DATA CENTER <span class="n">12</span></a>
+      <a href="cyberlab.html">CYBER LAB <span class="n">5</span></a>
+      <a href="audira-studio.html">AUDIRA STUDIO <span class="n">5</span></a>
+      <a href="objects.html">OBJECTS <span class="n">10</span></a>
+      <a href="cities.html">CITIES <span class="n">10</span></a>
+      <a href="lumen.html">LUMEN <span class="n">12</span></a>
+      <a href="computer-demo.html">DESK COMPUTER <span class="n">1</span></a>
+      <a href="assets/gallery-3d.html">3D DEMO <span class="n">12</span></a>
+    </nav>
+    <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+  </div>
+</header>
+
+<main class="container">
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-tag">
+      <span class="pulse-dot"></span>
+      <span>INTERACTIVE ISOMETRIC ENGINE · V2.4</span>
+    </div>
+
+    <h1 class="hero-title">
+      Engineering Precision in <span class="glow">Glowing Vector Dimension</span>
+    </h1>
+
+    <p class="hero-desc">
+      A bespoke digital universe of <strong>38+ interactive 2.5D isometric figures</strong>. Explore mission-critical Tier IV data centers, cryogenic quantum computers, warm audiophile vacuum-tube consoles, and architectural megacities — rendered with native Web Audio synthesis and fluid animation loops.
+    </p>
+
+    <div class="hero-actions">
+      <a href="datacenter.html" class="btn-primary">Explore Data Center · 12 Modules ↗</a>
+      <a href="cyberlab.html" class="btn-secondary">Cyber Lab · 5 Frontier Tech ↗</a>
+      <a href="audira-studio.html" class="btn-secondary">Audira Studio · 5 Audiophile Units ↗</a>
+    </div>
+
+    <!-- LIVE HERO SHOWCASE STAGE -->
+    <div class="hero-stage-card">
+      <div class="stage-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent);"></span>
+          <span>LIVE HERO BENCHMARK · INTERACTIVE DEMO</span>
+        </div>
+        <div class="stage-tabs" id="hero-model-tabs">
+          <button class="stage-tab-btn active" data-model="0">42U AI GPU RACK</button>
+          <button class="stage-tab-btn" data-model="1">QUANTUM CRYO-CHANDELIER</button>
+          <button class="stage-tab-btn" data-model="2">TUBE RADIO WR-88</button>
+          <button class="stage-tab-btn" data-model="3">TOKAMAK FUSION CORE</button>
+          <button class="stage-tab-btn" data-model="4">AERODYNE HOVERCAR</button>
+        </div>
+      </div>
+
+      <div id="stageHolder">
+        <svg id="stage" role="img" tabindex="0" aria-label="Hero Showcase"></svg>
+      </div>
+
+      <div class="stage-footer">
+        <div class="stage-hint" id="stage-hint">Click elements or press Space to trigger live interactions</div>
+        <div class="stage-readout" id="stage-readout">SYSTEM ACTIVE · SYNCHRO 100%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BANNER -->
+  <section class="stats-banner">
+    <div class="stat-item">
+      <div class="stat-num">38<span>+</span></div>
+      <div class="stat-lbl">Interactive Vector Models</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">6<span></span></div>
+      <div class="stat-lbl">Complete Collections</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">0<span>%</span></div>
+      <div class="stat-lbl">Zero External Dependencies</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">60<span>FPS</span></div>
+      <div class="stat-lbl">Hardware Accelerated Loops</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">&lt;180<span>ms</span></div>
+      <div class="stat-lbl">Instant Vector Load Time</div>
+    </div>
+  </section>
+
+  <!-- MASTER COLLECTIONS SHOWCASE -->
+  <section>
+    <div class="sec-heading">
+      <span class="sec-tag">CURATED SYSTEM GALLERIES</span>
+      <h2 class="sec-title">Explore All 6 Master Collections</h2>
+      <p class="sec-desc">Each collection is engineered with precision geometry, dedicated Web Audio sound synthesis, keyboard hotkeys, and continuous real-time physics.</p>
+    </div>
+
+    <div class="collections-grid">
+      <!-- 1. DATA CENTER -->
+      <a href="datacenter.html" class="col-card">
+        <div>
+          <span class="col-badge">COLLECTION 01 · TIER IV CERTIFIED</span>
+          <h3 class="col-title">Data Center Infrastructure</h3>
+          <p class="col-desc">Complete mission-critical facilities: 42U AI GPU Rack, Liquid Chiller CDU, Modular UPS, PTZ CCTV, DCIM NOC Video Wall, Spine-Leaf Network, 2.5 MVA Generator, CRAC Air Handler, Clean Agent Fire Suppression, Smart PDU, Robotic Tape Library, and Cold Aisle Pod.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">12 Modules</span>
+            <span class="col-tag-item">NOC Telemetry</span>
+            <span class="col-tag-item">DDoS Drill</span>
+            <span class="col-tag-item">Blackout ATS</span>
+          </div>
+        </div>
+        <div class="col-footer">
+          <span>Launch Data Center (12 Figures)</span>
+          <span class="arr">→</span>
+        </div>
+      </a>
+
+      <!-- 2. CYBER LAB -->
+      <a href="cyberlab.html" class="col-card">
+        <div>
+          <span class="col-badge">COLLECTION 02 · FRONTIER SCI-FI</span>
+          <h3 class="col-title">Cyber Lab Technologies</h3>
+          <p class="col-desc">Next-generation experimental technologies: 127-qubit quantum cryo-chandelier (15 mK), magnetic confinement Tokamak fusion reactor (Q>10), aerodynamic VTOL hovercar, deep-space orbital recon satellite, and dual-loop liquid-cooled super PC.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">5 Models</span>
+            <span class="col-tag-item">Quantum Bloch</span>
+            <span class="col-tag-item">Fusion Ignition</span>
+            <span class="col-tag-item">VTOL Physics</span>
+          </div>
+        </div>
+        <div class="col-footer">
+          <span>Launch Cyber Lab (5 Figures)</span>
+          <span class="arr">→</span>
+        </div>
+      </a>
+
+      <!-- 3. AUDIRA STUDIO -->
+      <a href="audira-studio.html" class="col-card">
+        <div>
+          <span class="col-badge">COLLECTION 03 · AUDIOPHILE HARDWARE</span>
+          <h3 class="col-title">Audira Valve & Synth Studio</h3>
+          <p class="col-desc">Legendary analog studio instruments: modular patchable synthesizer, handheld retro gaming console, dual-triode valve tube DAC, cyberdeck tape station, and vintage world-band vacuum-tube radio receiver with real Web Audio station tuning.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">5 Instruments</span>
+            <span class="col-tag-item">EM84 Magic Eye</span>
+            <span class="col-tag-item">Morse Code</span>
+            <span class="col-tag-item">Tube Harmonics</span>
+          </div>
+        </div>
+        <div class="col-footer">
+          <span>Launch Studio (5 Figures)</span>
+          <span class="arr">→</span>
+        </div>
+      </a>
+
+      <!-- 4. CITIES -->
+      <a href="cities.html" class="col-card">
+        <div>
+          <span class="col-badge">COLLECTION 04 · URBAN ARCOLOGY</span>
+          <h3 class="col-title">Architectural Cyber Cities</h3>
+          <p class="col-desc">Dense futuristic urban megastructures: high-density neon skyscraper clusters, hyperloop transit interchanges, elevated skybridge transit rings, and cybernetic metropolis blocks.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">10 Cityscapes</span>
+            <span class="col-tag-item">Transit Grids</span>
+            <span class="col-tag-item">Neon Monoliths</span>
+          </div>
+        </div>
+        <div class="col-footer">
+          <span>Launch Cities (10 Figures)</span>
+          <span class="arr">→</span>
+        </div>
+      </a>
+
+      <!-- 5. OBJECTS -->
+      <a href="objects.html" class="col-card">
+        <div>
+          <span class="col-badge">COLLECTION 05 · RETRO COMPUTING</span>
+          <h3 class="col-title">Classic Objects & Artifacts</h3>
+          <p class="col-desc">Iconic mechanical and digital artifacts: vintage desktop workstations, microwave communication relays, open-reel tape decks, and precision industrial instruments.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">10 Artifacts</span>
+            <span class="col-tag-item">Mechanical Decks</span>
+            <span class="col-tag-item">Workstations</span>
+          </div>
+        </div>
+        <div class="col-footer">
+          <span>Launch Objects (10 Figures)</span>
+          <span class="arr">→</span>
+        </div>
+      </a>
+
+      <!-- 6. LUMEN LIGHT SCULPTURES -->
+      <a href="lumen.html" class="col-card">
+        <div>
+          <span class="col-badge">COLLECTION 06 · SOLID GEOMETRY</span>
+          <h3 class="col-title">Lumen Geometric Lightforms</h3>
+          <p class="col-desc">Minimalist mathematical light sculptures: hypercubes, rhombic dodecahedrons, volumetric refractive crystal prisms, and monolithic radiant polyhedra.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">12 Sculptures</span>
+            <span class="col-tag-item">Pure Geometry</span>
+            <span class="col-tag-item">Refraction</span>
+          </div>
+        </div>
+        <div class="col-footer">
+          <span>Launch Lumen (12 Figures)</span>
+          <span class="arr">→</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ENGINEERING ARCHITECTURE PILLARS -->
+  <section>
+    <div class="sec-heading">
+      <span class="sec-tag">UNDER THE HOOD</span>
+      <h2 class="sec-title">Engineered Without Compromise</h2>
+      <p class="sec-desc">Designed as a high-performance vector alternative to heavy WebGL canvas textures, delivering silky 60fps renders with zero loading latency.</p>
+    </div>
+
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <div class="pillar-icon">01 / MATH</div>
+        <div class="pillar-title">Sub-Pixel Isometric Matrix</div>
+        <div class="pillar-desc">Custom 30° axonometric projection kernel (`ISO kernel`) calculating exact 3D-to-2D coordinates, depth sorting, and facet occlusion natively in browser SVG.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">02 / AUDIO</div>
+        <div class="pillar-title">Procedural Web Audio API</div>
+        <div class="pillar-desc">Zero downloaded MP3/WAV audio files. Every plasma detonation, tube chime, fan hum, radio static, and alarm is synthesized procedurally in real time.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">03 / COLOR</div>
+        <div class="pillar-title">Universal Accent Matrix</div>
+        <div class="pillar-desc">6 luminous color profiles (Ember, Ice Cyan, Emerald, Sodium Gold, Neon Pink, Dusk Violet) with instant CSS variable propagation and SVG glow filters.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">04 / ZERO DEP</div>
+        <div class="pillar-title">Zero External Frameworks</div>
+        <div class="pillar-desc">Built purely with semantic HTML5, Vanilla CSS, and modern JavaScript. Infinite resolution scaling on mobile, 4K laptops, or 8K HDR displays.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container foot-in">
+    <a class="foot-brand" href="index.html">
+      <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent);"></span>
+      <span>AUDIRA GLOW · BESPOKE ISOMETRIC ENGINE</span>
+    </a>
+    <div class="foot-links">
+      <a href="datacenter.html">Data Center</a>
+      <a href="cyberlab.html">Cyber Lab</a>
+      <a href="audira-studio.html">Audira Studio</a>
+      <a href="cities.html">Cities</a>
+      <a href="objects.html">Objects</a>
+      <a href="lumen.html">Lumen</a>
+      <a href="assets/gallery-3d.html">3D WebGL</a>
+    </div>
+    <div class="foot-status">
+      <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#00e676; box-shadow:0 0 8px #00e676;"></span>
+      <span>All 38 Models Operational · 60 FPS</span>
+    </div>
+  </div>
+</footer>
+
+<!-- CORE SCRIPT: Kernel, Palette, Audio, and Embedded Hero Figures -->
+<script>
+/* --- ACCENT PALETTES --- */
+const PALETTES = {
+  ember: [['Ember','#ff9a2e','#ffc77a','#ff9a2e','#ffc77a'], ['Ice','#40c4ff','#80d8ff','#40c4ff','#80d8ff'], ['Mint','#00e676','#69f0ae','#00e676','#69f0ae'], ['Gold','#ffd54f','#fff59d','#ffd54f','#fff59d'], ['Neon','#ff4fa3','#ff9fcb','#ff4fa3','#ff9fcb'], ['Dusk','#7c4dff','#b388ff','#7c4dff','#b388ff']]
+};
+const ACCENTS = PALETTES.ember;
+const vars = (a, hi) => `--accent:${a}; --accent-hi:${hi}; --accent-dim:color-mix(in srgb, ${a} 12%, transparent);`;
+const accentCss = ACCENTS.map(([n, da, dh]) => `:root[data-accent="${n.toLowerCase()}"] { ${vars(da, dh)} }`).join('\n');
+const st = document.createElement('style'); st.textContent = accentCss; document.head.appendChild(st);
+
+const sw = document.getElementById('swatches');
+sw.innerHTML = ACCENTS.map(([n, da]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${da}"><i></i></button>`).join('');
+
+function setAccent(k) {
+  if (!ACCENTS.some(a => a[0].toLowerCase() === k)) k = ACCENTS[0][0].toLowerCase();
+  document.documentElement.dataset.accent = k;
+  sw.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
+  try { localStorage.setItem('audira-glow-accent', k); } catch (e) {}
+}
+let savedAcc = null; try { savedAcc = localStorage.getItem('audira-glow-accent'); } catch (e) {}
+setAccent(savedAcc || 'ember');
+sw.addEventListener('click', e => { const b = e.target.closest('button[data-accent]'); if (b) setAccent(b.dataset.accent); });
+
+/* --- ISO KERNEL --- */
+const ISO = (() => {
+  const C = Math.cos(Math.PI / 6), S = Math.sin(Math.PI / 6);
+  function kernel(OX, OY) {
+    const P = (x,y,z) => [(x-y)*C + OX, (x+y)*S - z + OY];
+    const D = (x,y,z) => [(x-y)*C, (x+y)*S - z];
+    const plane = (O,U,V) => { const o=P(...O), u=D(...U), v=D(...V); return `matrix(${u[0]} ${u[1]} ${v[0]} ${v[1]} ${o[0]} ${o[1]})`; };
+    const TOP   = (x,y,z) => plane([x,y,z],[1,0,0],[0,1,0]);
+    const FRONT = (x,y,z) => plane([x,y,z],[1,0,0],[0,0,-1]);
+    const SIDE  = (x,y,z) => plane([x,y,z],[0,-1,0],[0,0,-1]);
+    const rect = (t,w,h,r=0,cls='face') => `<g transform="${t}"><rect class="${cls}" width="${w}" height="${h}" rx="${r}"/></g>`;
+    const rounded = (x,y,z,w,d,h,r,cls) => {
+      r = Math.min(r, w/2, d/2);
+      const n = 10, z1 = z + h, q = Math.PI/4, H = Math.PI/2, c = cls ? ' ' + cls : '';
+      const arc = (cx,cy,a0,a1) => { const o = []; for (let i = 0; i <= n; i++) { const a = a0 + (a1-a0)*i/n; o.push([cx + r*Math.cos(a), cy + r*Math.sin(a)]); } return o; };
+      const ring = [...arc(x+w-r,y+r,-H,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,2*H), ...arc(x+r,y+r,2*H,3*H)];
+      const vis  = [...arc(x+w-r,y+r,-q,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,3*q)];
+      const d3 = pts => 'M' + pts.map(p => P(...p).map(v => v.toFixed(2)).join(' ')).join('L') + 'Z';
+      const wall = [...vis.map(([a,b]) => [a,b,z]), ...vis.slice().reverse().map(([a,b]) => [a,b,z1])];
+      return `<path class="face${c}" d="${d3(wall)}"/><path class="face top${c}" d="${d3(ring.map(([a,b]) => [a,b,z1]))}"/>`;
+    };
+    const box = (x,y,z,w,d,h,r=0) => r > 0 ? rounded(x,y,z,w,d,h,r,'') :
+      rect(SIDE(x+w,y+d,z+h), d,h) + rect(FRONT(x,y+d,z+h), w,h) + rect(TOP(x,y,z+h), w,d,0,'face top');
+    const boxc = (x,y,z,w,d,h,r,cls) => r > 0 ? rounded(x,y,z,w,d,h,r,cls) :
+      rect(SIDE(x+w,y+d,z+h), d,h,0,'face '+cls) + rect(FRONT(x,y+d,z+h), w,h,0,'face '+cls) + rect(TOP(x,y,z+h), w,d,0,'face top '+cls);
+    const path = pts => 'M' + pts.map(p => P(...p).map(n => n.toFixed(2)).join(' ')).join('L');
+    return { C, S, P, D, plane, TOP, FRONT, SIDE, rect, box, boxc, path };
+  }
+  function frame(points, margin = 0.09, aspect = 16 / 10) {
+    const d = points.map(([x,y,z]) => [(x-y)*C, (x+y)*S - z]);
+    let x0 = Math.min(...d.map(p => p[0])), x1 = Math.max(...d.map(p => p[0]));
+    let y0 = Math.min(...d.map(p => p[1])), y1 = Math.max(...d.map(p => p[1]));
+    const m = margin * Math.max(x1 - x0, y1 - y0);
+    let w = x1 - x0 + 2*m, h = y1 - y0 + 2*m;
+    let ox = m - x0, oy = m - y0;
+    if (w / h < aspect) { const nw = h * aspect; ox += (nw - w) / 2; w = nw; }
+    else { const nh = w / aspect; oy += (nh - h) / 2; h = nh; }
+    return { ...kernel(ox, oy), viewBox: `0 0 ${w.toFixed(1)} ${h.toFixed(1)}`, W: w, H: h };
+  }
+  const slits = (a0, a1, step, b0, b1, vertical = true, cls = 'detail') => {
+    let s = ''; for (let a = a0; a <= a1 + 1e-6; a += step)
+      s += vertical ? `<line class="${cls}" x1="${a}" y1="${b0}" x2="${a}" y2="${b1}"/>` : `<line class="${cls}" x1="${b0}" y1="${a}" x2="${b1}" y2="${a}"/>`;
+    return s;
+  };
+  return { kernel, frame, slits };
+})();
+
+/* --- SHARED AUDIO --- */
+const AUDIO = (() => {
+  let ctx = null, out = null;
+  return () => {
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      out = ctx.createGain(); out.gain.value = 0.45;
+      out.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return { ctx, out };
+  };
+})();
+
+/* --- LOAD 5 HERO MODELS --- */
+const FIGS = [];
+</script>
+
+<!-- Embedded Hero Figure Scripts -->
+<script src="assets/audira/audira-datacenter.js"></script>
+<script src="assets/audira/audira-quantum.js"></script>
+<script src="assets/audira/audira-radio.js"></script>
+<script src="assets/audira/audira-tokamak.js"></script>
+<script src="assets/audira/audira-hovercar.js"></script>
+
+<script>
+(function heroApp() {
+  const holder = document.getElementById('stageHolder');
+  const stage = document.getElementById('stage');
+  const readoutEl = document.getElementById('stage-readout');
+  const hintEl = document.getElementById('stage-hint');
+  const tabBtns = document.querySelectorAll('.stage-tab-btn');
+
+  let activeHandle = null;
+  let timers = [];
+  let currentModelIdx = 0;
+
+  const api = {
+    iso: ISO,
+    readout: s => { if (readoutEl) readoutEl.textContent = s; },
+    hint: s => { if (hintEl) hintEl.textContent = s; },
+    audio: AUDIO,
+    after: (ms, fn) => { const t = setTimeout(fn, ms); timers.push(t); return t; },
+    every: (ms, fn) => { const t = setInterval(fn, ms); timers.push(t); return t; },
+    flash: (el, ms = 160) => { if (!el) return; el.classList.add('down', 'lit'); setTimeout(() => el.classList.remove('down'), 110); setTimeout(() => el.classList.remove('lit'), ms); },
+    replay: (el, cls = 'go') => { if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); },
+    power: () => {}
+  };
+
+  // Inject per-figure CSS
+  FIGS.forEach(f => {
+    if (f.css) {
+      const s = document.createElement('style');
+      s.textContent = f.css;
+      document.head.appendChild(s);
+    }
+  });
+
+  function mountHeroModel(idx) {
+    if (activeHandle && activeHandle.unmount) activeHandle.unmount();
+    timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = [];
+    currentModelIdx = idx;
+
+    const fig = FIGS[idx];
+    if (!fig) return;
+
+    stage.setAttribute('data-fig', fig.id);
+    stage.setAttribute('aria-label', fig.aria || fig.name);
+
+    if (hintEl) hintEl.textContent = fig.hint || 'Click components or press Space';
+
+    tabBtns.forEach((b, i) => b.classList.toggle('active', i === idx));
+
+    activeHandle = fig.mount(stage, api) || {};
+  }
+
+  tabBtns.forEach((btn, idx) => {
+    btn.addEventListener('click', () => {
+      mountHeroModel(idx);
+    });
+  });
+
+  window.addEventListener('keydown', e => {
+    if (e.target.closest && e.target.closest('input, textarea, button')) return;
+    if (activeHandle && activeHandle.key && activeHandle.key(e)) {
+      e.preventDefault();
+    }
+  });
+
+  if (FIGS.length > 0) {
+    mountHeroModel(0);
+  }
+})();
+</script>
+
+</body>
+</html>

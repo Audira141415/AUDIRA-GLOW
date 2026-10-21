@@ -1,0 +1,2589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen · iso-glow demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg:#0c0d0e; --panel:#141516; --edge:#222426;
+    --line:#3d4144; --detail:#2b2e30; --body:#17181a; --deck:#1b1d1f;
+    --ink:#868b8f; --ink-hi:#e6e8e9; --live:#f4f5f5;
+    --glass:#0f1011; --glass-on:#1a1410; --recess:#0e0f10;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
+    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
+    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
+    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+  } }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
+    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
+    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
+    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--mono); font-size:13px; padding:20px 16px 32px; }
+  .wrap { max-width:1180px; margin-inline:auto; display:grid; gap:14px; }
+  .top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 18px; text-transform:uppercase; letter-spacing:.14em; padding:0 4px; }
+  .top .hi { color:var(--ink-hi); }
+  .top .dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); margin-right:10px; vertical-align:1px; }
+  .arrows { display:flex; gap:6px; }
+  .arrows button, nav button { font:inherit; color:inherit; background:none; border:1px solid var(--edge); border-radius:10px; cursor:pointer; }
+  .arrows button { padding:6px 12px; letter-spacing:.14em; text-transform:uppercase; }
+  .arrows button:hover { color:var(--ink-hi); border-color:var(--line); }
+  .top .hi { margin-right:auto; }
+  .swatches { display:flex; align-items:center; gap:4px; padding:4px; border:1px solid var(--edge); border-radius:999px; }
+  .swatches button { width:26px; height:26px; border-radius:50%; border:1px solid transparent; background:none; cursor:pointer; display:grid; place-items:center; padding:0; }
+  .swatches button i { width:12px; height:12px; border-radius:50%; background:var(--sw); border:1px solid var(--line); box-shadow:0 0 0 0 var(--sw); transition:box-shadow .2s, transform .2s; }
+  .swatches button:hover i { transform:scale(1.15); }
+  .swatches button[aria-checked="true"] { border-color:var(--line); }
+  .swatches button[aria-checked="true"] i { box-shadow:0 0 10px 1px var(--sw); }
+  .swatches button:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+  .layout { display:grid; grid-template-columns:230px minmax(0,1fr); grid-template-rows:auto 1fr; grid-template-areas:"nav fig" "credit fig"; gap:14px; align-items:start; }
+  .layout > nav { grid-area:nav; } .layout > figure { grid-area:fig; } .layout > .credit { grid-area:credit; }
+  .made-with { display:flex; justify-content:flex-end; padding:2px 6px 0; font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+  .made-with a { color:var(--line); text-decoration:none; transition:color .2s; }
+  .made-with a:hover { color:var(--ink); }
+  .credit { align-self:end; display:grid; gap:3px; padding:0 16px 22px; font-size:12px; line-height:1.5; letter-spacing:.04em; }
+  .credit a { color:var(--ink); text-decoration:none; width:fit-content; transition:color .2s; }
+  .credit a:hover { color:var(--ink-hi); }
+  .credit a:hover .ar { color:var(--accent); }
+  .credit .ar { color:var(--line); transition:color .2s; }
+  .credit .by { color:var(--line); }
+  .credit .nm { color:var(--ink); }
+  .credit .cr { color:var(--line); margin-top:8px; font-size:11px; display:grid; gap:1px; }
+  .credit .cr .hs { white-space:nowrap; }
+  .credit .cr a { color:var(--line); }
+  .credit .cr a:hover { color:var(--ink-hi); }
+  .credit .soc { display:flex; gap:12px; margin-top:4px; }
+  .credit .soc a { display:grid; place-items:center; width:16px; height:16px; }
+  .credit .soc svg { width:14px; height:14px; fill:currentColor; transition:fill .2s; }
+  .credit .soc a:hover svg { fill:var(--accent); }
+  .credit a:focus-visible { outline:1px solid var(--accent); outline-offset:2px; border-radius:3px; }
+  nav { display:grid; gap:4px; background:var(--panel); border:1px solid var(--edge); border-radius:22px; padding:14px; }
+  nav button { display:flex; gap:12px; align-items:center; text-align:left; padding:9px 12px; border-color:transparent; letter-spacing:.06em; }
+  nav button .n { color:var(--line); font-size:12px; transition:color .2s; }
+  nav button:hover { color:var(--ink-hi); }
+  nav button[aria-current="true"] { color:var(--ink-hi); border-color:var(--edge); background:var(--bg); }
+  nav button[aria-current="true"] .n { color:var(--accent); text-shadow:0 0 8px var(--accent); }
+  figure { margin:0; background:var(--panel); border:1px solid var(--edge); border-radius:22px; padding:22px 26px; display:grid; gap:6px; min-width:0; }
+  .cap { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 18px; text-transform:uppercase; letter-spacing:.14em; }
+  .cap .hi { color:var(--ink-hi); text-transform:none; letter-spacing:.05em; }
+  #stageHolder { aspect-ratio:4/3; border-radius:14px; transition:background .5s; background:radial-gradient(ellipse 50% 45% at 50% 52%, transparent, transparent); }
+  #stageHolder.glow { background:radial-gradient(ellipse 50% 45% at 50% 52%, var(--accent-dim), transparent 72%); }
+  #stage { width:100%; height:100%; display:block; touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+  #stage:focus { outline:none; }
+  #stage:focus-visible { outline:1px dashed var(--line); outline-offset:4px; border-radius:8px; }
+  .fx { position:absolute; width:0; height:0; overflow:hidden; }
+  @media (max-width: 820px) {
+    .layout { grid-template-columns:1fr; grid-template-rows:auto; grid-template-areas:"nav" "fig" "credit"; }
+    .credit { padding:4px 8px 0; display:flex; flex-wrap:wrap; align-items:center; gap:4px 14px; }
+    .credit .soc { margin-top:0; }
+    .credit .cr { margin-top:0; flex-basis:100%; }
+    nav { position:relative; top:0; display:flex; overflow-x:auto; border-radius:16px; padding:8px; scrollbar-width:none; }
+    nav button { flex:none; padding:8px 10px; }
+    figure { padding:16px; }
+  }
+
+  /* ---------- shared figure vocabulary ---------- */
+  #stage text { font-family:var(--mono); }
+  .face { fill:var(--body); stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linejoin:round; }
+  .face.top { fill:var(--deck); }
+  .face.recess { fill:var(--recess); }
+  .detail { fill:none; stroke:var(--detail); stroke-width:1; vector-effect:non-scaling-stroke; }
+  .label { fill:var(--ink); font-family:var(--mono); }
+  .glass { fill:var(--glass); transition:fill .3s, stroke .3s; }
+  .glass.hot { fill:var(--glass-on); stroke:var(--accent); }
+  .halo { fill:var(--accent); opacity:0; transition:opacity .4s; }
+  .halo.hot { opacity:.22; }
+  .scr { fill:var(--accent-hi); font-family:var(--mono); }
+  .scr-accent { fill:var(--accent); }
+  .led { fill:var(--detail); transition:fill .2s; }
+  .led.hot { fill:var(--accent); }
+  .wire { fill:none; stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linecap:round; stroke-linejoin:round; transition:stroke .4s; }
+  .wire.hot { stroke:var(--accent); }
+  .wire-under { fill:none; stroke:var(--panel); stroke-width:3.5; stroke-linecap:round; stroke-linejoin:round; }
+  .pulse { fill:none; stroke:var(--accent-hi); stroke-width:2.2; stroke-linecap:round; vector-effect:non-scaling-stroke;
+           stroke-dasharray:70 1200; stroke-dashoffset:70; opacity:0; }
+  .pulse.go { animation:flow .55s linear; }
+  @keyframes flow { 0% { stroke-dashoffset:70; opacity:1; } 90% { opacity:1; } 100% { stroke-dashoffset:-1000; opacity:0; } }
+  .press { cursor:pointer; transition:transform 60ms ease-out; }
+  .press.down { transform:translateY(3px); }
+  .press .face { transition:fill .6s ease-out, stroke .6s ease-out; }
+  .press.lit .face, .press.latched .face { fill:var(--accent); stroke:var(--accent-hi); transition:none; }
+  .press.lit .face.top, .press.latched .face.top { fill:var(--accent-hi); }
+  .press.lit { filter:url(#glow); }
+  .press.latched { filter:url(#soft); }
+  .press:hover .face.top { stroke:var(--ink); }
+  .blink { animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  @media (prefers-reduced-motion:reduce) {
+    .press, .glass, .halo, .press .face, .wire { transition:none; } .blink { animation:none; } .pulse.go { animation:none; }
+  }
+</style>
+<style>
+  :root { --dh-w: 1280px; }
+  body { padding-top: 74px !important; }
+  .dh { position:fixed; z-index:20; top:0; left:0; right:0; padding:12px 16px 10px; font:12px/1.45 "DM Mono", monospace; background:linear-gradient(var(--bg) 60%, rgba(12,13,14,0)); }
+  .dh-in { max-width:var(--dh-w, 1280px); margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:10px 18px; }
+  .dh-brand { flex:none; display:flex; align-items:center; gap:8px; color:var(--ink-hi); text-decoration:none; font-weight:500; font-size:12px; letter-spacing:.14em; text-transform:uppercase; }
+  .dh-brand .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
+  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:3px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:var(--panel); }
+  .dh-seg a { flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; padding:5px 13px; border-radius:999px; color:var(--ink); text-decoration:none; font-size:11px; letter-spacing:.06em; transition:all .2s; }
+  .dh-seg a:hover { color:var(--ink-hi); }
+  .dh-seg a.active { color:var(--ink-hi); background:var(--bg); box-shadow:0 0 0 1px var(--accent) inset; }
+  .dh-seg .n { opacity:.6; font-size:10px; }
+</style>
+</head>
+<body>
+
+<header class="dh">
+  <div class="dh-in">
+    <a class="dh-brand" href="index.html"><span class="dot"></span><span>AUDIRA GLOW</span></a>
+    <nav class="dh-seg" aria-label="Collections"><a href="audira-studio.html" class="">AUDIRA STUDIO <span class="n">5</span></a><a href="datacenter.html" class="">DATA CENTER <span class="n">12</span></a><a href="cyberlab.html" class="">CYBER LAB <span class="n">5</span></a><a href="objects.html" class="">OBJECTS <span class="n">10</span></a><a href="cities.html" class="">CITIES <span class="n">10</span></a><a href="lumen.html" class=" active">LUMEN <span class="n">12</span></a><a href="computer-demo.html" class="">DESK COMPUTER <span class="n">1</span></a><a href="assets/gallery-3d.html" class="">3D DEMO <span class="n">12</span></a></nav>
+  </div>
+</header>
+
+<svg class="fx" aria-hidden="true">
+  <defs>
+    <filter id="glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="soft" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="bloom" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+</svg>
+<div class="wrap">
+  <div class="top">
+    <span class="hi"><span class="dot"></span>Lumen</span>
+    <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+    <div class="arrows"><button id="prev" aria-label="Previous figure">← Prev</button><button id="next" aria-label="Next figure">Next →</button></div>
+  </div>
+  <div class="layout">
+    <nav id="nav" aria-label="Figures"></nav>
+    <!-- optional: <aside class="credit">Made by … <a href="…">…</a></aside> (styles below) -->
+    <figure>
+      <div class="cap"><span class="hi" id="fignum">Fig 1</span><span id="figname"></span></div>
+      <div id="stageHolder"></div>
+      <div class="cap"><span id="hint"></span><span class="hi" id="readout"></span></div>
+    </figure>
+  </div>
+  <!-- Made-with credit: keep by default; delete this footer if you don't want it. -->
+  <footer class="made-with"><a href="https://iso-glow.vercel.app" target="_blank" rel="noopener">Made with ISO-GLOW ↗</a></footer>
+</div>
+<script>
+  // Gallery settings: palette 'ember' | 'city' | your own [[name, darkAccent, darkHi, lightAccent, lightHi], ...]
+  window.GALLERY = { palette: 'city', autoDemo: true, storageKey: 'iso-glow-accent' };
+  const FIGS = [];
+</script>
+<!-- FIGURES: one script per figure, each calling FIGS.push({...}). Order here = Fig 1, 2, 3 ... -->
+<script>
+
+<!-- FIGURES: one  per figure, each calling FIGS.push({...}). Order here = Fig 1, 2, 3 ... -->
+
+// RW shading kit — iso-glow builds the shapes, this layer shades them like the RWDS sheet:
+// filled olive gradients (top light, front mid, side dark), soft lime rim on top edges,
+// lime gradient for lit parts, translucent lime glass, contact shadow + lime pool, floating dots.
+const RW = (() => {
+  // faces mix the accent into --rw-base: the page background in dark mode, a deep neutral in light mode,
+  // so Lumen objects stay solid and readable on a light page (flat lit parts, no glow)
+  const BASE = 'var(--rw-base, var(--bg))';
+  const mix = (p, b = BASE) => `color-mix(in srgb, var(--accent) ${p}%, ${b})`;
+  // optional gradient theme: --accent2 is the end colour (falls back to --accent)
+  const B = 'var(--accent2, var(--accent))', mix2 = (p, b = BASE) => `color-mix(in srgb, ${B} ${p}%, ${b})`;
+  // body tint: the gradient stop that stays rich when darkened (the picker avoids orange/gold, which turn brown)
+  const mixT = (p, b = BASE) => `color-mix(in srgb, var(--rw-tint, var(--accent)) ${p}%, ${b})`;
+  const st = (o, c, a = 1) => `<stop offset="${o}" style="stop-color:${c};stop-opacity:${a}"/>`;
+  const lg = (id, x2, y2, s) => `<linearGradient id="rw-${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${s}</linearGradient>`;
+  const rg = (id, s, cx = .5, cy = .5, r = .5) => `<radialGradient id="rw-${id}" cx="${cx}" cy="${cy}" r="${r}">${s}</radialGradient>`;
+  const defs = `<defs>
+    ${lg('top', 1, 1, st(0, mixT(42)) + st(1, mix2(18)))}
+    ${lg('corner', 0, 1, st(0, 'var(--accent-hi)', .9) + st(.45, 'var(--accent)', .3) + st(1, B, 0))}
+    ${lg('front', 0, 1, st(0, mixT(20)) + st(1, mixT(8)))}
+    ${lg('side', 0, 1, st(0, mixT(10)) + st(1, mixT(2)))}
+    ${lg('cyl', 1, 0, st(0, mixT(8)) + st(.38, mixT(30)) + st(.72, mix2(14)) + st(1, mixT(5)))}
+    ${lg('litcyl', 1, 0, st(0, mix(55)) + st(.4, 'var(--accent-hi)') + st(.75, B) + st(1, mix2(45)))}
+    ${lg('lit', 0, 1, st(0, 'var(--accent-hi)') + st(.5, 'var(--accent)') + st(1, mix2(70)))}
+    ${lg('glass', 0, 1, st(0, 'var(--accent)', .7) + st(1, B, .22))}
+    ${lg('column', 0, 1, st(0, B, 0) + st(.35, B, .16) + st(1, 'var(--accent)', .34))}
+    ${lg('tube', 1, 0, st(0, 'var(--accent-hi)', .4) + st(.14, 'var(--accent)', .14) + st(.5, 'var(--accent)', .06) + st(.86, B, .14) + st(1, 'var(--accent-hi)', .35))}
+    ${lg('lface', 0, 1, st(0, B, 0) + st(.32, B, .2) + st(1, 'var(--accent)', .3))}
+    ${lg('ledge', 0, 1, st(0, 'var(--accent-hi)', 0) + st(.5, 'var(--accent-hi)', .25) + st(1, 'var(--accent-hi)', .85))}
+    ${lg('cone', 0, 1, st(0, B, 0) + st(.3, B, 0) + st(.6, B, .1) + st(.85, 'var(--accent)', .24) + st(1, 'var(--accent)', .36))}
+    ${lg('beam', 0, 1, st(0, B, 0) + st(1, 'var(--accent)', .55))}
+    ${lg('cardf', 1, 1, st(0, mixT(52)) + st(1, mix2(28)))}
+    ${lg('litwall', 0, 1, st(0, mix2(70)) + st(1, 'var(--accent-hi)'))}
+    ${lg('paper', 0, 1, st(0, mixT(26)) + st(1, mix2(12)))}
+    <linearGradient id="rw-theme" x1="0" y1=".5" x2="1" y2=".5"><stop offset="0" style="stop-color:var(--accent)"/><stop offset="1" style="stop-color:${B}"/></linearGradient>
+    <linearGradient id="rw-themehi" x1="0" y1=".5" x2="1" y2=".5"><stop offset="0" style="stop-color:var(--accent-hi)"/><stop offset="1" style="stop-color:color-mix(in srgb, ${B} 60%, #ffffff)"/></linearGradient>
+    ${rg('well', st(0, 'var(--accent-hi)') + st(.55, 'var(--accent)') + st(1, mix2(60)))}
+    ${rg('orb', st(0, 'var(--accent-hi)') + st(.55, 'var(--accent)') + st(1, mix2(55)), .36, .3, .8)}
+    ${rg('pool', st(0, 'var(--accent)', .16) + st(1, B, 0))}
+    ${rg('shadow', st(0, '#000', .7) + st(1, '#000', 0))}
+  </defs>`;
+  // light-theme rule: prefix EVERY selector in the list, not just the first
+  const L = rule => { const [sels, body] = rule.split('{'); const list = sels.split(',').map(s => s.trim());
+    return `@media (prefers-color-scheme: light) { ${list.map(s => `:root:not([data-theme="dark"]) ${s}`).join(', ')} {${body} } ${list.map(s => `:root[data-theme="light"] ${s}`).join(', ')} {${body}`; };
+  const css = `
+    @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --rw-base:#1b1e18; } }
+    :root[data-theme="light"] { --rw-base:#1b1e18; }
+    #stage .rw-top { fill:url(#rw-top); }
+    #stage .rw-front { fill:url(#rw-front); }
+    #stage .rw-side { fill:url(#rw-side); }
+    #stage .rw-cyl { fill:url(#rw-cyl); }
+    #stage .rw-litcyl { fill:url(#rw-litcyl); }
+    #stage .rw-lit { fill:url(#rw-lit); }
+    #stage .rw-orb { fill:url(#rw-orb); }
+    #stage .rw-glass { fill:url(#rw-glass); stroke:var(--accent-hi); stroke-opacity:.75; stroke-width:1; vector-effect:non-scaling-stroke; }
+    #stage .rw-paper { fill:url(#rw-paper); }
+    #stage .rw-flat { fill:url(#rw-theme); }
+    #stage .rw-hi { fill:url(#rw-themehi); }
+    #stage .rw-edge { fill:${mixT(42)}; }
+    #stage .rw-pit { fill:${mixT(5)}; }
+    #stage .rw-ink { fill:${mixT(14)}; }
+    #stage .rw-txt { fill:${mix(48)}; font-family:var(--mono); }
+    #stage .rw-lip { fill:none; stroke:${mix(72)}; stroke-opacity:.85; stroke-width:1.2; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
+    #stage .rw-rim { fill:none; stroke:${mix(30)}; stroke-width:1; vector-effect:non-scaling-stroke; }
+    #stage .rw-etch { fill:none; stroke:${mix(24)}; stroke-width:1; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+    #stage .rw-line { fill:none; stroke:var(--accent-hi); stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
+    #stage .rw-glow { fill:url(#rw-theme); opacity:.45; }
+    #stage .rw-dot { fill:url(#rw-themehi); }
+    #stage .rw-halo { fill:url(#rw-theme); opacity:.16; }
+    #stage .rw-cardf { fill:url(#rw-cardf); stroke:var(--accent); stroke-width:1.2; vector-effect:non-scaling-stroke; }
+    #stage .rw-litwall { fill:url(#rw-litwall); }
+    #stage .rw-wall { fill:${mixT(6)}; }
+    #stage .rw-cast { fill:#000; opacity:.38; }
+    #stage .rw-shadow { fill:url(#rw-shadow); }
+    #stage .rw-corner { fill:url(#rw-corner); }
+    #stage .rw-ring { fill:none; stroke:var(--accent); stroke-opacity:.2; stroke-width:1; vector-effect:non-scaling-stroke; }
+    #stage .rw-ring2 { fill:none; stroke:var(--accent); stroke-opacity:.14; stroke-width:1; stroke-dasharray:3 9; vector-effect:non-scaling-stroke; animation:rw-turn 40s linear infinite; }
+    @keyframes rw-turn { to { stroke-dashoffset:-480; } }
+    @media (prefers-reduced-motion:reduce) { #stage .rw-ring2 { animation:none; } }
+    #stage .rw-pool { fill:url(#rw-pool); }
+    #stage .rw-beam { fill:url(#rw-beam); }
+    #stage .rw-column { fill:url(#rw-column); }
+    #stage .rw-cone { fill:url(#rw-cone); }
+    #stage .rw-tube { fill:url(#rw-tube); }
+    #stage .rw-lface { fill:url(#rw-lface); }
+    #stage .rw-ledge { fill:url(#rw-ledge); }
+    #stage .rw-cedge { fill:none; stroke:var(--accent-hi); stroke-opacity:.55; stroke-width:1.2; vector-effect:non-scaling-stroke; }
+    #stage .rw-ray { stroke:var(--accent-hi); stroke-opacity:.3; stroke-width:1; vector-effect:non-scaling-stroke; }
+    ${L('#stage [filter] { filter:none !important; }')}
+    ${L('#stage .rw-glow, #stage .rw-halo, #stage .rw-pool, #stage .rw-beam, #stage .rw-column, #stage .rw-cone, #stage .rw-tube, #stage .rw-lface, #stage .rw-ledge, #stage .rw-cedge, #stage .rw-ray { display:none; }')}
+    ${L('#stage .rw-shadow { opacity:.25; }')}
+  `;
+  const kit = K => {
+    const { P } = K, f = v => v.toFixed(2), H = Math.PI / 2, q = H / 2;
+    const d3 = (pts, close = true) => 'M' + pts.map(p => P(...p).map(f).join(' ')).join('L') + (close ? 'Z' : '');
+    const arc = (cx, cy, r, a0, a1, n = 10) => { if (r <= 0) return [[cx, cy]]; const o = [];
+      for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * i / n; o.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); } return o; };
+    const wall = (pts, z0, z1) => d3([...pts.map(([a, b]) => [a, b, z0]), ...pts.slice().reverse().map(([a, b]) => [a, b, z1])]);
+    // shaded rounded box: separate side / front / top fills + rim light on the near top edge
+    function box(x, y, z, w, d, h, r = 0, c = '', topc = 'rw-top') {
+      r = Math.min(r, w / 2, d / 2); const z1 = z + h, k = c ? ' ' + c : '';
+      const ring = [...arc(x+w-r, y+r, r, -H, 0), ...arc(x+w-r, y+d-r, r, 0, H), ...arc(x+r, y+d-r, r, H, 2*H), ...arc(x+r, y+r, r, 2*H, 3*H)];
+      const side = [...arc(x+w-r, y+r, r, -q, 0), ...arc(x+w-r, y+d-r, r, 0, q)];
+      const front = [...arc(x+w-r, y+d-r, r, q, H), ...arc(x+r, y+d-r, r, H, 3*q)];
+      const lip = [...arc(x+w-r, y+r, r, -q, 0), ...arc(x+w-r, y+d-r, r, 0, H), ...arc(x+r, y+d-r, r, H, 3*q)];
+      // light catching the front vertical corner: a thin strip fading downward
+      const cx0 = x + w - r + r * Math.cos(q), cy0 = y + d - r + r * Math.sin(q), [tx, ty] = P(cx0, cy0, z1), [, by] = P(cx0, cy0, z);
+      const hw = h > 8 ? .8 : 0, corner = hw ? `<path class="rw-corner" d="M${f(tx - hw)} ${f(ty)}H${f(tx + hw)}V${f(by)}H${f(tx - hw)}Z"/>` : '';
+      return `<path class="rw-side${k}" d="${wall(side, z, z1)}"/><path class="rw-front${k}" d="${wall(front, z, z1)}"/>` + corner +
+        `<path class="${topc}${k}" d="${d3(ring.map(([a, b]) => [a, b, z1]))}"/><path class="rw-lip" d="${d3(lip.map(([a, b]) => [a, b, z1]), false)}"/>`;
+    }
+    // upright cylinder (axis z)
+    function cyl(cx, cy, z, r, h, c = 'rw-cyl', topc = 'rw-top') {
+      const vis = arc(cx, cy, r, -q, 3*q, 24), ring = arc(cx, cy, r, 0, 4*H, 40);
+      return `<path class="${c}" d="${wall(vis, z, z+h)}"/><path class="${topc}" d="${d3(ring.map(([a, b]) => [a, b, z+h]))}"/>` +
+        `<path class="rw-lip" d="${d3(vis.map(([a, b]) => [a, b, z+h]), false)}"/>`;
+    }
+    // stacked copies of a face-local shape along a 3D step: solid thickness for coins, cards, discs
+    function ext(tf, n, inner, face, edgeCls = 'rw-edge') {
+      let s = ''; for (let i = 0; i < n; i++) s += `<g transform="${tf(i)}" class="${edgeCls}">${inner}</g>`;
+      return s + `<g transform="${tf(n)}">${face}</g>`;
+    }
+    const ground = (cx, cy, rx, ry, pool = true) => `<g transform="${K.TOP(0, 0, 0)}">
+      ${pool ? `<ellipse class="rw-pool" cx="${cx}" cy="${cy}" rx="${rx * 1.25}" ry="${ry * 1.25}"/>` : ''}
+      <ellipse class="rw-shadow" cx="${cx + 6}" cy="${cy + 6}" rx="${rx}" ry="${ry}"/>
+      <circle class="rw-ring" cx="${cx}" cy="${cy}" r="${(rx + ry) / 2 * 1.04}"/>
+      <circle class="rw-ring2" cx="${cx}" cy="${cy}" r="${(rx + ry) / 2 * 1.24}"/></g>`;
+    const dot = (x, y, z, r = 2.5, id = '') => { const p = P(x, y, z);
+      const a = Math.round(Math.random() * 90);
+      return `<g ${id ? `id="${id}" ` : ''}><rect class="rw-dot" transform="translate(${f(p[0])} ${f(p[1])}) rotate(${a})" x="${-r * .8}" y="${-r * .8}" width="${r * 1.6}" height="${r * 1.6}" rx=".3"/></g>`; };
+    // sunken pocket: shape(cls, transform) returns ONE element. Opening drawn as wall colour, floor shifted
+    // by the depth transform and clipped to the opening, so the far inner walls show through.
+    let rid = 0;
+    function recess(shape, tf0, tf1, wallCls = 'rw-wall', floorCls = 'rw-pit', extra = '') {
+      const id = 'rwc' + (rid++) + Math.random().toString(36).slice(2, 6);
+      return `<clipPath id="${id}">${shape('', tf0)}</clipPath>${shape(wallCls, tf0)}<g clip-path="url(#${id})">${shape(floorCls, tf1)}${extra}</g>`;
+    }
+    // expanding light cone (approved look): convex hull of the projected base + top circles, path "d"
+    const hull = pts => { pts = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      const cr = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]); const lo = [], up = [];
+      for (const p of pts) { while (lo.length > 1 && cr(lo[lo.length-2], lo[lo.length-1], p) <= 0) lo.pop(); lo.push(p); }
+      for (const p of pts.slice().reverse()) { while (up.length > 1 && cr(up[up.length-2], up[up.length-1], p) <= 0) up.pop(); up.push(p); }
+      return 'M' + lo.slice(0, -1).concat(up.slice(0, -1)).map(p => p.map(f).join(' ')).join('L') + 'Z'; };
+    const cone = (cx, cy, z, r0, r1, h) => hull([...arc(cx, cy, r0, 0, 4*H, 48).map(([a, b]) => P(a, b, z)),
+                                                ...arc(cx, cy, r1, 0, 4*H, 48).map(([a, b]) => P(a, b, z + h))]);
+    // rising square motes appended to `el`; returns tick(t, level 0..1, speed)
+    function motes(el, { cx, cy, r, z0, h, n = 12, size = 1 }) {
+      n = Math.round(n * 1.4); size *= 1.15;
+      const ps = [];
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * 4 * H, rr = Math.sqrt(Math.random()) * r, s = (.7 + Math.random() * 1.1) * size;
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.innerHTML = `<rect class="rw-dot" x="${-s}" y="${-s}" width="${2*s}" height="${2*s*(.6 + Math.random()*.4)}" rx=".2"/>`;
+        el.appendChild(g);
+        ps.push({ g, x: cx + rr * Math.cos(a), y: cy + rr * Math.sin(a), off: Math.random(), spd: 3200 + Math.random() * 2600, rot: Math.random() * 360, spin: (Math.random() - .5) * 200 });
+      }
+      return (t, level = 1, speed = 1) => ps.forEach(p => {
+        const u = ((t * speed / p.spd) + p.off) % 1, [px, py] = P(p.x, p.y, z0 + u * h);
+        p.g.setAttribute('transform', `translate(${f(px)} ${f(py)}) rotate(${(p.rot + u * p.spin).toFixed(1)})`);
+        p.g.style.opacity = (level * Math.min(1, u * 6) * (1 - u)).toFixed(2);
+      });
+    }
+    // clip polygon for the vertical plane y = yc above height z (things sinking into a slot)
+    const above = (id, yc, z) => `<clipPath id="${id}"><polygon points="${[P(-400, yc, z), P(600, yc, z), P(600, yc, 600), P(-400, yc, 600)].map(p => p.map(f).join(',')).join(' ')}"/></clipPath>`;
+    // circles / cylinders / cones along any 3D axis
+    const sub = (a, b) => a.map((v, i) => v - b[i]), dotp = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+    const cross = (a, b) => [a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0]];
+    const unit = a => { const l = Math.hypot(...a) || 1; return a.map(v => v / l); };
+    function ring3(c, axis, r, n = 40) {
+      const a = unit(axis), u = unit(cross(a, Math.abs(a[2]) < .9 ? [0, 0, 1] : [1, 0, 0])), v = cross(a, u);
+      return Array.from({ length: n }, (_, i) => { const t = i / n * 4 * H, cs = Math.cos(t), sn = Math.sin(t);
+        return [c[0] + r * (u[0]*cs + v[0]*sn), c[1] + r * (u[1]*cs + v[1]*sn), c[2] + r * (u[2]*cs + v[2]*sn)]; });
+    }
+    const poly = pts => 'M' + pts.map(p => P(...p).map(f).join(' ')).join('L') + 'Z';
+    function cylAx(c0, c1, r, side = 'rw-cyl', cap = 'rw-top') {
+      const ax = sub(c1, c0), r0 = ring3(c0, ax, r), r1 = ring3(c1, ax, r);
+      const capR = dotp(ax, [1, 1, 1]) > 0 ? r1 : r0;
+      return `<path class="${side}" d="${hull([...r0, ...r1].map(p => P(...p)))}"/><path class="${cap}" d="${poly(capR)}"/>`;
+    }
+    const coneAx = (c0, c1, r0, r1) => hull([...ring3(c0, sub(c1, c0), r0), ...ring3(c1, sub(c1, c0), r1)].map(p => P(...p)));
+    return { d3, arc, wall, box, cyl, ext, ground, dot, recess, cone, motes, above, ring3, poly, cylAx, coneAx, hull };
+  };
+  // idle auto-play: run step() every `period` ms unless the viewer touched the figure recently.
+  // returns mark() — call it from key handlers; pointer input on the stage is tracked automatically.
+  const auto = (api, stage, period, step) => {
+    let last = 0; const mark = () => { last = performance.now(); };
+    stage.addEventListener('pointerdown', mark, true);
+    api.every(period, () => { if (performance.now() - last > period + 2500) step(); });
+    return mark;
+  };
+  // install the shared Lumen classes once, so any figure works on its own
+  if (typeof document !== 'undefined' && !document.getElementById('rw-css')) {
+    const el = document.createElement('style'); el.id = 'rw-css'; el.textContent = css; document.head.appendChild(el);
+  }
+  return { mix, mix2, mixT, defs, css, kit, auto };
+})();
+
+FIGS.push({
+  id: 'term', name: 'Card terminal', hint: 'Click card · coin · ✕ — or Enter · C · X',
+  aria: 'Isometric payment terminal with a card hovering over a glowing slot. Click the card or press Enter to pay, click the coin or press C to drop a coin, press X to clear.',
+  css: `
+    [data-fig="term"] .t-halo { opacity:.14; transition:opacity .4s; }
+    [data-fig="term"] .t-halo.hot { opacity:.3; }
+    [data-fig="term"] .t-beam { opacity:.85; transition:opacity .5s; }
+    [data-fig="term"] .t-beam.hot { opacity:1; }
+    [data-fig="term"] .t-tick { stroke:var(--accent); stroke-opacity:.55; } [data-fig="term"] .t-tick.hot { stroke:var(--accent-hi); stroke-opacity:1; }
+    [data-fig="term"] .t-bar { fill:${RW.mix(55)}; }
+    [data-fig="term"] .t-bar.new { fill:url(#rw-themehi); }
+    [data-fig="term"] .t-area { fill:url(#rw-theme); fill-opacity:.4; stroke:var(--accent-hi); stroke-width:1.2; vector-effect:non-scaling-stroke; }
+    [data-fig="term"] .t-strip { fill:url(#rw-themehi); }
+    [data-fig="term"] .t-well { fill:url(#rw-well); }
+    [data-fig="term"] .t-xface { fill:url(#rw-well); }
+    [data-fig="term"] .press.lit .t-xface { fill:url(#rw-themehi); }
+    [data-fig="term"] .t-x { fill:none; stroke:${RW.mix(12)}; stroke-width:2.6; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+    [data-fig="term"] .t-ctxt { fill:url(#rw-themehi); }
+    #stage[data-fig="term"] .rw-dim.rw-front { fill:${RW.mix(4)}; } #stage[data-fig="term"] .rw-dim.rw-side { fill:${RW.mix(2)}; }
+    [data-fig="term"] .grab { cursor:pointer; }
+  `,
+  mount(stage, api) {
+    const W = 160, H = 64, CX = 80, CY = 80, R = 46;          // H = rim of the slot ring
+    const DOTS = [[-30, 40, 120], [178, 20, 118], [176, 168, 30], [20, 196, 96]];
+    const K = api.iso.frame([[0,0,0],[W,0,0],[0,W,0],[W+10,W,0],[20,CY,150],[140,CY,150],[CX-R*1.5*.71,CY-R*1.5*.71,164],[CX-R*1.5*.71,CY+R*1.5*.71,164],[CX+R*1.5*.71,CY-R*1.5*.71,164], ...DOTS]);
+    const { P, D, TOP, FRONT, SIDE } = K, G = RW.kit(K);
+    const pt = p => p.map(v => v.toFixed(2)).join(',');
+    const q = Math.PI / 4;
+
+    let svg = RW.defs + `<defs>
+      <clipPath id="term-clip"><polygon points="${[P(-200,CY,H),P(360,CY,H),P(360,CY,400),P(-200,CY,400)].map(pt).join(' ')}"/></clipPath>
+    </defs>`;
+    svg += G.ground(W/2, W/2, 120, 120);
+    // tiers: plinth, recessed groove band, main body (top at z 62)
+    svg += G.box(0,0,0, W,W,16, 20);
+    svg += G.box(6,6,16, W-12,W-12,6, 16, 'rw-dim');
+    svg += G.box(2,2,22, W-4,W-4,40, 18);
+
+    // lit strips on the plinth: solid lime + crisp halo
+    const strip = `<rect class="rw-halo t-halo" x="16" y="2.5" width="${W-32}" height="11" rx="5.5"/><rect class="t-strip" x="20" y="6" width="${W-40}" height="4" rx="2"/>`;
+    svg += `<g transform="${FRONT(0, W, 16)}">${strip}</g><g transform="${SIDE(W, W, 16)}">${strip}</g>`;
+
+    // sunken top deck inside a raised frame, ticks + light rings on the deck floor
+    let deck = `<g transform="${TOP(0,0,57)}">
+`;
+    for (let i = 0; i < 48; i++) {
+      const a = i / 48 * Math.PI * 2, r0 = R + 10, r1 = R + (i % 4 === 0 ? 16 : 13);
+      deck += `<line class="rw-etch t-tick" x1="${CX + r0*Math.cos(a)}" y1="${CY + r0*Math.sin(a)}" x2="${CX + r1*Math.cos(a)}" y2="${CY + r1*Math.sin(a)}"/>`;
+    }
+    deck += `${[[26,26],[W-26,26],[26,W-26],[W-26,W-26]].map(([x,y]) => `<circle class="rw-pit" cx="${x}" cy="${y}" r="3"/>`).join('')}</g>`;
+    const deckShape = (c, tf) => `<rect class="${c}" transform="${tf}" x="16" y="16" width="${W-32}" height="${W-32}" rx="10"/>`;
+    svg += G.recess(deckShape, TOP(0,0,62), TOP(0,0,57), 'rw-wall', 'rw-top', deck);
+    svg += `<g transform="${TOP(0,0,62)}"><rect class="rw-rim" x="16" y="16" width="${W-32}" height="${W-32}" rx="10"/></g>`;
+
+    const k = R / Math.SQRT2;
+    // raised slot ring, then a deep well: lit inner walls, bright floor
+    svg += G.cyl(CX, CY, 57, R+7, H-57);
+    const wellShape = (c, tf) => `<circle class="${c}" transform="${tf}" cx="${CX}" cy="${CY}" r="${R}"/>`;
+    svg += G.recess(wellShape, TOP(0,0,H), TOP(0,0,H-16), 'rw-litwall', 't-well');
+    svg += `<g transform="${TOP(0,0,H)}"><circle class="rw-line" cx="${CX}" cy="${CY}" r="${R}"/></g>`;
+    // light: an expanding cone — round base on the slot opening, bigger round top, fading upward
+    const LH = 100, ZT = H + LH;
+    const hull = pts => { pts = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      const cr = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]); const lo = [], up = [];
+      for (const p of pts) { while (lo.length > 1 && cr(lo[lo.length-2], lo[lo.length-1], p) <= 0) lo.pop(); lo.push(p); }
+      for (const p of pts.slice().reverse()) { while (up.length > 1 && cr(up[up.length-2], up[up.length-1], p) <= 0) up.pop(); up.push(p); }
+      return 'M' + lo.slice(0, -1).concat(up.slice(0, -1)).map(p => p.map(v => v.toFixed(2)).join(' ')).join('L') + 'Z'; };
+    const cone = (r0, r1) => hull([...G.arc(CX, CY, r0, 0, 2*Math.PI, 48).map(([x, y]) => P(x, y, H)),
+                                   ...G.arc(CX, CY, r1, 0, 2*Math.PI, 48).map(([x, y]) => P(x, y, ZT))]);
+    svg += `<g id="term-beam" class="t-beam">
+      <path class="rw-cone" d="${cone(R, R * 1.5)}"/>
+    </g>`;
+
+    svg += `<g id="term-pback"></g>`;
+    // card: solid, 3 units thick, casts a faint shadow onto the ring (kept low so it never reads as a smear); coin: thick disc
+    const cw = 84, ch = 54, cx0 = CX - cw/2, cz0 = H + 30;   // hole (2R = 92) is wider than the card
+    svg += `<g transform="${TOP(0,0,H)}"><ellipse id="term-cast" class="rw-shadow" cx="${CX+4}" cy="${CY+6}" rx="${cw/2+6}" ry="12"/></g>`;
+    const cardR = `<rect width="${cw}" height="${ch}" rx="5"/>`;
+    const coinC = `<circle cx="0" cy="0" r="10"/>`;
+    svg += `<g clip-path="url(#term-clip)">
+      <g id="term-cardg" class="grab">
+        ${G.ext(i => FRONT(cx0, CY - 3 + i, cz0 + ch), 3, cardR, `
+          <rect class="rw-cardf" width="${cw}" height="${ch}" rx="5"/>
+          <rect class="rw-hi" x="6" y="7" width="24" height="3" rx="1.5"/>
+          <rect class="rw-flat" x="6" y="12" width="14" height="2" rx="1" opacity=".7"/>
+          <rect class="rw-flat" x="${cw-21}" y="8" width="14" height="11" rx="2.5"/>
+          <path class="rw-etch" style="stroke:${RW.mix(25)}" d="M${cw-21} 13.5h14M${cw-14} 8v11"/>
+          <circle class="rw-flat" cx="${cw-12}" cy="${ch-9}" r="4"/>
+          <text class="t-ctxt" x="7" y="36" font-size="6.5" letter-spacing=".8">0000 0000 4021</text>`)}
+      </g>
+      <g id="term-coing" class="grab">
+        ${G.ext(i => FRONT(CX + 62, CY - 4 + i, H + 70), 4, coinC,
+          `<circle class="rw-halo" r="15"/><circle class="rw-orb" r="10"/><circle class="rw-etch" style="stroke:${RW.mix(55)}" r="6.5"/>`)}
+      </g>
+    </g>`;
+
+    svg += `<g id="term-pfront"></g>`;
+
+    // front of the body: two screens set into the face
+    const scr = x => (c, tf) => `<rect class="${c}" transform="${tf}" x="${x}" y="6" width="64" height="26" rx="4"/>`;
+    const F0 = FRONT(2, W-2, 62), F1 = FRONT(2, W-6, 62);
+    svg += G.recess(scr(10), F0, F1, 'rw-wall', 'rw-pit', `<g transform="${F1}" id="term-bars"></g>`);
+    svg += G.recess(scr(82), F0, F1, 'rw-wall', 'rw-pit', `<g transform="${F1}"><path id="term-area" class="t-area"/></g>`);
+    svg += `<g transform="${F0}"><rect class="rw-rim" x="10" y="6" width="64" height="26" rx="4"/><rect class="rw-rim" x="82" y="6" width="64" height="26" rx="4"/></g>`;
+
+    // side of the body: vents, label, protruding X disc
+    const XU = 104, XV = 20, disc = `<circle cx="${XU}" cy="${XV}" r="13"/>`;
+    svg += `<g transform="${SIDE(W-2, W-2, 62)}">
+      ${api.iso.slits(16, 36, 4, 8, 26, true, 'rw-etch')}
+      <text class="rw-txt" x="16" y="34" font-size="6" letter-spacing="1">PAY</text>
+    </g>
+    <g class="press" id="term-x">
+      ${G.ext(i => SIDE(W - 2 + i * 1.3, W-2, 62), 5, disc,
+        `<circle class="rw-halo t-halo" cx="${XU}" cy="${XV}" r="19"/>
+         <circle class="t-xface" cx="${XU}" cy="${XV}" r="13"/>
+         <path class="t-x" d="M${XU-4.5} ${XV-4.5} L${XU+4.5} ${XV+4.5} M${XU+4.5} ${XV-4.5} L${XU-4.5} ${XV+4.5}"/>`)}
+    </g>`;
+
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'term-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const halos = [...stage.querySelectorAll('.t-halo')], beam = $('#term-beam'), cast = $('#term-cast');
+    const cardg = $('#term-cardg'), coing = $('#term-coing'), bars = $('#term-bars'), area = $('#term-area');
+    const xbtn = $('#term-x');
+    const ticks = [...stage.querySelectorAll('.t-tick')], dots = DOTS.map((_, i) => $('#term-dot' + i));
+
+    // floating motes rising through the light column
+    const PN = 14, parts = [];
+    const pback = $('#term-pback'), pfront = $('#term-pfront');
+    for (let i = 0; i < PN; i++) {
+      const ang = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * (R + 2);
+      const x = CX + rr * Math.cos(ang), y = CY + rr * Math.sin(ang);
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      const sz = .7 + Math.random() * 1.1;
+      g.innerHTML = `<rect class="rw-dot" x="${-sz}" y="${-sz}" width="${sz * 2}" height="${sz * 2 * (.6 + Math.random() * .4)}" rx=".2"/>`;
+      (y > CY ? pfront : pback).appendChild(g);
+      parts.push({ g, x, y, off: Math.random(), spd: 3200 + Math.random() * 2600, drift: (Math.random() - .5) * 8, rot: Math.random() * 360, spin: (Math.random() - .5) * 200 });
+    }
+    const AMTS = [4.5, 12, 24, 8.75, 36.2, 17.4, 6.25];
+    const st = { hist: [6, 14, 9, 22, 11, 18, 7, 15], total: 0, n: 0, last: null, glow: 0, anim: null, ai: 0 };
+
+    function drawCharts() {
+      const h = st.hist.slice(-8), mx = Math.max(...h, 1);
+      bars.innerHTML = h.map((v, i) => {
+        const bh = Math.max(1, 18 * v / mx);
+        return `<rect class="t-bar${i === h.length-1 && st.last ? ' new' : ''}" x="${17 + i*7}" y="${29 - bh}" width="4" height="${bh}" rx="1"/>`;
+      }).join('');
+      let acc = 0; const cum = h.map(v => acc += v), cm = acc || 1;
+      const pts = cum.map((v, i) => `${88 + i * 52/7},${29 - 18 * v / cm}`);
+      area.setAttribute('d', `M88,29 L${pts.join(' L')} L140,29 Z`);
+    }
+    function render() {
+      const on = st.glow > 0 || !!st.anim;
+      halos.forEach(el => el.classList.toggle('hot', on));
+      beam.classList.toggle('hot', on);
+      api.power(on);
+      api.readout(st.last ? `approved · $${st.last.toFixed(2)} · total $${st.total.toFixed(2)} · ${st.n} tx` : 'ready · tap card');
+    }
+    function settle(amt) {
+      st.last = amt; st.total += amt; st.n++; st.hist.push(amt);
+      st.glow++; api.after(2600, () => { st.glow--; render(); });
+      drawCharts(); render();
+    }
+    function pay() { if (st.anim) return; st.anim = { kind: 'card', t0: performance.now(), done: false, amt: AMTS[st.ai++ % AMTS.length] }; render(); }
+    function coin() { if (st.anim) return; st.anim = { kind: 'coin', t0: performance.now(), done: false, amt: 1 }; render(); }
+    function clear() {
+      api.flash(xbtn);
+      st.hist = st.hist.slice(-8).map(() => 0); st.total = 0; st.n = 0; st.last = null; st.glow = 0;
+      drawCharts(); render(); api.readout('cleared');
+    }
+
+    const ease = p => p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;
+    const tr = (el, dx, dz) => { const d = D(dx, 0, dz); el.setAttribute('transform', `translate(${d[0].toFixed(2)} ${d[1].toFixed(2)})`); };
+    api.loop(t => {
+      let cardZ = Math.sin(t / 700) * 3, coinX = 0, coinZ = Math.sin(t / 520 + 1) * 4, coinO = 1;
+      const a = st.anim;
+      if (a) {
+        const p = Math.min(1, (t - a.t0) / (a.kind === 'card' ? 1900 : 1300));
+        if (a.kind === 'card') {
+          if (p < .35) cardZ = -(ch + 30) * ease(p / .35);
+          else if (p < .55) cardZ = -(ch + 30);
+          else cardZ = -(ch + 30) * (1 - ease((p - .55) / .45));
+        } else {
+          const q = Math.min(1, p / .55);
+          coinX = -62 * ease(q); coinZ = 4 - 86 * q * q;
+          if (p > .7) { coinX = 0; coinZ = 0; coinO = (p - .7) / .3; }
+        }
+        if (!a.done && p >= (a.kind === 'card' ? .35 : .5)) { a.done = true; settle(a.amt); }
+        if (p >= 1) { st.anim = null; render(); }
+      }
+      tr(cardg, 0, cardZ); cast.style.opacity = (.3 * Math.max(0, Math.min(1, (cardZ + 24) / 24))).toFixed(2); tr(coing, coinX, coinZ); coing.style.opacity = coinO;
+      const boost = (st.anim || st.glow > 0) ? 1.8 : 1;
+      parts.forEach(p => {
+        const u = ((t * boost / p.spd) + p.off) % 1, z = H - 6 + u * 100;
+        const [px, py] = P(p.x + Math.sin(u * 6 + p.off * 9) * p.drift * .3, p.y, z);
+        p.g.setAttribute('transform', `translate(${px.toFixed(2)} ${py.toFixed(2)}) rotate(${(p.rot + u * p.spin).toFixed(1)})`);
+        p.g.style.opacity = (Math.min(1, u * 6) * (1 - u)).toFixed(2);
+      });
+      dots.forEach((el, i) => { el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`); });
+      const lit = st.anim || st.glow > 0, head = Math.floor(t / 30) % 48;
+      ticks.forEach((el, i) => el.classList.toggle('hot', !!lit && ((head - i + 48) % 48) < 14));
+    });
+
+    cardg.addEventListener('click', pay);
+    coing.addEventListener('click', coin);
+    xbtn.addEventListener('click', clear);
+    drawCharts(); render();
+    let ak = 0; const mark = RW.auto(api, stage, 3200, () => (ak++ % 2 ? coin() : pay()));
+    return {
+      key: e => {
+        mark();
+        if (e.key === 'Enter' || e.key === ' ') return pay(), true;
+        if (e.key === 'c' || e.key === 'C') return coin(), true;
+        if (e.key === 'x' || e.key === 'X' || e.key === 'Escape') return clear(), true;
+        return false;
+      },
+      demo: () => api.after(300, pay),
+    };
+  },
+});
+
+FIGS.push({
+  id: 'vault', name: 'Vault safe', hint: 'Click the door or Enter · C deposit · ←→ dial',
+  aria: 'Isometric vault safe with a round door and a dial. Press Enter or click the door to spin the dial and swing it open, press C to deposit a coin, arrow keys turn the dial.',
+  css: `
+    [data-fig="vault"] .v-edge { fill:${RW.mix(13)}; }
+    [data-fig="vault"] .v-face { fill:url(#rw-top); }
+    [data-fig="vault"] .v-ring { fill:none; stroke:${RW.mix(42)}; stroke-width:1.2; vector-effect:non-scaling-stroke; }
+    [data-fig="vault"] .v-dial { fill:${RW.mix(30)}; transition:fill .3s; }
+    [data-fig="vault"] .v-dial.hot { fill:url(#rw-orb); }
+    [data-fig="vault"] .v-spoke { fill:none; stroke:${RW.mix(60)}; stroke-width:2.6; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+    [data-fig="vault"] .v-back { fill:url(#rw-well); }
+    [data-fig="vault"] .v-spill { fill:url(#vault-spillg); }
+    [data-fig="vault"] .v-led { fill:${RW.mix(28)}; } [data-fig="vault"] .v-led.hot { fill:url(#rw-themehi); }
+    [data-fig="vault"] .v-strip { fill:url(#rw-themehi); }
+    [data-fig="vault"] .grab { cursor:pointer; }
+  `,
+  mount(stage, api) {
+    const W = 140, DP = 120, H = 130;                          // body width, depth, height
+    const HX = 26, DZ = 115, DR = 42, DCU = 44, DCV = 50;      // hinge x, door top z, door radius, door centre (door-local)
+    const OX = HX + DCU, OZ = DZ - DCV, OR = DR - 3;           // opening centre x / z and radius
+    const DOTS = [[-34, 20, 150], [176, 10, 128], [170, 150, 30], [-14, 196, 96]];
+    const K = api.iso.frame([[-4,-4,0],[W+4,-4,0],[-4,DP+84,0],[W+4,DP+4,0],[0,0,H],[W,0,H],[HX,DP+90,DZ],[HX-6,DP+88,0], ...DOTS]);
+    const { P, TOP, FRONT, SIDE, plane } = K, G = RW.kit(K);
+    const deg = Math.PI / 180;
+
+    let svg = RW.defs + `<defs><linearGradient id="vault-spillg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color:var(--accent);stop-opacity:.45"/><stop offset="1" style="stop-color:var(--accent);stop-opacity:0"/></linearGradient></defs>`;
+    svg += G.ground(W/2, DP/2 + 10, 115, 100);
+    // light spilling out of the open door onto the ground
+    svg += `<g transform="${TOP(0,0,0)}"><path id="vault-spill" class="v-spill" style="opacity:0" d="M${OX-34} ${DP+4} L${OX+34} ${DP+4} L${OX+48} ${DP+52} L${OX-48} ${DP+52} Z"/></g>`;
+    // plinth + body
+    svg += G.box(-4,-4,0, W+8,DP+8,10, 18);
+    svg += G.box(0,0,10, W,DP,H-10, 14);
+    const strip = w => `<rect class="v-strip" x="14" y="4" width="${w - 28}" height="3" rx="1.5"/>`;
+    svg += `<g transform="${FRONT(-4, DP+4, 10)}">${strip(W+8)}</g><g transform="${SIDE(W+4, DP+4, 10)}">${strip(DP+8)}</g>`;
+    // top: inset lid line + bolts
+    svg += `<g transform="${TOP(0,0,H)}"><rect class="rw-etch" x="10" y="10" width="${W-20}" height="${DP-20}" rx="10"/>
+      ${[[18,18],[W-18,18],[18,DP-18],[W-18,DP-18]].map(([x,y]) => `<circle class="rw-pit" cx="${x}" cy="${y}" r="3"/>`).join('')}</g>`;
+    // side: keypad + label + vents
+    let pad = '';
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) pad += `<rect class="rw-pit" x="${22 + c*12}" y="${30 + r*10}" width="9" height="7" rx="1.5"/>`;
+    svg += `<g transform="${SIDE(W, DP, H)}">${pad}
+      <rect id="vault-led" class="v-led" x="22" y="18" width="33" height="4" rx="2"/>
+      <text class="rw-txt" x="22" y="74" font-size="6" letter-spacing="1">VAULT·07</text>
+      ${api.iso.slits(76, 100, 4, 24, 60, true, 'rw-etch')}</g>`;
+    // opening in the front face: lit tunnel walls, glowing back, coin stacks inside
+    const hole = (c, tf) => `<circle class="${c}" transform="${tf}" cx="${OX}" cy="${H - OZ}" r="${OR}"/>`;
+    svg += G.recess(hole, FRONT(0, DP, H), FRONT(0, DP - 46, H), 'rw-litwall', 'v-back', `<g id="vault-in"></g>`);
+    svg += `<g transform="${FRONT(0, DP, H)}"><circle class="rw-line" style="stroke-opacity:.85" cx="${OX}" cy="${H - OZ}" r="${OR + 4}"/></g>`;
+    // hinges
+    svg += G.cyl(HX - 2, DP + 3, OZ + 14, 4, 16) + G.cyl(HX - 2, DP + 3, OZ - 30, 4, 16);
+    // door: stacked layers on a plane that swings about the hinge (transforms set per frame)
+    svg += `<g id="vault-door" class="grab">`;
+    svg += `<g data-l="0"><circle class="v-face" cx="${DCU}" cy="${DCV}" r="${DR}"/><circle class="v-ring" cx="${DCU}" cy="${DCV}" r="${DR - 8}"/></g>`;
+    for (let i = 1; i < 7; i++) svg += `<g class="v-edge" data-l="${i}"><circle cx="${DCU}" cy="${DCV}" r="${DR}"/></g>`;
+    svg += `<g data-l="7">
+        <circle class="v-face" cx="${DCU}" cy="${DCV}" r="${DR}"/>
+        <circle class="v-ring" cx="${DCU}" cy="${DCV}" r="${DR - 5}"/>
+        ${Array.from({ length: 10 }, (_, i) => { const a = i * 36 * deg; return `<circle class="rw-pit" cx="${DCU + (DR - 10) * Math.cos(a)}" cy="${DCV + (DR - 10) * Math.sin(a)}" r="2.2"/>`; }).join('')}
+        <circle id="vault-dial" class="v-dial" cx="${DCU}" cy="${DCV}" r="15"/>
+        <circle class="v-ring" cx="${DCU}" cy="${DCV}" r="11"/>
+        <g id="vault-spokes">${[0, 120, 240].map(a => `<line class="v-spoke" x1="${DCU}" y1="${DCV}" x2="${DCU + 22 * Math.cos(a * deg)}" y2="${DCV + 22 * Math.sin(a * deg)}"/>`).join('')}
+          <circle class="rw-hi" cx="${DCU}" cy="${DCV}" r="4"/></g>
+      </g></g>`;
+    // beam of light blasting out of the open door, fading as it travels
+    const B0 = [OX, DP + 4, OZ], B1 = [OX + 4, DP + 92, OZ - 26], b0 = P(...B0), b1 = P(...B1);
+    svg += `<defs><linearGradient id="vault-beamg" gradientUnits="userSpaceOnUse" x1="${b0[0].toFixed(1)}" y1="${b0[1].toFixed(1)}" x2="${b1[0].toFixed(1)}" y2="${b1[1].toFixed(1)}">
+      <stop offset="0" style="stop-color:var(--accent);stop-opacity:.5"/><stop offset=".6" style="stop-color:var(--accent);stop-opacity:.14"/><stop offset="1" style="stop-color:var(--accent);stop-opacity:0"/></linearGradient></defs>
+      <path id="vault-beam" class="rw-beam" style="fill:url(#vault-beamg);opacity:0" d="${G.coneAx(B0, B1, OR - 6, OR + 22)}"/>`;
+    svg += `<g id="vault-motes"></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'vault-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const door = $('#vault-door'), layers = [...door.querySelectorAll('[data-l]')], spokes = $('#vault-spokes');
+    const beamEl = $('#vault-beam'), dial = $('#vault-dial'), led = $('#vault-led'), spill = $('#vault-spill'), inner = $('#vault-in');
+    const dots = DOTS.map((_, i) => $('#vault-dot' + i));
+    const tickMotes = G.motes($('#vault-motes'), { cx: OX, cy: DP + 8, r: 26, z0: OZ - 30, h: 120, n: 14 });
+
+    const st = { open: false, th: 0, dial: 0, anim: null, coins: 14, boost: 0 };
+    const STACKS = [[52, DP - 30], [88, DP - 30], [62, DP - 16], [80, DP - 16], [70, DP - 4]];
+    function drawInside() {
+      let s = '', left = st.coins;
+      const per = STACKS.map((_, i) => { const n = Math.min(7, Math.ceil(left / (STACKS.length - i))); left -= n; return n; });
+      STACKS.forEach(([x, y], i) => {
+        const z0 = OZ - Math.sqrt(Math.max(0, OR * OR - (x - OX) ** 2)) + 2;
+        for (let c = 0; c < per[i]; c++) s += G.cyl(x, y, z0 + c * 3.2, 8, 2.8, 'rw-litcyl', 'rw-hi');
+      });
+      inner.innerHTML = s;
+    }
+    let flip = false;
+    function setDoor(th) {
+      const c = Math.cos(th * deg), s = Math.sin(th * deg);
+      // past 45° the outer face turns away: paint layers front-to-back so the plain back face ends on top
+      if ((c - s < 0) !== flip) { flip = !flip; (flip ? layers.slice().reverse() : layers).forEach(g => door.appendChild(g)); }
+      layers.forEach(g => { const i = +g.dataset.l * 1.6;
+        g.setAttribute('transform', plane([HX - s * i, DP + c * i, DZ], [c, s, 0], [0, 0, -1])); });
+    }
+    function render() {
+      dial.classList.toggle('hot', st.open || !!st.anim); led.classList.toggle('hot', st.open);
+      api.power(st.open);
+      const total = st.coins * 50 + 540;
+      api.readout(st.open ? `open · ${st.coins} coins · $${total.toLocaleString()}` : `locked · dial ${String(((st.dial % 360) + 360) % 360 / 9 | 0).padStart(2, '0')}`);
+    }
+    function toggle() {
+      if (st.anim) return;
+      st.anim = { kind: st.open ? 'close' : 'open', t0: performance.now(), d0: st.dial };
+      render();
+    }
+    function deposit() {
+      if (!st.open) { api.readout('locked · open the door to deposit'); return; }
+      if (st.coins >= 30) { api.readout('vault full'); return; }
+      st.coins++; st.boost = performance.now(); drawInside(); api.flash(led); render();
+    }
+    function turn(d) { if (st.anim || st.open) return; st.dial += d; spokes.setAttribute('transform', `rotate(${st.dial} ${DCU} ${DCV})`); render(); }
+
+    const ease = p => p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;
+    api.loop(t => {
+      const a = st.anim;
+      if (a) {
+        const e = t - a.t0;
+        if (a.kind === 'open') {
+          st.dial = a.d0 + 540 * ease(Math.min(1, e / 700));
+          st.th = 105 * ease(Math.max(0, Math.min(1, (e - 700) / 900)));
+          if (e > 700 && !st.open) { st.open = true; render(); }
+          if (e >= 1600) { st.anim = null; render(); }
+        } else {
+          st.th = 105 * (1 - ease(Math.min(1, e / 800)));
+          st.dial = a.d0 - 180 * ease(Math.max(0, Math.min(1, (e - 800) / 400)));
+          if (e > 800 && st.open) { st.open = false; render(); }
+          if (e >= 1200) { st.anim = null; render(); }
+        }
+        spokes.setAttribute('transform', `rotate(${st.dial.toFixed(1)} ${DCU} ${DCV})`);
+      }
+      setDoor(st.th);
+      const lv = st.th / 105;
+      spill.style.opacity = lv.toFixed(2); beamEl.style.opacity = lv.toFixed(2);
+      tickMotes(t, lv, t - st.boost < 1200 ? 2.2 : 1);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    door.addEventListener('click', toggle);
+    stage.addEventListener('click', e => { if (st.open && e.target.closest('#vault-in, .v-back, .rw-litwall')) deposit(); });
+    drawInside(); setDoor(0); render();
+    let ak = 0; const mark = RW.auto(api, stage, 2400, () => { if (st.anim) return; if (!st.open) { ak = 0; toggle(); } else if (ak++ < 2) deposit(); else toggle(); });
+    return {
+      key: e => {
+        mark();
+        if (e.key === 'Enter' || e.key === ' ') return toggle(), true;
+        if (e.key === 'c' || e.key === 'C') return deposit(), true;
+        if (e.key === 'ArrowLeft') return turn(-18), true;
+        if (e.key === 'ArrowRight') return turn(18), true;
+        return false;
+      },
+      demo: () => { api.after(300, toggle); api.after(2100, deposit); api.after(2600, deposit); },
+    };
+  },
+});
+
+FIGS.push({
+  id: 'jar', name: 'Savings jar', hint: 'Click the jar or Space to save $10 · R empty',
+  aria: 'Isometric glass savings jar on a pedestal with a goal ring. Click it or press Space to drop a coin in; the fill rises and the ring lights toward a $500 goal. R empties the jar.',
+  css: `
+    [data-fig="jar"] .j-glassb { fill:url(#rw-theme); fill-opacity:.05; }
+    [data-fig="jar"] .j-glassf { fill:url(#rw-theme); fill-opacity:.07; }
+    [data-fig="jar"] .j-shine { fill:url(#rw-themehi); fill-opacity:.16; }
+    [data-fig="jar"] .j-rim { fill:none; stroke:var(--accent-hi); stroke-opacity:.45; stroke-width:1.1; vector-effect:non-scaling-stroke; }
+    [data-fig="jar"] .j-seg { fill:${RW.mix(16)}; transition:fill .3s; }
+    [data-fig="jar"] .j-seg.on { fill:url(#rw-themehi); }
+    [data-fig="jar"] .j-layer { fill:none; stroke:${RW.mix(55)}; stroke-width:1; vector-effect:non-scaling-stroke; }
+    [data-fig="jar"] .j-slot.hot { fill:url(#rw-themehi); }
+    [data-fig="jar"] .j-goal { opacity:0; transition:opacity .6s; }
+    [data-fig="jar"] .j-goal.hot { opacity:1; }
+    [data-fig="jar"] .grab { cursor:pointer; }
+  `,
+  mount(stage, api) {
+    const CX = 80, CY = 80, PR = 62, PH = 16, JR = 42, JZ = PH, JH = 70, LZ = JZ + JH, LH = 8;
+    const GOAL = 500, STEP = 10, CR = 9.5, CH = 4.2;          // $10 per coin, coin radius / thickness
+    const DOTS = [[0, 30, 120], [160, 40, 110], [150, 160, 24], [10, 170, 70]];
+    const K = api.iso.frame([[CX-PR,CY-PR,0],[CX+PR,CY+PR,0],[CX+PR,CY-PR,0],[CX-PR,CY+PR,0],[CX,CY,LZ+52], ...DOTS]);
+    const { P, TOP, FRONT } = K, G = RW.kit(K);
+    const q = Math.PI / 4, f = v => v.toFixed(2);
+    const front = G.arc(CX, CY, JR, -q, 3*q, 28), back = G.arc(CX, CY, JR, 3*q, 7*q, 28);
+
+    let svg = RW.defs + `<defs>${G.above('jar-clip', CY, LZ + LH)}</defs>`;
+    svg += G.ground(CX, CY, 92, 92);
+    // pedestal + segmented goal ring on its top
+    svg += G.cyl(CX, CY, 0, PR, PH);
+    let ring = '';
+    const NS = 32;
+    for (let i = 0; i < NS; i++) {
+      const a0 = (i / NS) * 2 * Math.PI - Math.PI / 2 + .03, a1 = ((i + 1) / NS) * 2 * Math.PI - Math.PI / 2 - .03, r0 = PR - 10, r1 = PR - 4;
+      const pt = (r, a) => `${(CX + r * Math.cos(a)).toFixed(2)} ${(CY + r * Math.sin(a)).toFixed(2)}`;
+      ring += `<path class="j-seg" data-i="${i}" d="M${pt(r0, a0)} L${pt(r1, a0)} A${r1} ${r1} 0 0 1 ${pt(r1, a1)} L${pt(r0, a1)} A${r0} ${r0} 0 0 0 ${pt(r0, a0)} Z"/>`;
+    }
+    svg += `<g transform="${TOP(0, 0, PH)}">${ring}<circle class="rw-halo" cx="${CX}" cy="${CY}" r="${JR + 4}"/></g>`;
+    // jar: back glass, coin fill, motes, front glass, rims, lid
+    svg += `<g class="grab" id="jar-body">
+      <path class="j-glassb" d="${G.wall(back, JZ, LZ)}"/>
+      <g id="jar-fill"></g><g id="jar-motes"></g>
+      <path class="j-glassf" d="${G.wall(front, JZ, LZ)}"/>
+      <path class="j-rim" d="${[-q, 3*q].map(a => { const p0 = P(CX + JR*Math.cos(a), CY + JR*Math.sin(a), JZ + 2), p1 = P(CX + JR*Math.cos(a), CY + JR*Math.sin(a), LZ); return `M${p0[0].toFixed(2)} ${p0[1].toFixed(2)}L${p1[0].toFixed(2)} ${p1[1].toFixed(2)}`; }).join('')}"/>
+      <path class="j-shine" d="${G.wall(G.arc(CX, CY, JR, 1.55, 1.85, 6), JZ + 8, LZ - 6)}"/>
+      <path class="j-rim" d="${G.d3(G.arc(CX, CY, JR, 0, 2 * Math.PI, 48).map(([x, y]) => [x, y, JZ + 2]))}"/>
+      ${G.cyl(CX, CY, LZ, JR + 3, LH)}
+      <g transform="${TOP(0, 0, LZ + LH)}">
+        <rect class="rw-pit" x="${CX - 18}" y="${CY - 3.5}" width="36" height="7" rx="3.5"/>
+        <rect id="jar-slot" class="rw-pit j-slot" x="${CX - 14}" y="${CY - 1}" width="28" height="2" rx="1"/>
+        <circle class="rw-etch" cx="${CX}" cy="${CY}" r="${JR - 6}"/>
+      </g>
+    </g>`;
+    // cone of light from the lid when the goal is reached
+    svg += `<g id="jar-goal" class="j-goal"><path class="rw-cone" d="${G.cone(CX, CY, LZ + LH, 20, 38, 80)}"/></g>`;
+    // falling coin, clipped where it enters the slot
+    const coinC = `<circle r="9"/>`;
+    svg += `<g clip-path="url(#jar-clip)"><g id="jar-coin" style="opacity:0">
+      ${G.ext(i => FRONT(CX, CY - 3 + i, LZ + 74), 4, coinC, `<circle class="rw-orb" r="9"/><circle class="rw-etch" style="stroke:${RW.mix(55)}" r="6"/>
+        <text class="rw-ink" x="0" y="3" font-size="8" text-anchor="middle" style="font-family:var(--mono)">$</text>`)}
+    </g></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'jar-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const fill = $('#jar-fill'), coin = $('#jar-coin'), slot = $('#jar-slot'), goal = $('#jar-goal'), body = $('#jar-body');
+    const segs = [...stage.querySelectorAll('.j-seg')], dots = DOTS.map((_, i) => $('#jar-dot' + i));
+    const tickMotes = G.motes($('#jar-motes'), { cx: CX, cy: CY, r: JR - 10, z0: JZ + 4, h: JH - 10, n: 14 });
+
+    const st = { total: 0, drawn: -1, anim: null, boost: 0 };
+    // seven jittered stacks; coin k goes to stack k % 7, so piles grow evenly
+    const STACKS = [[CX, CY], ...Array.from({ length: 6 }, (_, i) => [CX + 21 * Math.cos(i * Math.PI / 3 + .3), CY + 21 * Math.sin(i * Math.PI / 3 + .3)])];
+    const jit = k => [Math.sin(k * 12.9898) * 1.6, Math.cos(k * 78.233) * 1.6];
+    function drawFill(n) {
+      const piles = STACKS.map(() => []);
+      for (let k = 0; k < n; k++) piles[k % STACKS.length].push(k);
+      const order = STACKS.map((p, i) => i).sort((a, b) => (STACKS[a][0] + STACKS[a][1]) - (STACKS[b][0] + STACKS[b][1]));
+      let s = '';
+      for (const i of order) piles[i].forEach((k, h) => {
+        const [jx, jy] = jit(k), x = STACKS[i][0] + jx, y = STACKS[i][1] + jy, z = JZ + 1 + h * CH;
+        s += G.cyl(x, y, z, CR, CH - .6, 'rw-litcyl', 'rw-hi');
+        s += `<g transform="${TOP(0, 0, z + CH - .6)}"><circle class="rw-etch" style="stroke:${RW.mix(55)}" cx="${f(x)}" cy="${f(y)}" r="${CR - 3}"/></g>`;
+      });
+      fill.innerHTML = s;
+    }
+    function render() {
+      const lit = Math.round(NS * Math.min(1, st.total / GOAL));
+      segs.forEach((el, i) => el.classList.toggle('on', i < lit));
+      const done = st.total >= GOAL;
+      goal.classList.toggle('hot', done);
+      api.power(st.total > 0);
+      api.readout(done ? `goal reached · $${st.total} saved` : st.total ? `$${st.total} of $${GOAL} · ${Math.round(st.total / GOAL * 100)}%` : `empty · goal $${GOAL}`);
+    }
+    function save() {
+      if (st.anim) return;
+      if (st.total >= GOAL) { api.readout(`goal reached · R to empty`); return; }
+      st.anim = { t0: performance.now(), done: false }; slot.classList.add('hot');
+    }
+    function empty() { st.total = 0; st.anim = null; coin.style.opacity = 0; slot.classList.remove('hot'); render(); }
+
+    const ease = p => p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;
+    api.loop(t => {
+      const a = st.anim;
+      if (a) {
+        const p = Math.min(1, (t - a.t0) / 800), d = K.D(0, 0, -74 * p * p);
+        coin.style.opacity = p < .95 ? 1 : 0;
+        coin.setAttribute('transform', `translate(${d[0].toFixed(2)} ${d[1].toFixed(2)})`);
+        if (!a.done && p >= 1) { a.done = true; st.total += STEP; st.boost = t; render(); }
+        if (p >= 1) { st.anim = null; slot.classList.remove('hot'); }
+      }
+      const n = Math.round(st.total / STEP);
+      if (n !== st.drawn) { st.drawn = n; drawFill(n); }
+      tickMotes(t, st.total ? .9 : .25, t - st.boost < 1500 ? 2.4 : 1);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    body.addEventListener('click', save);
+    render();
+    let full = 0; const mark = RW.auto(api, stage, 1100, () => { if (st.total >= GOAL) { if (++full > 2) { full = 0; empty(); } } else save(); });
+    return {
+      key: e => {
+        mark();
+        if (e.key === ' ' || e.key === 'Enter') return save(), true;
+        if (e.key === 'r' || e.key === 'R') return empty(), true;
+        return false;
+      },
+      demo: () => { st.total = 380; render(); api.after(300, save); api.after(1300, save); },
+    };
+  },
+});
+
+FIGS.push({
+  id: 'xfer', name: 'Phone transfer', hint: 'Click SEND or Enter · ↑↓ amount',
+  aria: 'Two isometric phones on a plate. Press Enter or click SEND to fly a coin along a glowing arc from one phone to the other; a receipt rises from the receiving phone. Arrow keys change the amount.',
+  css: `
+    [data-fig="xfer"] .x-btn { fill:url(#rw-theme); cursor:pointer; }
+    [data-fig="xfer"] .x-btn:hover { fill:url(#rw-themehi); }
+    [data-fig="xfer"] .x-btxt { fill:${RW.mix(12)}; font-family:var(--mono); pointer-events:none; }
+    [data-fig="xfer"] .x-big { fill:url(#rw-themehi); font-family:var(--mono); }
+    [data-fig="xfer"] .x-sm { fill:${RW.mix(50)}; font-family:var(--mono); }
+    [data-fig="xfer"] .x-track { fill:none; stroke:${RW.mix(50)}; stroke-width:1; stroke-dasharray:2 4; vector-effect:non-scaling-stroke; }
+    [data-fig="xfer"] .x-arc { fill:none; stroke:var(--accent-hi); stroke-width:2; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+    [data-fig="xfer"] .x-paper { fill:color-mix(in srgb, var(--accent-hi) 30%, #f3f5ec); }
+    [data-fig="xfer"] .x-ptxt { fill:color-mix(in srgb, var(--accent) 25%, #1b2112); font-family:var(--mono); }
+    [data-fig="xfer"] .x-check { fill:url(#rw-theme); }
+    [data-fig="xfer"] .x-light { opacity:0; }
+  `,
+  mount(stage, api) {
+    const PW = 54, PD = 96, PT = 9, PZ = 8, SZ = PZ + PT;              // phone size, top of phones
+    const A = [4, 4], B = [124, 62];                                    // phone corners
+    const AC = [A[0] + PW/2, A[1] + PD/2], BC = [B[0] + PW/2, B[1] + PD/2];
+    const PEAK = 92;
+    const DOTS = [[-30, 40, 120], [200, 0, 110], [200, 180, 30], [40, 196, 70]];
+    const K = api.iso.frame([[-4,-2,0],[182,-2,0],[-4,162,0],[182,162,0],[(AC[0]+BC[0])/2,(AC[1]+BC[1])/2,SZ+PEAK+14],[BC[0],BC[1],SZ+70], ...DOTS]);
+    const { P, D, TOP, FRONT } = K, G = RW.kit(K);
+    const f = v => v.toFixed(2);
+
+    // arc points
+    const arcAt = u => [AC[0] + (BC[0] - AC[0]) * u, AC[1] + (BC[1] - AC[1]) * u, SZ + 10 + PEAK * 4 * u * (1 - u)];
+    const arcD = 'M' + Array.from({ length: 41 }, (_, i) => P(...arcAt(i / 40)).map(f).join(' ')).join('L');
+
+    let svg = RW.defs + `<defs>${G.above('xfer-clip', BC[1], SZ)}</defs>`;
+    svg += G.ground(89, 80, 112, 98);
+    svg += G.box(-4, -2, 0, 186, 164, PZ, 20);
+    svg += `<g transform="${FRONT(-4, 162, PZ)}"><rect class="rw-hi" x="18" y="2.5" width="150" height="3" rx="1.5"/></g><g transform="${K.SIDE(182, 162, PZ)}"><rect class="rw-hi" x="18" y="2.5" width="128" height="3" rx="1.5"/></g>`;
+
+    const phone = (x, y, id, ui) => G.box(x, y, PZ, PW, PD, PT, 10) +
+      `<g transform="${TOP(x, y, SZ)}">
+        <rect class="rw-pit" x="4" y="8" width="${PW - 8}" height="${PD - 16}" rx="6"/>
+        <rect class="rw-rim" x="4" y="8" width="${PW - 8}" height="${PD - 16}" rx="6"/>
+        <rect class="rw-etch" x="${PW/2 - 7}" y="4" width="14" height="1.6" rx=".8"/>
+        <g id="${id}">${ui}</g></g>`;
+    svg += phone(...A, 'xfer-a', `
+        <text class="x-sm" x="9" y="18" font-size="4">BALANCE</text>
+        <text id="xfer-abal" class="x-big" x="9" y="27" font-size="7">$1,200</text>
+        <text class="x-sm" x="9" y="42" font-size="4">SEND TO ALEX</text>
+        <text id="xfer-amt" class="x-big" x="9" y="56" font-size="12">$40</text>
+        <path class="rw-etch" d="M9 62h36"/>
+        <rect id="xfer-send" class="x-btn" x="9" y="70" width="36" height="11" rx="5.5"/>
+        <text class="x-btxt" x="27" y="77.4" font-size="4.6" text-anchor="middle" letter-spacing=".6">SEND</text>`);
+    svg += `<g class="x-light" id="xfer-lb"><path class="rw-cone" d="${G.cone(BC[0], BC[1], SZ, 16, 30, 70)}"/></g>`;
+    svg += phone(...B, 'xfer-b', `
+        <text class="x-sm" x="9" y="18" font-size="4">ALEX · BALANCE</text>
+        <text id="xfer-bbal" class="x-big" x="9" y="27" font-size="7">$240</text>
+        <g id="xfer-list"></g>`);
+    // receipt rising out of B's screen
+    const RW_ = 34, RH = 40;
+    svg += `<g clip-path="url(#xfer-clip)"><g id="xfer-rcpt" transform="translate(0 0)">
+      <g transform="${FRONT(BC[0] - RW_/2, BC[1], SZ + RH)}">
+        <path class="x-paper" d="M0 0 H${RW_} V${RH - 3} l-3.4 3 -3.4 -3 -3.4 3 -3.4 -3 -3.4 3 -3.4 -3 -3.4 3 -3.4 -3 -3.4 3 L0 ${RH - 3} Z"/>
+        <circle class="x-check" cx="${RW_/2}" cy="9" r="5"/>
+        <path d="M${RW_/2 - 2.4} 9 l1.8 1.8 3.2 -3.4" fill="none" stroke="#1b2112" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <text class="x-ptxt" x="${RW_/2}" y="20" font-size="3.6" text-anchor="middle" letter-spacing=".4">RECEIVED</text>
+        <text id="xfer-ramt" class="x-ptxt" x="${RW_/2}" y="27" font-size="6" text-anchor="middle">$40.00</text>
+        <path d="M5 31h${RW_ - 10}" stroke="#1b2112" stroke-opacity=".25" stroke-dasharray="1 1.5" stroke-width=".6"/>
+      </g></g></g>`;
+    svg += `<path class="x-track" d="${arcD}"/><g id="xfer-arc"></g>`;
+    svg += `<g id="xfer-motes"></g>`;
+    const coinC = `<circle r="8"/>`;
+    svg += `<g id="xfer-coin" style="opacity:0">${G.ext(i => FRONT(0, i - 3, 0), 3, coinC, `<circle class="rw-orb" r="8"/><circle class="rw-etch" style="stroke:${RW.mix(55)}" r="5.2"/>`)}</g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'xfer-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const arc = $('#xfer-arc'), coin = $('#xfer-coin'), rcpt = $('#xfer-rcpt'), lb = $('#xfer-lb');
+    const abal = $('#xfer-abal'), bbal = $('#xfer-bbal'), amtEl = $('#xfer-amt'), ramt = $('#xfer-ramt'), list = $('#xfer-list');
+    const dots = DOTS.map((_, i) => $('#xfer-dot' + i));
+    const tickMotes = G.motes($('#xfer-motes'), { cx: BC[0], cy: BC[1], r: 18, z0: SZ, h: 80, n: 12 });
+
+    const st = { a: 1200, b: 240, amt: 40, anim: null, hist: [], rise: 0, light: 0 };
+    const money = v => '$' + v.toLocaleString();
+    function drawUI() {
+      abal.textContent = money(st.a); bbal.textContent = money(st.b); amtEl.textContent = money(st.amt);
+      list.innerHTML = st.hist.slice(-4).reverse().map((v, i) =>
+        `<rect class="rw-front" x="9" y="${36 + i * 11}" width="36" height="8" rx="2"/>
+         <circle class="x-check" cx="14" cy="${40 + i * 11}" r="2"/>
+         <text class="x-sm" x="19" y="${41.4 + i * 11}" font-size="3.8">+${money(v)}</text>`).join('');
+    }
+    function render() {
+      api.power(!!st.anim || st.light > 0);
+      api.readout(st.hist.length ? `sent ${money(st.hist[st.hist.length - 1])} · you ${money(st.a)} · alex ${money(st.b)}` : `ready · ${money(st.amt)} to alex`);
+    }
+    function send() {
+      if (st.anim) return;
+      if (st.a < st.amt) { api.readout('insufficient balance'); return; }
+      api.flash($('#xfer-send'));
+      st.a -= st.amt; drawUI();
+      st.anim = { t0: performance.now(), amt: st.amt, done: false }; render();
+    }
+    function setAmt(d) { if (st.anim) return; st.amt = Math.max(10, Math.min(200, st.amt + d)); drawUI(); render(); }
+
+    const O0 = P(0, 0, 0);
+    const ease = p => p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;
+    api.loop(t => {
+      const a = st.anim;
+      if (a) {
+        const e = t - a.t0, p = Math.min(1, e / 1300), u = ease(p);
+        // comet tail: short segments sampled from the coin's own path, fading behind it
+        let tail = '';
+        if (p < 1) for (let k = 0; k < 10; k++) {
+          const u0 = Math.max(0, u - (k + 1) * .022), u1 = Math.max(0, u - k * .022);
+          if (u1 <= 0) break;
+          const a0 = P(...arcAt(u0)), a1 = P(...arcAt(u1));
+          tail += `<line class="x-arc" x1="${f(a0[0])}" y1="${f(a0[1])}" x2="${f(a1[0])}" y2="${f(a1[1])}" style="opacity:${(1 - k / 10).toFixed(2)}"/>`;
+        }
+        arc.innerHTML = tail;
+        const [x, y] = P(...arcAt(u)).map((v, i) => v - O0[i]);
+        coin.setAttribute('transform', `translate(${f(x)} ${f(y)})`); coin.style.opacity = p < 1 ? 1 : 0;
+        if (e < 200) st.rise = Math.max(0, st.rise - e / 200);
+        if (!a.done && p >= 1) { a.done = true; st.b += a.amt; st.hist.push(a.amt); ramt.textContent = money(a.amt) + '.00'; drawUI(); st.light = t; render(); }
+        if (a.done) st.rise = ease(Math.min(1, (e - 1300) / 600));
+        if (e >= 1900) { st.anim = null; render(); }
+      }
+      const r = D(0, 0, -(RH + 2) * (1 - st.rise));
+      rcpt.setAttribute('transform', `translate(${f(r[0])} ${f(r[1])})`);
+      const lv = st.light ? Math.max(0, 1 - (t - st.light) / 2600) : 0;
+      lb.style.opacity = lv.toFixed(2);
+      if (st.light && lv === 0) { st.light = 0; render(); }
+      tickMotes(t, Math.max(.15, lv), lv > 0 ? 2 : 1);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    $('#xfer-send').addEventListener('click', send);
+    $('#xfer-a').parentNode.addEventListener('click', e => { if (!e.target.closest('#xfer-send')) send(); });
+    drawUI(); render();
+    const AMTS = [40, 25, 80, 15, 120]; let ak = 0;
+    const mark = RW.auto(api, stage, 3200, () => { if (st.anim) return; if (st.a < 200) { st.a = 1200; st.b = 240; st.hist = []; } st.amt = AMTS[ak++ % AMTS.length]; drawUI(); send(); });
+    return {
+      key: e => {
+        mark();
+        if (e.key === 'Enter' || e.key === ' ') return send(), true;
+        if (e.key === 'ArrowUp') return setAmt(10), true;
+        if (e.key === 'ArrowDown') return setAmt(-10), true;
+        return false;
+      },
+      demo: () => api.after(300, send),
+    };
+  },
+});
+
+FIGS.push({
+  id: 'printer', name: 'Receipt printer', hint: 'Click a key or Enter to print · X tear off',
+  aria: 'Isometric receipt printer with a keypad and a lit total display. Click a key or press Enter to print an item; the paper feeds up and curls, and the total ticks up. Press X to tear the receipt off.',
+  css: `
+    [data-fig="printer"] .p-paper { fill:color-mix(in srgb, var(--accent-hi) 28%, #f3f5ec); }
+    [data-fig="printer"] .p-paper2 { fill:color-mix(in srgb, var(--accent-hi) 22%, #c9cfbd); }
+    [data-fig="printer"] .p-ptxt { fill:color-mix(in srgb, var(--accent) 25%, #1b2112); font-family:var(--mono); }
+    [data-fig="printer"] .p-slot { fill:${RW.mix(30)}; transition:fill .2s; }
+    [data-fig="printer"] .p-slot.hot { fill:url(#rw-themehi); }
+    [data-fig="printer"] .p-disp { fill:url(#rw-themehi); font-family:var(--mono); }
+    [data-fig="printer"] .p-strip { fill:url(#rw-themehi); }
+    [data-fig="printer"] .p-key { cursor:pointer; }
+    #stage[data-fig="printer"] .p-go .rw-top { fill:url(#rw-well); }
+    #stage[data-fig="printer"] .p-go .rw-front { fill:${RW.mix(62)}; } #stage[data-fig="printer"] .p-go .rw-side { fill:${RW.mix(40)}; }
+    #stage[data-fig="printer"] .press.lit .rw-top { fill:url(#rw-themehi); }
+  `,
+  mount(stage, api) {
+    const W = 130, DP = 110, BZ = 10, H = 70;                    // body w/d, plinth height, deck height
+    const SX0 = 32, SX1 = 98, SY = 26, PWD = SX1 - SX0;          // paper width + slot plane
+    const STR = 58, CR = 13, MAXL = STR + CR * Math.PI * .85;    // straight run, curl radius, max length
+    const DOTS = [[-30, 30, 150], [160, 10, 140], [160, 140, 40], [0, 150, 90]];
+    const K = api.iso.frame([[-4,-4,0],[W+4,-4,0],[-4,DP+4,0],[W+4,DP+4,0],[SX0,SY-CR*2,H+STR+CR+6],[SX1,SY,H+STR+CR+6], ...DOTS]);
+    const { P, D, TOP, FRONT, SIDE } = K, G = RW.kit(K);
+    const f = v => v.toFixed(2);
+
+    let svg = RW.defs;
+    svg += G.ground(W/2, DP/2, 105, 95);
+    svg += G.box(-4,-4,0, W+8,DP+8,BZ, 16);
+    svg += G.box(0,0,BZ, W,DP,H-BZ, 14);
+    const strip = w => `<rect class="p-strip" x="14" y="3.5" width="${w - 28}" height="3" rx="1.5"/>`;
+    svg += `<g transform="${FRONT(-4, DP+4, BZ)}">${strip(W+8)}</g><g transform="${SIDE(W+4, DP+4, BZ)}">${strip(DP+8)}</g>`;
+    // paper slot on the deck
+    const slotS = (c, tf) => `<rect class="${c}" transform="${tf}" x="${SX0 - 4}" y="${SY - 5}" width="${PWD + 8}" height="10" rx="5"/>`;
+    svg += G.recess(slotS, TOP(0,0,H), TOP(0,0,H-6), 'rw-wall', 'rw-pit',
+      `<g transform="${TOP(0,0,H-6)}"><rect id="p-slot" class="p-slot" x="${SX0}" y="${SY - 1}" width="${PWD}" height="2" rx="1"/></g>`);
+    svg += `<g id="p-sheet" style="opacity:.35"><g transform="${FRONT(SX0 - 8, SY - 3, H + 96)}"><rect class="rw-lface" width="${PWD + 16}" height="96"/></g></g>`;
+    svg += `<g id="p-paper"></g>`;
+    // keypad: 3 rows x 4 keys, last one is PRINT (lime)
+    const keys = [];
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) keys.push([r, c]);
+    keys.sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]));
+    keys.forEach(([r, c]) => {
+      const x = 18 + c * 24, y = 46 + r * 18, go = r === 2 && c === 3;
+      svg += `<g class="press p-key${go ? ' p-go' : ''}" data-k="${r * 4 + c}">${G.box(x, y, H, 18, 12, 4, 3)}</g>`;
+    });
+    // front display, set into the face
+    const dispS = (c, tf) => `<rect class="${c}" transform="${tf}" x="12" y="8" width="72" height="24" rx="4"/>`;
+    const F0 = FRONT(0, DP, H), F1 = FRONT(0, DP - 4, H);
+    svg += G.recess(dispS, F0, F1, 'rw-wall', 'rw-pit', `<g transform="${F1}">
+        <text class="rw-txt" x="18" y="16" font-size="4.4" letter-spacing=".6">TOTAL</text>
+        <text id="p-total" class="p-disp" x="78" y="28" font-size="10" text-anchor="end">$0.00</text></g>`);
+    svg += `<g transform="${F0}"><rect class="rw-rim" x="12" y="8" width="72" height="24" rx="4"/>
+      <circle id="p-led" class="rw-pit" cx="${W - 18}" cy="14" r="3"/></g>`;
+    svg += `<g transform="${SIDE(W, DP, H)}">${api.iso.slits(16, 40, 4, 10, 34, true, 'rw-etch')}
+      <text class="rw-txt" x="16" y="46" font-size="6" letter-spacing="1">POS·12</text></g>`;
+    svg += `<g id="p-motes"></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'p-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const sheet = $('#p-sheet'), paper = $('#p-paper'), slot = $('#p-slot'), totalEl = $('#p-total'), led = $('#p-led');
+    const keyEls = [...stage.querySelectorAll('.p-key')], dots = DOTS.map((_, i) => $('#p-dot' + i));
+    const tickMotes = G.motes($('#p-motes'), { cx: (SX0 + SX1) / 2, cy: SY, r: 20, z0: H, h: 80, n: 10 });
+
+    const ITEMS = [['LATTE', 4.8], ['BAGEL', 3.25], ['SALAD', 9.9], ['WATER', 1.5], ['TOAST', 5.4], ['JUICE', 4.2], ['SOUP', 6.75]];
+    const st = { L: 4, target: 4, lines: [], total: 0, shown: 0, ii: 0, tear: 0, busy: 0 };
+
+    function drawPaper(off = 0, op = 1) {
+      const L = st.L, Ls = Math.min(L, STR), top = H + Ls;
+      let s = `<g style="opacity:${op}" transform="translate(${f(off * .4)} ${f(-off)})">`;
+      // curl first (behind / above), then the straight run facing the viewer
+      if (L > STR) {
+        const A = (L - STR) / CR, n = Math.max(2, Math.ceil(A * 8));
+        for (let i = 0; i < n; i++) {
+          const a0 = A * i / n, a1 = A * (i + 1) / n;
+          const yz = a => [SY - CR + CR * Math.cos(a), H + STR + CR * Math.sin(a)];
+          const [y0, z0] = yz(a0), [y1, z1] = yz(a1);
+          s += `<path class="${a1 > Math.PI / 2 ? 'p-paper2' : 'p-paper'}" d="M${[P(SX0, y0, z0), P(SX1, y0, z0), P(SX1, y1, z1), P(SX0, y1, z1)].map(p => p.map(f).join(' ')).join('L')}Z"/>`;
+        }
+      }
+      s += `<g transform="${FRONT(SX0, SY, top)}"><rect class="p-paper" width="${PWD}" height="${Ls}"/>`;
+      st.lines.forEach(ln => {
+        const h = L - ln.at;                                   // height above the slot
+        if (h < 1.5 || h > Ls - 2) return;
+        const v = Ls - h;
+        s += ln.total
+          ? `<path d="M4 ${f(v - 7)}h${PWD - 8}" stroke="#1b2112" stroke-opacity=".3" stroke-dasharray="1 1.5" stroke-width=".6"/>
+             <text class="p-ptxt" x="4" y="${f(v)}" font-size="5">TOTAL</text><text class="p-ptxt" x="${PWD - 4}" y="${f(v)}" font-size="5" text-anchor="end">$${ln.price.toFixed(2)}</text>`
+          : `<text class="p-ptxt" x="4" y="${f(v)}" font-size="4.2">${ln.name}</text><text class="p-ptxt" x="${PWD - 4}" y="${f(v)}" font-size="4.2" text-anchor="end">${ln.price.toFixed(2)}</text>`;
+      });
+      s += `</g></g>`;
+      paper.innerHTML = s;
+    }
+    function render() {
+      api.power(st.lines.length > 0);
+      const n = st.lines.filter(l => !l.total).length;
+      api.readout(n ? `${n} item${n > 1 ? 's' : ''} · total $${st.total.toFixed(2)}` : 'ready · press print');
+    }
+    function print(keyEl) {
+      if (st.tear) return;
+      if (st.target + 9 > MAXL) { tear(); return; }
+      const [name, price] = ITEMS[st.ii++ % ITEMS.length];
+      st.target += 9; st.lines.push({ name, price, at: st.target - 3 });
+      st.total += price; st.busy = performance.now();
+      api.flash(keyEl || keyEls[keyEls.length - 1]); api.flash(led);
+      slot.classList.add('hot'); render();
+    }
+    function tear() {
+      if (st.tear || !st.lines.length) return;
+      st.lines.push({ total: true, price: st.total, at: st.target - 3 }); st.target += 4;
+      st.tear = performance.now() + 500;
+    }
+
+    api.loop(t => {
+      if (Math.abs(st.target - st.L) > .05) st.L += Math.sign(st.target - st.L) * Math.min(Math.abs(st.target - st.L), .35);
+      if (t - st.busy > 700) slot.classList.remove('hot');
+      st.shown += (st.total - st.shown) * .12; if (Math.abs(st.total - st.shown) < .005) st.shown = st.total;
+      totalEl.textContent = '$' + st.shown.toFixed(2);
+      if (st.tear && t > st.tear) {
+        const p = Math.min(1, (t - st.tear) / 700);
+        drawPaper(p * 40, 1 - p);
+        if (p >= 1) { st.tear = 0; st.lines = []; st.total = 0; st.L = st.target = 4; render(); api.readout('torn off · ready'); }
+      } else drawPaper();
+      sheet.style.opacity = (t - st.busy < 1600 ? 1 - (t - st.busy) / 1600 * .65 : .35).toFixed(2);
+      tickMotes(t, t - st.busy < 1600 ? 1 : .15, 1.6);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    keyEls.forEach(k => k.addEventListener('click', () => print(k)));
+    stage.addEventListener('click', e => { if (e.target.closest('#p-paper')) tear(); });
+    render();
+    const mark = RW.auto(api, stage, 1100, () => print());
+    return {
+      key: e => {
+        mark();
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'p' || e.key === 'P') return print(), true;
+        if (e.key === 'x' || e.key === 'X' || e.key === 'Escape') return tear(), true;
+        return false;
+      },
+      demo: () => { api.after(300, print); api.after(1100, print); api.after(1900, print); },
+    };
+  },
+});
+
+FIGS.push({
+  id: 'report', name: 'Report lamp', hint: 'Click the lamp · Enter next quarter',
+  aria: 'Isometric report page on a stand lit by a desk lamp. Click the lamp to switch it on or off; press Enter for the next quarter and the chart grows to the new numbers.',
+  css: `
+    [data-fig="report"] .r-page { fill:url(#rw-front); stroke:${RW.mix(45)}; stroke-width:1; vector-effect:non-scaling-stroke; }
+    [data-fig="report"] .r-edge { fill:${RW.mix(30)}; }
+    [data-fig="report"] .r-fold { fill:${RW.mix(40)}; }
+    [data-fig="report"] .r-bar { fill:${RW.mix(40)}; transition:fill .4s; }
+    [data-fig="report"] .on .r-bar { fill:url(#rw-lit); }
+    [data-fig="report"] .r-line { fill:none; stroke:${RW.mix(50)}; stroke-width:1.4; stroke-linejoin:round; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+    [data-fig="report"] .on .r-line { stroke:var(--accent-hi); }
+    [data-fig="report"] .r-pt { fill:${RW.mix(50)}; } [data-fig="report"] .on .r-pt { fill:url(#rw-themehi); }
+    [data-fig="report"] .r-spot { fill:url(#rw-theme); opacity:0; transition:opacity .3s; }
+    [data-fig="report"] .on .r-spot { opacity:.16; }
+    [data-fig="report"] .r-beam { fill:url(#rep-beamg); opacity:0; transition:opacity .25s; }
+    [data-fig="report"] .r-beam.on { opacity:1; }
+    [data-fig="report"] .r-bulb { fill:${RW.mix(12)}; transition:fill .2s; } [data-fig="report"] .r-bulb.on { fill:url(#rw-well); }
+    [data-fig="report"] .r-core { fill:${RW.mix(20)}; } [data-fig="report"] .on ~ .r-core, [data-fig="report"] .r-core.on { fill:url(#rw-themehi); }
+    [data-fig="report"] .r-mouth { fill:none; stroke:var(--accent-hi); stroke-opacity:.8; stroke-width:1.2; vector-effect:non-scaling-stroke; }
+    [data-fig="report"] .grab { cursor:pointer; }
+  `,
+  mount(stage, api) {
+    const X0 = 40, Y0 = 18, PW = 92, Z0 = 14, PH = 108, ZT = Z0 + PH;       // page plane x, y range, z range
+    const LB = [100, 8], EL = [112, -4, 86], HP = [86, 16, 114];          // lamp base, elbow, head pivot
+    const TGT = [X0, Y0 + PW * .45, Z0 + PH * .45];                          // where the lamp aims
+    const DOTS = [[0, 0, 130], [140, -30, 120], [140, 120, 24], [10, 140, 70]];
+    const K = api.iso.frame([[16,-14,0],[128,-14,0],[16,124,0],[128,124,0],[X0,Y0,ZT],[X0,Y0+PW,ZT],[EL[0],EL[1],EL[2]+10],[HP[0],HP[1],HP[2]+16], ...DOTS]);
+    const { P, TOP, SIDE } = K, G = RW.kit(K);
+    const f = v => v.toFixed(2);
+    const dir = TGT.map((v, i) => v - HP[i]), dl = Math.hypot(...dir), du = dir.map(v => v / dl);
+    const SH = HP.map((v, i) => v + du[i] * 22);                              // shade mouth
+    const hs = P(...SH), ts = P(...TGT);
+
+    let svg = RW.defs + `<defs><linearGradient id="rep-beamg" gradientUnits="userSpaceOnUse" x1="${f(hs[0])}" y1="${f(hs[1])}" x2="${f(ts[0])}" y2="${f(ts[1])}">
+      <stop offset="0" style="stop-color:var(--accent);stop-opacity:.5"/><stop offset=".7" style="stop-color:var(--accent);stop-opacity:.16"/><stop offset="1" style="stop-color:var(--accent);stop-opacity:.04"/></linearGradient></defs>`;
+    svg += G.ground(72, 55, 90, 95);
+    svg += G.box(16, -14, 0, 112, 138, 8, 18);
+    svg += `<g transform="${K.FRONT(16, 124, 8)}"><rect class="rw-hi" x="16" y="2.5" width="80" height="3" rx="1.5"/></g><g transform="${K.SIDE(128, 124, 8)}"><rect class="rw-hi" x="16" y="2.5" width="106" height="3" rx="1.5"/></g>`;
+    // page stand + page (faces +x), 3 layers thick, folded top corner
+    svg += G.box(X0 - 12, Y0 - 4, 8, 12, PW + 8, 6, 3);
+    const pageShape = `<path d="M0 0 H${PW - 16} L${PW} 16 V${PH} H0 Z"/>`;
+    svg += `<g id="rep-page">${G.ext(i => SIDE(X0 - 2.4 + i * .8, Y0 + PW, ZT), 3, pageShape, `
+      <path class="r-page" d="M0 0 H${PW - 16} L${PW} 16 V${PH} H0 Z"/>
+      <path class="r-fold" d="M${PW - 16} 0 V16 H${PW} Z"/>
+      <ellipse class="r-spot" cx="${PW * .45}" cy="${PH * .55}" rx="44" ry="40"/>
+      <rect class="rw-hi" x="8" y="9" width="34" height="4" rx="2"/>
+      <rect class="rw-etch" x="8" y="18" width="56" height="2" rx="1" style="stroke:none;fill:${RW.mix(40)}"/>
+      <rect class="rw-etch" x="8" y="24" width="42" height="2" rx="1" style="stroke:none;fill:${RW.mix(40)}"/>
+      <text class="rw-txt" x="8" y="38" font-size="5" letter-spacing=".6" id="rep-q">Q1 · REVENUE</text>
+      <path class="rw-etch" d="M8 ${PH - 10} H${PW - 8}"/>
+      <g id="rep-chart"></g>`)}</g>`;
+    // light cone from the shade onto the page
+    svg += `<path id="rep-beam" class="r-beam" d="${G.coneAx(SH, TGT, 12, 36)}"/>`;
+    // lamp: base, two arm segments, joints, shade
+    svg += `<g id="rep-lamp" class="grab">
+      ${G.cyl(LB[0], LB[1], 8, 18, 6)}
+      ${G.cylAx([LB[0], LB[1], 14], EL, 3.2)}
+      ${G.cylAx(EL, HP, 3.2)}
+      <circle class="rw-hi" cx="${f(P(...EL)[0])}" cy="${f(P(...EL)[1])}" r="4"/>
+      <path d="${G.coneAx(HP.map((v, i) => v - du[i] * 5), SH, 5, 14)}" class="rw-cyl"/>
+      <path id="rep-bulb" class="r-bulb" d="${G.poly(G.ring3(SH, du, 13.4))}"/>
+      <circle id="rep-core" class="r-core" cx="${f(P(...SH.map((v, i) => v - du[i] * 3))[0])}" cy="${f(P(...SH.map((v, i) => v - du[i] * 3))[1])}" r="5.2"/>
+      <path class="r-mouth" d="${G.poly(G.ring3(SH, du, 14))}"/>
+    </g>`;
+    svg += `<g id="rep-motes"></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'rep-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const page = $('#rep-page'), chart = $('#rep-chart'), beam = $('#rep-beam'), bulb = $('#rep-bulb'), lamp = $('#rep-lamp'), qEl = $('#rep-q');
+    const dots = DOTS.map((_, i) => $('#rep-dot' + i));
+    const tickMotes = G.motes($('#rep-motes'), { cx: X0 + 30, cy: Y0 + PW * .5, r: 26, z0: Z0 + 20, h: 90, n: 10 });
+
+    const st = { on: false, q: 1, data: [22, 30, 26, 38, 34, 46], shown: [0, 0, 0, 0, 0, 0], flick: 0 };
+    function drawChart() {
+      const base = PH - 10, cw = PW - 16, n = st.shown.length, bw = 8;
+      let s = '', pts = [];
+      st.shown.forEach((v, i) => {
+        const x = 12 + i * (cw / n), h = v * 1.1;
+        s += `<rect class="r-bar" x="${f(x)}" y="${f(base - h)}" width="${bw}" height="${f(Math.max(0, h))}" rx="1.5"/>`;
+        pts.push([x + bw / 2, base - h - 10]);
+      });
+      s += `<path class="r-line" d="M${pts.map(p => p.map(f).join(' ')).join('L')}"/>` + pts.map(p => `<circle class="r-pt" cx="${f(p[0])}" cy="${f(p[1])}" r="1.8"/>`).join('');
+      chart.innerHTML = s;
+    }
+    function render() {
+      page.classList.toggle('on', st.on); beam.classList.toggle('on', st.on); bulb.classList.toggle('on', st.on); $('#rep-core').classList.toggle('on', st.on);
+      api.power(st.on);
+      const d = st.data, g = ((d[5] - d[4]) / d[4] * 100);
+      qEl.textContent = `Q${st.q} · REVENUE`;
+      api.readout(st.on ? `Q${st.q} report · revenue ${g >= 0 ? '+' : ''}${g.toFixed(1)}%` : 'lamp off');
+    }
+    function toggle() { st.on = !st.on; if (st.on) st.flick = performance.now(); render(); }
+    function next() {
+      if (!st.on) { toggle(); return; }
+      st.q = st.q % 4 + 1;
+      const last = st.data[st.data.length - 1];
+      st.data = st.data.slice(1).concat(Math.max(14, Math.min(64, last + (Math.random() * 24 - 8)) | 0));
+      render();
+    }
+
+    api.loop(t => {
+      let changed = false;
+      st.shown = st.shown.map((v, i) => { const tg = st.on ? st.data[i] : st.data[i] * .35, nv = v + (tg - v) * .09; if (Math.abs(nv - v) > .01) changed = true; return nv; });
+      if (changed) drawChart();
+      // short flicker when switched on
+      const fk = t - st.flick;
+      if (st.on && fk < 380) beam.style.opacity = (Math.floor(fk / 60) % 2 ? .3 : 1); else beam.style.opacity = '';
+      tickMotes(t, st.on ? .8 : 0);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    lamp.addEventListener('click', toggle);
+    page.addEventListener('click', next);
+    const mark = RW.auto(api, stage, 2600, next);
+    drawChart(); render();
+    return {
+      key: e => {
+        mark();
+        if (e.key === 'Enter' || e.key === 'n' || e.key === 'N') return next(), true;
+        if (e.key === ' ' || e.key === 'l' || e.key === 'L') return toggle(), true;
+        return false;
+      },
+      demo: () => api.after(300, toggle),
+    };
+  },
+});
+
+FIGS.push({
+  id: 'tap', name: 'Tap to pay', hint: 'Click the card or Enter to tap',
+  aria: 'Isometric phone lying flat with a card hovering above it. Click the card or press Enter: it dips to tap, rings pulse on the screen, the screen flips to paid and a coin pops onto the stack beside it.',
+  css: `
+    [data-fig="tap"] .t-scr { fill:${RW.mix(5)}; transition:fill .3s; }
+    [data-fig="tap"] .t-scr.paid { fill:url(#rw-well); }
+    [data-fig="tap"] .t-ring { fill:none; stroke:var(--accent-hi); stroke-width:1.4; vector-effect:non-scaling-stroke; opacity:0; }
+    [data-fig="tap"] .t-big { fill:url(#rw-themehi); font-family:var(--mono); }
+    [data-fig="tap"] .paidui .t-big { fill:${RW.mix(12)}; }
+    [data-fig="tap"] .t-sm { fill:${RW.mix(50)}; font-family:var(--mono); }
+    [data-fig="tap"] .paidui .t-sm { fill:${RW.mix(25)}; }
+    [data-fig="tap"] .t-light { opacity:0; }
+    [data-fig="tap"] .grab { cursor:pointer; }
+  `,
+  mount(stage, api) {
+    const PX = 10, PY = 40, PW = 128, PD = 66, PT = 8;           // phone (landscape, long side along x)
+    const SC = [PX + PW / 2, PY + PD / 2], CW = 78, CD = 50, HOV = 46;
+    const STK = [168, 52];                                       // coin stack
+    const DOTS = [[0, 30, 96], [176, 24, 86], [176, 120, 20], [20, 130, 64]];
+    const K = api.iso.frame([[PX-10,PY-10,0],[PX+PW+60,PY-10,0],[PX-10,PY+PD+10,0],[PX+PW+60,PY+PD+10,0],[SC[0],SC[1],PT+HOV+40],[STK[0],STK[1],90], ...DOTS]);
+    const { P, D, TOP, FRONT } = K, G = RW.kit(K);
+    const f = v => v.toFixed(2), O0 = P(0, 0, 0);
+
+    let svg = RW.defs;
+    svg += G.ground(PX + PW / 2 + 20, PY + PD / 2, 120, 80);
+    svg += G.box(PX, PY, 0, PW, PD, PT, 12);
+    svg += `<g transform="${K.SIDE(PX + PW, PY + PD, PT)}"><rect class="rw-hi" x="18" y="3" width="30" height="2" rx="1"/></g>`;
+    svg += `<g transform="${TOP(0, 0, PT)}">
+      <rect id="tap-scr" class="t-scr" x="${PX + 10}" y="${PY + 5}" width="${PW - 20}" height="${PD - 10}" rx="6"/>
+      <rect class="rw-rim" x="${PX + 10}" y="${PY + 5}" width="${PW - 20}" height="${PD - 10}" rx="6"/>
+      <rect class="rw-etch" x="${PX + 4}" y="${PY + PD / 2 - 7}" width="1.6" height="14" rx=".8"/>
+      <g id="tap-ui"></g>
+      ${[0, 1, 2].map(i => `<circle class="t-ring" data-r="${i}" cx="${SC[0]}" cy="${SC[1]}" r="10"/>`).join('')}
+      <ellipse id="tap-shadow" class="rw-shadow" cx="${SC[0] + 6}" cy="${SC[1] + 6}" rx="${CW / 2 + 4}" ry="${CD / 2 + 4}"/>
+    </g>`;
+    svg += `<g id="tap-light" class="t-light"><path class="rw-cone" d="${G.cone(SC[0], SC[1], PT, 22, 36, 60)}"/></g>`;
+    svg += `<g id="tap-stack"></g>`;
+    // card: flat, face up, 3 layers thick
+    const cardR = `<rect x="${SC[0] - CW / 2}" y="${SC[1] - CD / 2}" width="${CW}" height="${CD}" rx="5"/>`;
+    const cx0 = SC[0] - CW / 2, cy0 = SC[1] - CD / 2;
+    svg += `<g id="tap-card" class="grab">${G.ext(i => TOP(0, 0, PT + HOV + i * .9), 3, cardR, `
+      <rect class="rw-cardf" x="${cx0}" y="${cy0}" width="${CW}" height="${CD}" rx="5"/>
+      <rect class="rw-flat" x="${cx0 + 8}" y="${cy0 + 12}" width="13" height="10" rx="2.5"/>
+      <path class="rw-etch" style="stroke:${RW.mix(25)}" d="M${cx0 + 8} ${cy0 + 17}h13M${cx0 + 14.5} ${cy0 + 12}v10"/>
+      <path d="M${cx0 + 28} ${cy0 + 13} a4 4 0 0 1 0 8 M${cx0 + 31} ${cy0 + 11} a7 7 0 0 1 0 12" fill="none" stroke="var(--accent-hi)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <text class="t-big" x="${cx0 + 8}" y="${cy0 + 34}" font-size="5.4" letter-spacing=".7">0000 0000 7731</text>
+      <rect class="rw-hi" x="${cx0 + CW - 22}" y="${cy0 + CD - 11}" width="14" height="3" rx="1.5"/>`, 'rw-edge')}</g>`;
+    // popping coin (upright, spinning) — drawn per frame
+    svg += `<g id="tap-coin"></g><g id="tap-motes"></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'tap-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const card = $('#tap-card'), scr = $('#tap-scr'), ui = $('#tap-ui'), shadow = $('#tap-shadow'), light = $('#tap-light');
+    const coinG = $('#tap-coin'), stack = $('#tap-stack'), rings = [...stage.querySelectorAll('.t-ring')];
+    const dots = DOTS.map((_, i) => $('#tap-dot' + i));
+    const tickMotes = G.motes($('#tap-motes'), { cx: SC[0], cy: SC[1], r: 24, z0: PT, h: 80, n: 12 });
+
+    const AMTS = [12.4, 4.8, 23, 7.25, 15.6, 3.9];
+    const st = { n: 0, sum: 0, coins: 3, last: 0, paid: 0, anim: null, ai: 0 };
+    function drawUI() {
+      const paid = st.paid > 0;
+      ui.setAttribute('class', paid ? 'paidui' : '');
+      const x = PX + 18, y = PY + 14;
+      ui.innerHTML = paid
+        ? `<text class="t-sm" x="${x}" y="${y + 4}" font-size="4.4" letter-spacing=".6">PAID</text>
+           <text class="t-big" x="${x}" y="${y + 20}" font-size="13">$${st.last.toFixed(2)}</text>
+           <circle class="rw-ink" cx="${PX + PW - 24}" cy="${y + 14}" r="8"/><path d="M${PX + PW - 28} ${y + 14} l3 3 5 -6" fill="none" stroke="var(--accent-hi)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`
+        : `<text class="t-sm" x="${x}" y="${y + 4}" font-size="4.4" letter-spacing=".6">HOLD CARD NEAR</text>
+           <text class="t-big" x="${x}" y="${y + 20}" font-size="13">$${AMTS[st.ai % AMTS.length].toFixed(2)}</text>
+           <rect class="rw-front" x="${x}" y="${y + 28}" width="60" height="3" rx="1.5"/>`;
+    }
+    function drawStack() {
+      let s = '';
+      for (let i = 0; i < st.coins; i++) s += G.cyl(STK[0], STK[1], i * 3.4, 11, 3, 'rw-litcyl', 'rw-hi');
+      stack.innerHTML = s;
+    }
+    function render() {
+      scr.classList.toggle('paid', st.paid > 0);
+      api.power(!!st.anim || st.paid > 0);
+      api.readout(st.n ? `paid $${st.last.toFixed(2)} · ${st.n} today · $${st.sum.toFixed(2)}` : 'ready · tap card');
+    }
+    function tap() {
+      if (st.anim) return;
+      st.anim = { t0: performance.now(), done: false, amt: AMTS[st.ai % AMTS.length] }; render();
+    }
+
+    const ease = p => p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;
+    api.loop(t => {
+      let hz = Math.sin(t / 700) * 3, coin = null;
+      const a = st.anim;
+      if (a) {
+        const e = t - a.t0;
+        if (e < 500) hz = -(HOV - 8) * ease(e / 500);
+        else if (e < 1100) hz = -(HOV - 8);
+        else hz = -(HOV - 8) * (1 - ease(Math.min(1, (e - 1100) / 600)));
+        rings.forEach((r, i) => { const u = (e - 450 - i * 180) / 700;
+          if (u > 0 && u < 1) { r.setAttribute('r', (12 + u * 44).toFixed(1)); r.style.opacity = (1 - u).toFixed(2); } else r.style.opacity = 0; });
+        if (!a.done && e > 700) { a.done = true; st.n++; st.sum += a.amt; st.last = a.amt; st.ai++; st.paid = t; drawUI(); render(); }
+        if (e > 900 && e < 2300) {                       // coin pops out and lands on the stack
+          const u = Math.min(1, (e - 900) / 1300);
+          const x = SC[0] + (STK[0] - SC[0]) * u, y = SC[1] + (STK[1] - SC[1]) * u, z = PT + 6 + 70 * 4 * u * (1 - u) + (st.coins * 3.4) * u;
+          coin = { x, y, z, spin: e / 90 };
+        }
+        if (e >= 2300) { st.coins = st.coins >= 9 ? 3 : st.coins + 1; drawStack(); st.anim = null; render(); }
+      }
+      if (st.paid && t - st.paid > 2600) { st.paid = 0; drawUI(); render(); }
+      const d = D(0, 0, hz);
+      card.setAttribute('transform', `translate(${f(d[0])} ${f(d[1])})`);
+      const sh = 1 - Math.min(1, (hz + HOV) / HOV);
+      shadow.style.opacity = (.25 + .6 * sh).toFixed(2);
+      light.style.opacity = Math.max(.32, st.paid ? 1 - (t - st.paid) / 2400 : 0).toFixed(2);
+      if (coin) {
+        const sx = Math.abs(Math.cos(coin.spin)), [px, py] = P(coin.x, coin.y, coin.z).map((v, i) => v - O0[i]);
+        coinG.innerHTML = `<g transform="translate(${f(px)} ${f(py)})"><g transform="${FRONT(0, 0, 0)}"><g transform="scale(${Math.max(.12, sx).toFixed(2)} 1)">
+          <circle class="rw-edge" r="9" cx="-1.2"/><circle class="rw-orb" r="9"/><circle class="rw-etch" style="stroke:${RW.mix(55)}" r="6"/></g></g></g>`;
+      } else if (coinG.firstChild) coinG.innerHTML = '';
+      tickMotes(t, st.paid ? 1 : .15, st.paid ? 2 : 1);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    card.addEventListener('click', tap);
+    const mark = RW.auto(api, stage, 3200, tap);
+    drawUI(); drawStack(); render();
+    return {
+      key: e => { mark(); if (e.key === 'Enter' || e.key === ' ') return tap(), true; return false; },
+      demo: () => api.after(300, tap),
+    };
+  },
+});
+
+FIGS.push({
+  id: 'trade', name: 'Trading phone', hint: 'Click BUY / SELL · B · S',
+  aria: 'Isometric phone standing in a dock with a live candlestick chart. Click BUY or SELL, or press B or S, to trade; candles stream in continuously.',
+  css: `
+    [data-fig="trade"] .tr-up { fill:url(#rw-themehi); }
+    [data-fig="trade"] .tr-dn { fill:${RW.mix(38)}; }
+    [data-fig="trade"] .tr-wick { stroke-width:.7; }
+    [data-fig="trade"] .tr-line { fill:none; stroke:var(--accent); stroke-width:1; stroke-dasharray:1.5 1.5; vector-effect:non-scaling-stroke; }
+    [data-fig="trade"] .tr-big { fill:url(#rw-themehi); font-family:var(--mono); }
+    [data-fig="trade"] .tr-sm { fill:${RW.mix(50)}; font-family:var(--mono); }
+    [data-fig="trade"] .tr-buy { fill:url(#rw-theme); cursor:pointer; }
+    [data-fig="trade"] .tr-sell { fill:${RW.mix(18)}; stroke:${RW.mix(45)}; stroke-width:1; vector-effect:non-scaling-stroke; cursor:pointer; }
+    [data-fig="trade"] .tr-btxt { font-family:var(--mono); pointer-events:none; }
+    [data-fig="trade"] .tr-fill { fill:url(#rw-theme); opacity:0; }
+    [data-fig="trade"] .tr-edge { fill:${RW.mix(16)}; }
+    [data-fig="trade"] .tr-body { fill:url(#rw-side); }
+  `,
+  mount(stage, api) {
+    const TL = 12 * Math.PI / 180, sn = Math.sin(TL), cs = Math.cos(TL);
+    const PW = 72, PH = 138, XB = 74, YR = 102, ZB = 14;             // phone size, bottom-front x, right edge y, rest height
+    const U = [0, -1, 0], V = [sn, 0, -cs], N = [cs, 0, sn];          // screen axes + outward normal
+    const O = [XB - PH * sn, YR, ZB + PH * cs];                       // top-left of the screen face
+    const DOTS = [[10, 10, 170], [120, 0, 150], [140, 150, 40], [-10, 140, 100]];
+    const K = api.iso.frame([[22,10,0],[112,10,0],[22,124,0],[112,124,0],[O[0],O[1],O[2]+6],[O[0],O[1]-PW,O[2]+6], ...DOTS]);
+    const { P, TOP, plane } = K, G = RW.kit(K);
+    const f = v => v.toFixed(2);
+    const at = d => O.map((v, i) => v - N[i] * d);
+    const face = d => plane(at(d), U, V);
+
+    let svg = RW.defs;
+    svg += G.ground(68, 66, 80, 80);
+    // dock: base, back cradle, front lip with a lit strip
+    svg += G.box(22, 10, 0, 90, 114, ZB, 14);
+    svg += G.box(XB - 24, 16, ZB, 12, 102, 22, 4);
+    svg += `<g id="tr-phone">`;
+    for (let i = 7; i >= 1; i--) svg += `<g transform="${face(i)}"><rect class="${i === 7 ? 'tr-body' : 'tr-edge'}" width="${PW}" height="${PH}" rx="11"/></g>`;
+    svg += `<g transform="${face(0)}">
+      <rect class="tr-edge" width="${PW}" height="${PH}" rx="11"/>
+      <rect class="rw-pit" x="4" y="5" width="${PW - 8}" height="${PH - 10}" rx="8"/>
+      <rect class="rw-rim" x="4" y="5" width="${PW - 8}" height="${PH - 10}" rx="8"/>
+      <rect class="rw-etch" x="${PW / 2 - 9}" y="8" width="18" height="3" rx="1.5" style="fill:${RW.mix(14)}"/>
+      <text class="tr-sm" x="10" y="22" font-size="4.6" letter-spacing=".6">ETH / USD</text>
+      <text id="tr-price" class="tr-big" x="10" y="34" font-size="10">$3,400</text>
+      <text id="tr-chg" class="tr-sm" x="${PW - 10}" y="34" font-size="4.6" text-anchor="end">+0.0%</text>
+      <rect class="rw-front" x="9" y="40" width="${PW - 18}" height="58" rx="3"/>
+      <g id="tr-chart"></g>
+      <text id="tr-pos" class="tr-sm" x="10" y="106" font-size="4.2">POSITION 0.00</text>
+      <rect id="tr-buy" class="tr-buy" x="9" y="111" width="${(PW - 22) / 2}" height="13" rx="6.5"/>
+      <text class="tr-btxt" x="${9 + (PW - 22) / 4}" y="119.4" font-size="5" text-anchor="middle" letter-spacing=".8" style="fill:${RW.mix(12)}">BUY</text>
+      <rect id="tr-sell" class="tr-sell" x="${13 + (PW - 22) / 2}" y="111" width="${(PW - 22) / 2}" height="13" rx="6.5"/>
+      <text class="tr-btxt" x="${13 + 3 * (PW - 22) / 4}" y="119.4" font-size="5" text-anchor="middle" letter-spacing=".8" style="fill:${RW.mix(55)}">SELL</text>
+      <rect id="tr-flash" class="tr-fill" x="4" y="5" width="${PW - 8}" height="${PH - 10}" rx="8"/>
+    </g></g>`;
+    svg += G.box(XB + 2, 14, ZB, 9, 100, 9, 3);
+    svg += `<g transform="${K.SIDE(XB + 11, 114, ZB + 9)}"><rect class="rw-hi" x="10" y="3" width="80" height="2.6" rx="1.3"/></g>`;
+    svg += `<g id="tr-motes"></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'tr-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const chart = $('#tr-chart'), priceEl = $('#tr-price'), chgEl = $('#tr-chg'), posEl = $('#tr-pos'), flash = $('#tr-flash');
+    const dots = DOTS.map((_, i) => $('#tr-dot' + i));
+    const mid = at(-6).map((v, i) => v + U[i] * PW / 2 + V[i] * PH * .45);
+    const tickMotes = G.motes($('#tr-motes'), { cx: mid[0] + 8, cy: mid[1], r: 22, z0: ZB + 30, h: 110, n: 12 });
+
+    let p0 = 3400, last = p0;
+    const candles = [];
+    for (let i = 0; i < 16; i++) { const o = last, c = o + (Math.random() - .45) * 30; candles.push({ o, c, h: Math.max(o, c) + Math.random() * 12, l: Math.min(o, c) - Math.random() * 12 }); last = c; }
+    const st = { pos: 0, cost: 0, fill: 0, boost: 0, trades: 0 };
+    function drawChart() {
+      const X0 = 12, X1 = PW - 12, Y0 = 44, Y1 = 94, n = candles.length;
+      const hi = Math.max(...candles.map(c => c.h)), lo = Math.min(...candles.map(c => c.l)), sy = v => Y1 - (v - lo) / (hi - lo || 1) * (Y1 - Y0);
+      const w = (X1 - X0) / n;
+      let s = '';
+      candles.forEach((c, i) => {
+        const x = X0 + i * w + w / 2, up = c.c >= c.o, cls = up ? 'tr-up' : 'tr-dn';
+        s += `<line class="tr-wick" x1="${f(x)}" x2="${f(x)}" y1="${f(sy(c.h))}" y2="${f(sy(c.l))}" style="stroke:${up ? 'var(--accent-hi)' : RW.mix(38)}"/>`;
+        const y0 = sy(Math.max(c.o, c.c)), y1 = sy(Math.min(c.o, c.c));
+        s += `<rect class="${cls}" x="${f(x - w * .32)}" y="${f(y0)}" width="${f(w * .64)}" height="${f(Math.max(.8, y1 - y0))}" rx=".4"/>`;
+      });
+      s += `<path class="tr-line" d="M${X0} ${f(sy(last))}H${X1}"/>`;
+      chart.innerHTML = s;
+      const chg = (last - p0) / p0 * 100;
+      priceEl.textContent = '$' + last.toLocaleString(undefined, { maximumFractionDigits: 0 });
+      chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(1) + '%';
+    }
+    function tick() {
+      const o = last, c = o + (Math.random() - .46) * 28;
+      candles.push({ o, c, h: Math.max(o, c) + Math.random() * 10, l: Math.min(o, c) - Math.random() * 10 });
+      candles.shift(); last = c; drawChart(); render();
+    }
+    function render() {
+      posEl.textContent = `POSITION ${st.pos.toFixed(2)} ETH`;
+      const pnl = st.pos * last - st.cost;
+      api.power(st.pos > 0);
+      api.readout(`eth $${last.toFixed(0)} · pos ${st.pos.toFixed(2)} · p&l ${pnl >= 0 ? '+' : '-'}$${Math.abs(pnl).toFixed(2)}`);
+    }
+    function trade(buy) {
+      if (!buy && st.pos <= 0) { api.readout('nothing to sell'); return; }
+      const q = .2;
+      if (buy) { st.pos += q; st.cost += q * last; } else { const avg = st.cost / st.pos; st.pos = Math.max(0, st.pos - q); st.cost = avg * st.pos; }
+      st.fill = performance.now(); st.boost = st.fill; st.trades++;
+      api.flash($(buy ? '#tr-buy' : '#tr-sell')); render();
+    }
+
+    api.every(650, tick);
+    api.loop(t => {
+      const e = t - st.fill;
+      flash.style.opacity = st.fill && e < 500 ? (.22 * (1 - e / 500)).toFixed(2) : 0;
+      tickMotes(t, t - st.boost < 1800 ? 1 : .2, t - st.boost < 1800 ? 2 : 1);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    $('#tr-buy').addEventListener('click', () => trade(true));
+    $('#tr-sell').addEventListener('click', () => trade(false));
+    let ak = 0;
+    const mark = RW.auto(api, stage, 2600, () => trade(ak++ % 3 !== 2));
+    drawChart(); render();
+    return {
+      key: e => {
+        mark();
+        if (e.key === 'b' || e.key === 'B' || e.key === 'Enter') return trade(true), true;
+        if (e.key === 's' || e.key === 'S') return trade(false), true;
+        return false;
+      },
+      demo: () => api.after(400, () => trade(true)),
+    };
+  },
+});
+
+FIGS.push({
+  id: 'globe', name: 'Route globe', hint: 'Click or Enter to send a route · Space pause spin',
+  aria: 'Isometric dot-matrix globe on a pedestal with an orbit ring. Routes between cities light up with travelling pulses; click or press Enter to send one, Space pauses the spin.',
+  css: `
+    [data-fig="globe"] .g-sphere { fill:url(#globe-g); }
+    [data-fig="globe"] .g-rim { fill:none; stroke:${RW.mix(50)}; stroke-width:1.1; vector-effect:non-scaling-stroke; }
+    [data-fig="globe"] .g-land { fill:url(#rw-theme); }
+    [data-fig="globe"] .g-route { fill:none; stroke:var(--accent); stroke-opacity:.85; stroke-width:1.3; vector-effect:non-scaling-stroke; }
+    [data-fig="globe"] .g-live { fill:none; stroke:var(--accent-hi); stroke-width:2.6; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+    [data-fig="globe"] .g-node { fill:url(#rw-themehi); }
+    [data-fig="globe"] .g-orbit { fill:none; stroke:${RW.mix(45)}; stroke-width:1; vector-effect:non-scaling-stroke; }
+    [data-fig="globe"] .g-ring { fill:url(#rw-themehi); }
+  `,
+  mount(stage, api) {
+    const CX = 80, CY = 80, RG = 50, ZC = 96, OR = 74, TILT = 18 * Math.PI / 180;
+    const C3 = [CX, CY, ZC], V = [1, 1, 1].map(v => v / Math.sqrt(3));
+    const DOTS = [[0, 10, 170], [170, 20, 140], [160, 160, 20], [10, 160, 90]];
+    const K = api.iso.frame([[CX-50,CY-50,0],[CX+50,CY+50,0],[CX+50,CY-50,0],[CX-50,CY+50,0],[CX-OR,CY-OR,ZC],[CX+OR,CY+OR,ZC],[CX+OR,CY-OR,ZC],[CX-OR,CY+OR,ZC],[CX,CY,ZC+RG+20], ...DOTS]);
+    const { P } = K, G = RW.kit(K);
+    const f = v => v.toFixed(2), deg = Math.PI / 180;
+    const SR = RG * Math.sqrt(1.5);                                    // projected sphere radius
+    const [sx, sy] = P(...C3);
+
+    // land mask: a few blobs on the sphere, sampled on a lat/lon grid
+    const BLOBS = [[45,-100,26],[15,-80,12],[-15,-60,20],[52,15,18],[5,20,24],[-25,25,13],[52,90,30],[22,80,13],[-25,135,15],[68,-42,9],[35,140,7]];
+    const ang = (la1, lo1, la2, lo2) => Math.acos(Math.min(1, Math.sin(la1*deg)*Math.sin(la2*deg) + Math.cos(la1*deg)*Math.cos(la2*deg)*Math.cos((lo1-lo2)*deg))) / deg;
+    const LAND = [];
+    for (let la = -78; la <= 78; la += 6) {
+      const step = 6 / Math.max(.25, Math.cos(la * deg));
+      for (let lo = -180; lo < 180; lo += step) if (BLOBS.some(([a, b, r]) => ang(la, lo, a, b) < r)) LAND.push([la, lo]);
+    }
+    const CITIES = [[40,-74],[51,0],[35,139],[1,103],[-33,151],[19,72],[-23,-46],[37,-122],[25,55],[6,3],[55,37]];
+    const vec = (la, lo, rot) => {
+      const a = la * deg, b = (lo + rot) * deg;
+      let x = Math.cos(a) * Math.cos(b), y = Math.cos(a) * Math.sin(b), z = Math.sin(a);
+      const y2 = y * Math.cos(TILT) - z * Math.sin(TILT), z2 = y * Math.sin(TILT) + z * Math.cos(TILT);
+      return [x, y2, z2];
+    };
+    const facing = n => n[0]*V[0] + n[1]*V[1] + n[2]*V[2];
+    const world = (n, r) => [CX + n[0] * r, CY + n[1] * r, ZC + n[2] * r];
+    const slerp = (a, b, u) => { const d = Math.acos(Math.max(-1, Math.min(1, a[0]*b[0]+a[1]*b[1]+a[2]*b[2]))), s = Math.sin(d) || 1;
+      const k0 = Math.sin((1 - u) * d) / s, k1 = Math.sin(u * d) / s; return a.map((v, i) => v * k0 + b[i] * k1); };
+
+    // orbit ring (tilted) split into back + front halves
+    const oAxis = [Math.sin(.5), -Math.sin(.3), 1];
+    const oPts = G.ring3(C3, oAxis, OR, 90);
+    // split the ring by SEGMENT (midpoint depth) so the two halves join with no gap
+    const half = front => { let d = '', on = false;
+      oPts.forEach((p, i) => { const q = oPts[(i + 1) % oPts.length];
+        const isF = ((p[0] + q[0]) / 2 - CX) + ((p[1] + q[1]) / 2 - CY) + ((p[2] + q[2]) / 2 - ZC) > 0;
+        if (isF === front) { if (!on) d += 'M' + P(...p).map(f).join(' '); d += 'L' + P(...q).map(f).join(' '); on = true; } else on = false; });
+      return d; };
+
+    let svg = RW.defs + `<defs><radialGradient id="globe-g" cx=".36" cy=".3" r=".75">
+      <stop offset="0" style="stop-color:${RW.mix(34)}"/><stop offset=".7" style="stop-color:${RW.mix(12)}"/><stop offset="1" style="stop-color:${RW.mix(5)}"/></radialGradient></defs>`;
+    svg += G.ground(CX, CY, 80, 80);
+    svg += G.cyl(CX, CY, 0, 42, 10) + G.cyl(CX, CY, 10, 30, 6);
+    svg += `<g transform="${K.TOP(0, 0, 16)}"><circle class="rw-hi" cx="${CX}" cy="${CY}" r="12"/></g>`;
+    svg += G.cyl(CX, CY, 16, 6, ZC - RG - 12, 'rw-cyl', 'rw-top');
+    svg += `<path class="rw-cone" d="${G.cone(CX, CY, 16, 12, 34, ZC - 10)}"/>`;
+    svg += `<path class="g-orbit" d="${half(false)}"/>`;
+    svg += `<g id="globe-satb"></g>`;
+    svg += `<circle class="g-sphere" cx="${f(sx)}" cy="${f(sy)}" r="${f(SR)}"/>`;
+    svg += `<g id="globe-land"></g><g id="globe-routes"></g>`;
+    svg += `<circle class="g-rim" cx="${f(sx)}" cy="${f(sy)}" r="${f(SR)}"/>`;
+    svg += `<path class="g-orbit" d="${half(true)}"/><g id="globe-satf"></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'globe-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const landG = $('#globe-land'), routesG = $('#globe-routes'), satF = $('#globe-satf'), satB = $('#globe-satb');
+    const dots = DOTS.map((_, i) => $('#globe-dot' + i));
+
+    const st = { rot: 0, spin: true, routes: [], sent: 0, ci: 0, lastT: 0 };
+    const PAIRS = [];
+    CITIES.forEach((a, i) => CITIES.forEach((b, j) => { const d = ang(a[0], a[1], b[0], b[1]); if (i < j && d > 25 && d < 95) PAIRS.push([a, b]); }));
+    function send() {
+      // pick a pair whose both ends currently face the viewer
+      const ok = PAIRS.filter(([a, b]) => facing(vec(...a, st.rot)) > .25 && facing(vec(...b, st.rot)) > .25);
+      const pool = ok.length ? ok : PAIRS, [a, b] = pool[st.ci % pool.length];
+      st.ci += 7; st.sent++;
+      st.routes.push({ a, b, t0: performance.now() });
+      if (st.routes.length > 6) st.routes.shift();
+      render();
+    }
+    function render() {
+      const live = st.routes.filter(r => performance.now() - r.t0 < 1600).length;
+      api.power(true);
+      api.readout(`routes ${st.sent} · live ${live} · ${st.spin ? 'spinning' : 'paused'}`);
+    }
+
+    api.loop(t => {
+      const dt = st.lastT ? t - st.lastT : 0; st.lastT = t;
+      if (st.spin) st.rot += dt * .012;
+      // land dots: front hemisphere only, size + opacity by facing
+      let s = '';
+      for (const [la, lo] of LAND) {
+        const n = vec(la, lo, st.rot), fc = facing(n);
+        if (fc <= .02) continue;
+        const [x, y] = P(...world(n, RG)), r = .7 + 1.3 * fc;
+        s += `<rect class="g-land" x="${f(x - r)}" y="${f(y - r)}" width="${f(2 * r)}" height="${f(2 * r)}" style="opacity:${(.25 + .75 * fc).toFixed(2)}"/>`;
+      }
+      landG.innerHTML = s;
+      // routes: lifted great-circle arcs, hidden behind the sphere
+      let r = '';
+      for (const rt of st.routes) {
+        const A = vec(...rt.a, st.rot), B = vec(...rt.b, st.rot), e = (t - rt.t0) / 1600;
+        const vis = Math.min(facing(A), facing(B));
+        if (vis < .05) continue;
+        const op = Math.min(1, vis * 4).toFixed(2);
+        r += `<g style="opacity:${op}">`;
+        const pts = [];
+        for (let i = 0; i <= 32; i++) {
+          const u = i / 32, n = slerp(A, B, u), w = world(n, RG + 28 * Math.sin(Math.PI * u)), p = P(...w);
+          const behind = facing(n) < .02;
+          pts.push(behind ? null : p);
+        }
+        let d = '', on = false;
+        pts.forEach(p => { if (!p) { on = false; return; } d += (on ? 'L' : 'M') + p.map(f).join(' '); on = true; });
+        r += `<path class="g-route" d="${d}"/>`;
+        if (e < 1) {                                               // travelling pulse
+          const k = Math.floor(e * 32), seg = pts.slice(Math.max(0, k - 5), k + 1).filter(Boolean);
+          if (seg.length > 1) r += `<path class="g-live" d="M${seg.map(p => p.map(f).join(' ')).join('L')}"/>`;
+          const hp = pts[k]; if (hp) r += `<rect class="g-node" x="${f(hp[0] - 2.2)}" y="${f(hp[1] - 2.2)}" width="4.4" height="4.4" transform="rotate(45 ${f(hp[0])} ${f(hp[1])})"/>`;
+        }
+        [A, B].forEach(n => { const p = P(...world(n, RG + 1)); r += `<circle class="rw-halo" cx="${f(p[0])}" cy="${f(p[1])}" r="5"/><rect class="g-node" x="${f(p[0] - 1.8)}" y="${f(p[1] - 1.8)}" width="3.6" height="3.6"/>`; });
+        r += `</g>`;
+      }
+      routesG.innerHTML = r;
+      // satellite on the orbit
+      const i = Math.floor((t / 60) % oPts.length), p = oPts[i], front = (p[0] - CX) + (p[1] - CY) + (p[2] - ZC) > 0;
+      const cube = G.box(p[0] - 3, p[1] - 3, p[2] - 3, 6, 6, 6, 1);
+      satF.innerHTML = front ? cube : ''; satB.innerHTML = front ? '' : cube;
+      if (Math.floor(t / 500) !== Math.floor((t - dt) / 500)) render();
+      dots.forEach((el, k) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + k * 1.7) * 4).toFixed(2)})`));
+    });
+
+    stage.addEventListener('click', send);
+    const mark = RW.auto(api, stage, 1200, send);
+    render();
+    return {
+      key: e => {
+        mark();
+        if (e.key === 'Enter') return send(), true;
+        if (e.key === ' ') { st.spin = !st.spin; render(); return true; }
+        return false;
+      },
+      demo: () => { api.after(200, send); api.after(700, send); },
+    };
+  },
+});
+
+FIGS.push({
+  id: 'legal', name: 'Gavel review', hint: 'Click the gavel to strike · click the page for a new case',
+  aria: 'Isometric document on a clipboard with a pen signing off its clauses and a gavel beside a sound block. The pen works through each line, then the gavel strikes and the page is stamped approved. Click the gavel or press Enter to strike, click the page or press N for a new case.',
+  css: `
+    [data-fig="legal"] .l-page { fill:url(#rw-paper); stroke:${RW.mix(40)}; stroke-width:1; vector-effect:non-scaling-stroke; }
+    [data-fig="legal"] .l-ln { fill:${RW.mix(32)}; transition:fill .2s; }
+    [data-fig="legal"] .l-ln.hot { fill:url(#rw-themehi); }
+    [data-fig="legal"] .l-ln.ok { fill:url(#rw-theme); }
+    [data-fig="legal"] .l-box { fill:none; stroke:${RW.mix(40)}; stroke-width:1; vector-effect:non-scaling-stroke; }
+    [data-fig="legal"] .l-box.ok { fill:url(#rw-theme); stroke:var(--accent-hi); }
+    [data-fig="legal"] .l-stamp { opacity:0; }
+    [data-fig="legal"] .l-stampr { fill:none; stroke:var(--accent-hi); stroke-width:1.6; vector-effect:non-scaling-stroke; }
+    [data-fig="legal"] .l-stampt { fill:url(#rw-themehi); font-family:var(--mono); }
+    [data-fig="legal"] .l-glass { fill:url(#rw-theme); fill-opacity:.22; stroke:var(--accent-hi); stroke-width:1.2; vector-effect:non-scaling-stroke; }
+    [data-fig="legal"] .l-shock { fill:none; stroke:var(--accent-hi); stroke-width:1.6; vector-effect:non-scaling-stroke; opacity:0; }
+    [data-fig="legal"] .l-light { opacity:0; }
+    [data-fig="legal"] .grab { cursor:pointer; }
+  `,
+  mount(stage, api) {
+    const BX = 6, BY = 14, BW = 84, BD = 112, BZ = 5;                 // clipboard
+    const PX = BX + 7, PY = BY + 14, PWD = BW - 14, PDD = BD - 20;    // page on it
+    const SB = [150, 64], SBR = 24, SBH = 10;                          // sound block
+    const PIV = [214, 64, 28], GL = 64, HR = 14, HL = 18;          // head stands upright: half-height HL              // gavel pivot, handle length, head radius / half length
+    const LINES = 6, LY = i => PY + 24 + i * 9.5;
+    const DOTS = [[0, 10, 66], [204, 4, 72], [226, 130, 20], [30, 140, 48]];
+    const K = api.iso.frame([[BX-4,BY-4,0],[BX-4,BY+BD+4,0],[PIV[0]+8,PIV[1]-30,0],[PIV[0]+8,PIV[1]+30,0],[SB[0],SB[1],GL*Math.sin(40*Math.PI/180)+PIV[2]+HL+10], ...DOTS]);
+    const { P, D, TOP } = K, G = RW.kit(K);
+    const f = v => v.toFixed(2), deg = Math.PI / 180;
+
+    let svg = RW.defs;
+    svg += G.ground(112, 66, 104, 84);
+    // clipboard + page + clip
+    svg += G.box(BX, BY, 0, BW, BD, BZ, 6);
+    let pg = `<rect class="l-page" x="${PX}" y="${PY}" width="${PWD}" height="${PDD}" rx="2"/>
+      <rect class="rw-hi" x="${PX + 7}" y="${PY + 8}" width="30" height="4" rx="2"/>
+      <rect class="l-ln" x="${PX + 7}" y="${PY + 15}" width="18" height="2" rx="1"/>`;
+    for (let i = 0; i < LINES; i++) pg += `<rect class="l-box" data-b="${i}" x="${PX + 7}" y="${LY(i) - 2.6}" width="4.4" height="4.4" rx="1"/>
+      <rect class="l-ln" data-l="${i}" x="${PX + 15}" y="${LY(i) - 1.2}" width="${PWD - 24 - (i % 3) * 7}" height="2.4" rx="1.2"/>`;
+    pg += `<path class="rw-etch" d="M${PX + 34} ${PY + PDD - 10}h${PWD - 42}"/>
+      <g id="legal-stamp" class="l-stamp" transform="rotate(-14 ${PX + PWD / 2} ${PY + PDD - 22})">
+        <rect class="l-stampr" x="${PX + PWD / 2 - 24}" y="${PY + PDD - 30}" width="48" height="15" rx="3"/>
+        <text class="l-stampt" x="${PX + PWD / 2}" y="${PY + PDD - 20}" font-size="6.4" text-anchor="middle" letter-spacing="1">APPROVED</text></g>`;
+    svg += `<g id="legal-page" class="grab"><g transform="${TOP(0, 0, BZ + .4)}">${pg}<ellipse id="legal-lshadow" class="rw-shadow" style="opacity:.45" cx="0" cy="0" rx="14" ry="4"/></g></g>`;
+    svg += G.box(BX + BW / 2 - 16, BY + 4, BZ, 32, 9, 5, 3);
+    // sound block, shock ring, light
+    svg += G.cyl(SB[0], SB[1], 0, SBR + 6, 4) + G.cyl(SB[0], SB[1], 4, SBR, SBH - 4);
+    svg += `<g transform="${TOP(0, 0, SBH)}"><circle class="rw-line" style="stroke-opacity:.6" cx="${SB[0]}" cy="${SB[1]}" r="${SBR - 6}"/>
+      <circle id="legal-shock" class="l-shock" cx="${SB[0]}" cy="${SB[1]}" r="10"/></g>`;
+    svg += `<g id="legal-light" class="l-light"><path class="rw-cone" d="${G.cone(SB[0], SB[1], SBH, SBR - 4, SBR + 12, 70)}"/></g>`;
+    svg += `<g id="legal-gavel" class="grab"></g><g id="legal-lens"></g><g id="legal-motes"></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'legal-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const gavel = $('#legal-gavel'), lens = $('#legal-lens'), stamp = $('#legal-stamp'), shock = $('#legal-shock'), light = $('#legal-light');
+    const lsh = $('#legal-lshadow'), page = $('#legal-page');
+    const lns = [...stage.querySelectorAll('.l-ln[data-l]')], boxes = [...stage.querySelectorAll('.l-box')];
+    const dots = DOTS.map((_, i) => $('#legal-dot' + i));
+    const tickMotes = G.motes($('#legal-motes'), { cx: SB[0], cy: SB[1], r: 18, z0: SBH, h: 80, n: 12 });
+
+    function drawGavel(a) {
+      const c = Math.cos(a * deg), s = Math.sin(a * deg);
+      const Hc = [PIV[0] - GL * c, PIV[1], PIV[2] + GL * s];
+      const ax = [s, 0, c];                                        // head axis ⟂ handle; vertical at the strike
+      const y = d => Hc.map((v, i) => v + ax[i] * d);
+      gavel.innerHTML =
+        G.cylAx(y(-HL), y(-5), HR) + G.cylAx(y(-5), y(5), HR + .8, 'rw-litcyl', 'rw-hi') + G.cylAx(y(5), y(HL), HR) +
+        G.cylAx(Hc, PIV, 3.4) +
+        `<circle class="rw-hi" cx="${f(P(...PIV)[0])}" cy="${f(P(...PIV)[1])}" r="4.2"/>`;
+    }
+    // pen: tip on the page, leaning back toward the viewer's right like a hand holds it
+    // pen: a fixed-direction 2D shape (tilted back so it reads in profile), translated to the tip each frame.
+    // Shaded with a gradient ACROSS the barrel so it reads as a cylinder at any position.
+    const PD3 = [-24, -6, 32], PL = Math.hypot(...PD3), pdu = PD3.map(v => v / PL);
+    const p0 = P(0, 0, 0), p1 = P(...pdu), ax = [p1[0] - p0[0], p1[1] - p0[1]];
+    const al = Math.hypot(...ax), an = [ax[0] / al, ax[1] / al], nn = [-an[1], an[0]], PWW = 9.5;
+    const at2 = d => [ax[0] * d, ax[1] * d];
+    const gx = (id, stops) => `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${f(-nn[0] * PWW / 2)}" y1="${f(-nn[1] * PWW / 2)}" x2="${f(nn[0] * PWW / 2)}" y2="${f(nn[1] * PWW / 2)}">${stops}</linearGradient>`;
+    const sp = (o, c) => `<stop offset="${o}" style="stop-color:${c}"/>`;
+    stage.insertAdjacentHTML('afterbegin', `<defs>
+      ${gx('pen-b', sp(0, RW.mix(30)) + sp(.35, RW.mix(22)) + sp(1, RW.mix(7)))}
+      ${gx('pen-l', sp(0, 'var(--accent-hi)') + sp(.45, 'var(--accent)') + sp(1, RW.mix(45)))}
+      ${gx('pen-t', sp(0, RW.mix(55)) + sp(1, RW.mix(25)))}</defs>`);
+    const seg = (d0, d1, g, cap = 'butt') => { const a = at2(d0), b = at2(d1);
+      return `<line x1="${f(a[0])}" y1="${f(a[1])}" x2="${f(b[0])}" y2="${f(b[1])}" stroke="url(#${g})" stroke-width="${PWW}" stroke-linecap="${cap}"/>`; };
+    const tipA = at2(11), tipL = [tipA[0] - nn[0] * PWW / 2, tipA[1] - nn[1] * PWW / 2], tipR = [tipA[0] + nn[0] * PWW / 2, tipA[1] + nn[1] * PWW / 2];
+    const PEN = `<path d="M0 0 L${f(tipL[0])} ${f(tipL[1])} L${f(tipR[0])} ${f(tipR[1])} Z" fill="url(#pen-t)"/>
+      <path d="M0 0 L${f(at2(3.5)[0] - nn[0] * 1.4)} ${f(at2(3.5)[1] - nn[1] * 1.4)} L${f(at2(3.5)[0] + nn[0] * 1.4)} ${f(at2(3.5)[1] + nn[1] * 1.4)} Z" fill="var(--accent-hi)"/>
+      ${seg(11, 50, 'pen-b')}${seg(50, 58, 'pen-l')}${seg(58, 68, 'pen-b', 'round')}`;
+    function drawPen(x, y, lift) {
+      const [px, py] = P(x, y, BZ + 1 + lift);
+      lsh.setAttribute('cx', f(x - 10)); lsh.setAttribute('cy', f(y - 1));
+      lens.innerHTML = `<g transform="translate(${f(px)} ${f(py)})">${PEN}</g>`;
+    }
+    const st = { phase: 'scan', t0: 0, line: 0, case: 2041, ok: 0 };
+    const set = (i, cls, on) => lns[i] && lns[i].classList.toggle(cls, on);
+    function render() {
+      api.power(st.phase === 'done');
+      api.readout(st.phase === 'done' ? `approved · case #${st.case}` : st.phase === 'scan' ? `case #${st.case} · reviewing clause ${Math.min(LINES, st.line + 1)}/${LINES}` : `case #${st.case} · ruling…`);
+    }
+    function newCase() {
+      st.case++; st.phase = 'scan'; st.t0 = performance.now(); st.line = 0;
+      lns.forEach((l, i) => { l.classList.remove('hot', 'ok'); l.setAttribute('width', PWD - 24 - (i % 3) * 7); }); boxes.forEach(b => b.classList.remove('ok')); stamp.style.opacity = 0; render();
+    }
+    function strike() { if (st.phase === 'strike') return; lns.forEach((l, i) => { l.setAttribute('width', PWD - 24 - (i % 3) * 7); l.classList.remove('hot'); l.classList.add('ok'); boxes[i].classList.add('ok'); }); st.phase = 'strike'; st.t0 = performance.now(); render(); }
+
+    const ease = p => p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;
+    api.loop(t => {
+      if (!st.t0) st.t0 = t;
+      const e = t - st.t0;
+      let ga = 8 + Math.sin(t / 800) * 2, lx = PX + PWD - 6, ly = PY + 12, lz = 6;
+      if (st.phase === 'scan') {
+        const per = 480, i = Math.min(LINES - 1, Math.floor(e / per)), u = (e % per) / per;
+        if (i !== st.line) { lns[st.line].setAttribute('width', PWD - 24 - (st.line % 3) * 7); set(st.line, 'hot', false); set(st.line, 'ok', true); boxes[st.line].classList.add('ok'); st.line = i; render(); }
+        set(i, 'hot', true);
+        const w = PWD - 24 - (i % 3) * 7;
+        lns[i].setAttribute('width', f(Math.max(.5, w * u)));
+        lx = PX + 15 + w * u; ly = LY(i) + 1; lz = Math.sin(u * 40) * .6 + .6;
+        if (e > per * LINES) strike();
+      } else if (st.phase === 'strike') {
+        if (e < 380) ga = 8 + 32 * ease(e / 380);                 // lift
+        else if (e < 500) ga = 40 - 40 * ((e - 380) / 120) ** 2;  // slam
+        else ga = Math.max(0, 6 * Math.sin((e - 500) / 60) * Math.exp(-(e - 500) / 160));
+        if (e >= 500 && st.phase === 'strike') { st.phase = 'done'; st.t0 = t; st.ok++; render(); }
+      } else {
+        ga = Math.max(0, 6 * Math.sin(e / 60) * Math.exp(-e / 160));
+        stamp.style.opacity = Math.min(1, e / 160).toFixed(2);
+        stamp.setAttribute('transform', `rotate(-14 ${PX + PWD / 2} ${PY + PDD - 22}) translate(${PX + PWD / 2} ${PY + PDD - 22}) scale(${(1 + .5 * Math.max(0, 1 - e / 200)).toFixed(2)}) translate(${-(PX + PWD / 2)} ${-(PY + PDD - 22)})`);
+      }
+      const se = st.phase === 'done' ? e : -1;
+      if (se >= 0 && se < 700) { shock.setAttribute('r', (10 + se / 700 * 30).toFixed(1)); shock.style.opacity = (1 - se / 700).toFixed(2); } else shock.style.opacity = 0;
+      light.style.opacity = Math.max(.3, se >= 0 ? 1 - se / 1800 : 0).toFixed(2);
+      drawGavel(ga); drawPen(lx, ly, lz);
+      tickMotes(t, se >= 0 && se < 1800 ? 1 : .15, 1.8);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    gavel.addEventListener('click', e => { e.stopPropagation(); strike(); });
+    page.addEventListener('click', newCase);
+    const mark = RW.auto(api, stage, 1000, () => { if (st.phase === 'done' && performance.now() - st.t0 > 2200) newCase(); });
+    render();
+    return {
+      key: e => {
+        mark();
+        if (e.key === 'Enter' || e.key === ' ') return strike(), true;
+        if (e.key === 'n' || e.key === 'N') return newCase(), true;
+        return false;
+      },
+      demo: () => {},
+    };
+  },
+});
+
+FIGS.push({
+  id: 'eth', name: 'ETH blocks', hint: 'Click or Enter to split / assemble',
+  aria: 'Isometric Ethereum coin hovering over a lit platform; the whole token breaks into blocks and reassembles. Click or press Enter to split or assemble it.',
+  css: `
+    [data-fig="eth"] .e-rim { fill:${RW.mix(34)}; }
+    [data-fig="eth"] .e-edge { fill:${RW.mix(20)}; }
+    [data-fig="eth"] .e-face { fill:url(#eth-faceg); }
+    [data-fig="eth"] .e-ring { fill:none; stroke:${RW.mix(30)}; stroke-width:1.2; vector-effect:non-scaling-stroke; }
+    [data-fig="eth"] .e-g1 { fill:url(#rw-lit); } [data-fig="eth"] .e-g2 { fill:url(#rw-theme); }
+    [data-fig="eth"] .e-gl { fill:url(#rw-theme); opacity:.22; }
+    #stage[data-fig="eth"] .cg.rw-side { fill:url(#rw-lit); } #stage[data-fig="eth"] .cg.rw-top { fill:url(#rw-themehi); } #stage[data-fig="eth"] .cg.rw-front { fill:${RW.mix(60)}; }
+    #stage[data-fig="eth"] .cf.rw-side { fill:${RW.mix(18)}; } #stage[data-fig="eth"] .cf.rw-top { fill:${RW.mix(42)}; } #stage[data-fig="eth"] .cf.rw-front { fill:${RW.mix(11)}; }
+    #stage[data-fig="eth"] .cr.rw-side { fill:${RW.mix(34)}; } #stage[data-fig="eth"] .cr.rw-top { fill:${RW.mix(56)}; } #stage[data-fig="eth"] .cr.rw-front { fill:${RW.mix(22)}; }
+    [data-fig="eth"] .grab { cursor:pointer; }
+  `,
+  mount(stage, api) {
+    const X0 = 96, T = 12, YC = 84, ZC = 92, R = 50, VS = 12.5, NCUBE = 21;   // coin face plane x, thickness, centre, radius, cube size
+    const DOTS = [[20, 10, 150], [130, -20, 170], [150, 150, 30], [10, 160, 90]];
+    const K = api.iso.frame([[X0-50,YC-50,0],[X0+40,YC+50,0],[X0-50,YC+50,0],[X0+40,YC-50,0],[X0,YC+R+34,ZC],[X0,YC-R-40,ZC],[X0,YC,ZC+R+34],[X0+24,YC+20,ZC-R],[X0-24,YC-20,ZC+R], ...DOTS]);
+    const { P, SIDE } = K, G = RW.kit(K);
+    const f = v => v.toFixed(2);
+
+    // the whole coin as a grid of cubes; each cube is coloured by what it covers (glyph / face / rim)
+    // and leaves on a stagger: right edge first, sweeping left; returning in reverse
+    const vox = [];
+    for (let v0 = 0; v0 < 2 * R; v0 += VS) for (let u0 = 0; u0 < 2 * R; u0 += VS) {
+      const nx = Math.max(u0, Math.min(R, u0 + VS)) - R, ny = Math.max(v0, Math.min(R, v0 + VS)) - R;
+      if (nx * nx + ny * ny > (R - 1) ** 2) continue;                   // cell doesn't touch the disc
+      const cu = u0 + VS / 2, cv = v0 + VS / 2, dist = Math.hypot(cu - R, cv - R);
+      const c = Math.abs(cu - R) / 20 + Math.abs(cv - R - 1) / 33 <= 1 ? 'cg' : dist > R - 8 ? 'cr' : 'cf';
+      vox.push({ u0, v0, c, x: X0 - VS, y: YC + R - u0 - VS, z: ZC + R - v0 - VS,
+        del: .3 * (1 - Math.hypot(cu - R, cv - R) / R) + Math.random() * .12,
+        // burst outward along the cell's own direction from the centre, plus depth scatter both ways
+        d: (() => { const ru = (cu - R) / R, rv = (cv - R) / R, a = Math.atan2(rv, ru) + (Math.random() - .5) * .7,
+                    m = 20 + Math.random() * 18 + Math.hypot(ru, rv) * 12;
+                    return [(Math.random() - .5) * 40, -Math.cos(a) * m, -Math.sin(a) * m * .7]; })(), ph: Math.random() * 6 });
+    }
+
+    // keep NCUBE cells spread evenly across the disc (golden-ratio stride through the cell list)
+    { const all = vox.splice(0), step = all.length / NCUBE;
+      const gl = all.filter(c => c.c === 'cg'); for (let j = 0; j < 5 && j < gl.length; j++) vox.push(gl[Math.floor(j * gl.length / 5)]);
+      for (let j = 0; vox.length < NCUBE + 5 && j < NCUBE * 2; j++) vox.push(all[Math.floor((j * step * 1.618) % all.length)]);
+      const seen = new Set(); for (let j = 0; j < vox.length; j++) { if (seen.has(vox[j])) vox.splice(j--, 1); else seen.add(vox[j]); }
+      vox.length = Math.min(vox.length, NCUBE);
+      for (const c of all) { if (vox.length >= NCUBE) break; if (!seen.has(c)) { vox.push(c); seen.add(c); } } }
+
+    let svg = RW.defs + `<defs><clipPath id="eth-solid"><rect x="-10" y="-10" width="${2 * R + 20}" height="${2 * R + 20}"/></clipPath>
+      <radialGradient id="eth-faceg" cx=".4" cy=".35" r=".75"><stop offset="0" style="stop-color:${RW.mix(26)}"/><stop offset="1" style="stop-color:${RW.mix(9)}"/></radialGradient></defs>`;
+    svg += G.ground(X0 - 5, YC, 70, 70);
+    svg += G.cyl(X0 - 5, YC, 0, 44, 6) + G.cyl(X0 - 5, YC, 6, 34, 3);
+    svg += `<g transform="${K.TOP(0, 0, 9)}"><circle class="rw-line" style="stroke-opacity:.7" cx="${X0 - 5}" cy="${YC}" r="28"/></g>`;
+    svg += `<path class="rw-cone" d="${G.cone(X0 - 5, YC, 9, 26, 44, ZC - R - 4)}"/>`;
+    svg += `<g id="eth-voxb"></g>`;
+    // the solid coin: shows only the cells whose cube is home
+    const disc = `<circle cx="${R}" cy="${R}" r="${R}"/>`;
+    const gpts = [[R, R - 34], [R + 20, R + 1], [R, R + 34], [R - 20, R + 1]];
+    const glyph = `
+      <polygon class="e-gl" points="${gpts.map(([x, y]) => `${x + (x - R) * .25},${y + (y - R) * .12}`).join(' ')}"/>
+      <polygon class="e-g1" points="${R},${R - 32} ${R - 18},${R + 1} ${R},${R + 10}"/>
+      <polygon class="e-g2" points="${R},${R - 32} ${R + 18},${R + 1} ${R},${R + 10}"/>
+      <polygon class="e-g1" points="${R},${R + 15} ${R - 18},${R + 6} ${R},${R + 32}"/>
+      <polygon class="e-g2" points="${R},${R + 15} ${R + 18},${R + 6} ${R},${R + 32}"/>`;
+    svg += `<g id="eth-coin" class="grab">`;
+    for (let i = 0; i <= T; i += 2) svg += `<g transform="${SIDE(X0 - T + i, YC + R, ZC + R)}"><g clip-path="url(#eth-solid)">${i < T
+      ? `<g class="e-edge">${disc}</g>`
+      : `<circle class="e-rim" cx="${R}" cy="${R}" r="${R}"/><circle class="e-face" cx="${R}" cy="${R}" r="${R - 5}"/>
+         <circle class="e-ring" cx="${R}" cy="${R}" r="${R - 12}"/>${glyph}`}</g></g>`;
+    svg += `</g><g id="eth-voxf"></g><g id="eth-motes"></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'eth-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const voxB = $('#eth-voxb'), voxF = $('#eth-voxf'), coin = $('#eth-coin'), dots = DOTS.map((_, i) => $('#eth-dot' + i));
+    const tickMotes = G.motes($('#eth-motes'), { cx: X0 - 5, cy: YC - 20, r: 30, z0: 20, h: 140, n: 14 });
+
+    const st = { target: 0, v: 0, block: 18204331, tx: 0, homeN: -1, last: 0 };
+    const clipEl = stage.querySelector('#eth-solid');
+    function render() {
+      api.power(true);
+      api.readout(st.target ? 'splitting into blocks…' : st.tx ? `block #${st.block.toLocaleString()} · ${st.tx} tx · mined` : `block #${st.block.toLocaleString()} · assembled`);
+    }
+    function flip() {
+      st.target = st.target ? 0 : 1;
+      if (!st.target) { st.block++; st.tx = 80 + (Math.random() * 120 | 0); }
+      render();
+    }
+
+    const ease = p => p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;
+    const smooth = x => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
+    api.loop(t => {
+      const dt = st.last ? Math.min(50, t - st.last) : 0; st.last = t;
+      st.v = Math.max(0, Math.min(1, st.v + (st.target ? 1 : -1) * dt / 1700));
+      const hov = Math.sin(t / 900) * 3;
+      const list = vox.map(b => {
+        const k = smooth((st.v - b.del) / .5);                     // 0 = home, merged into the round coin
+        const fl = k * Math.sin(t / 700 + b.ph) * 3;
+        return { ...b, k, X: b.x + b.d[0] * k, Y: b.y + b.d[1] * k, Z: Math.max(14 + 12 * k, b.z + b.d[2] * k) + hov + fl };
+      });
+      const coinOp = 1 - smooth(st.v / .3);
+      coin.style.opacity = coinOp.toFixed(3);
+      const away = st.v > .005 ? list.slice().sort((a, b) => (a.X + a.Y) - (b.X + b.Y) || a.Z - b.Z) : [];
+      const cube = b => G.box(b.X, b.Y, b.Z, VS, VS, VS, 1.2, b.c);
+      voxB.innerHTML = away.filter(b => b.X <= b.x + 3).map(cube).join('');
+      voxF.innerHTML = away.filter(b => b.X > b.x + 3).map(cube).join('');
+      const e = st.v;
+      const d = K.D(0, 0, hov);
+      coin.setAttribute('transform', `translate(${f(d[0])} ${f(d[1])})`);
+      tickMotes(t, .4 + .6 * e, 1 + e);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    stage.addEventListener('click', flip);
+    const mark = RW.auto(api, stage, 2400, flip);
+    render();
+    return {
+      key: e => { mark(); if (e.key === 'Enter' || e.key === ' ') return flip(), true; return false; },
+      demo: () => api.after(500, flip),
+    };
+  },
+});
+
+FIGS.push({
+  id: 'xchain', name: 'Cross-chain bridge', hint: 'Click or Space to bridge · D flips direction',
+  aria: 'Isometric cross-chain bridge: two chains of linked blocks on floating platforms joined by a glowing arc with three validator nodes. Click or press Space to send a token across: it locks on the source chain, collects three validator signatures in flight and is minted as a new block on the other chain. Press D to flip the direction.',
+  css: `
+    #stage[data-fig="xchain"] .xp.rw-top { fill:url(#rw-themehi); } #stage[data-fig="xchain"] .xp.rw-front { fill:url(#rw-theme); } #stage[data-fig="xchain"] .xp.rw-side { fill:${RW.mix(55)}; }
+    #stage[data-fig="xchain"] .xv.rw-top { fill:${RW.mixT(34)}; } #stage[data-fig="xchain"] .xv.on.rw-top { fill:url(#rw-themehi); }
+    #stage[data-fig="xchain"] .xv.on.rw-front { fill:url(#rw-theme); } #stage[data-fig="xchain"] .xv.on.rw-side { fill:${RW.mix(50)}; }
+    #stage[data-fig="xchain"] .xn.rw-top { fill:url(#rw-themehi); }
+    [data-fig="xchain"] .x-rail { fill:none; stroke:url(#rw-theme); stroke-opacity:.55; stroke-width:2.2; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+    [data-fig="xchain"] .x-track { fill:none; stroke:var(--accent-hi); stroke-opacity:.7; stroke-width:1; stroke-dasharray:2 6; vector-effect:non-scaling-stroke; }
+    [data-fig="xchain"] .x-tail { fill:none; stroke:var(--accent-hi); stroke-width:2.4; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+    [data-fig="xchain"] .x-glyph { fill:url(#rw-themehi); }
+    [data-fig="xchain"] .x-shock { fill:none; stroke:var(--accent-hi); stroke-width:1.6; vector-effect:non-scaling-stroke; opacity:0; }
+    [data-fig="xchain"] .x-light { opacity:.3; }
+    [data-fig="xchain"] .grab { cursor:pointer; }
+  `,
+  mount(stage, api) {
+    const PL = 74, BS = 34, BH = 16, GAP = 6, PZ = 10;                       // platform size, block size/height, gap, platform height
+    const CH = [{ x: 0, y: 84, mark: 'diamond', name: 'A' }, { x: 158, y: -6, mark: 'hex', name: 'B' }];
+    CH.forEach(c => { c.cx = c.x + PL / 2; c.cy = c.y + PL / 2; });
+    const topZ = n => PZ + n * (BH + GAP) - GAP;
+    const DOTS = [[10, 50, 120], [190, -30, 130], [236, 70, 24], [40, 170, 50]];
+    const MAXN = 5, PEAK = 64;
+    const K = api.iso.frame([[CH[0].x - 6, CH[0].y - 6, 0], [CH[0].x + PL + 6, CH[0].y + PL + 6, 0], [CH[1].x - 6, CH[1].y - 6, 0], [CH[1].x + PL + 6, CH[1].y + PL + 6, 0],
+      [(CH[0].cx + CH[1].cx) / 2, (CH[0].cy + CH[1].cy) / 2, topZ(MAXN) + PEAK + 12], ...DOTS]);
+    const { P, D, TOP, FRONT, SIDE } = K, G = RW.kit(K);
+    const f = v => v.toFixed(2), O0 = P(0, 0, 0);
+
+    let svg = RW.defs;
+    // floor: one shadow under each platform, rings centred on the pair
+    svg += G.ground((CH[0].cx + CH[1].cx) / 2, (CH[0].cy + CH[1].cy) / 2, 130, 110);
+    CH.forEach((c, i) => {
+      svg += G.box(c.x, c.y, 0, PL, PL, PZ, 14);
+      const lab = `<text class="rw-txt" x="12" y="7.4" font-size="5" letter-spacing="1.2">CHAIN ${c.name}</text>`;
+      svg += `<g transform="${FRONT(c.x, c.y + PL, PZ)}"><rect class="rw-hi" x="${PL - 30}" y="4" width="18" height="2.4" rx="1.2"/>${lab}</g>`;
+      svg += `<g id="xc-stack${i}"></g>`;
+      svg += `<g class="x-light" id="xc-light${i}"><path class="rw-cone" d="M0 0"/></g>`;
+      svg += `<g transform="${TOP(0, 0, PZ)}"><circle id="xc-shock${i}" class="x-shock" cx="${c.cx}" cy="${c.cy}" r="10"/></g>`;
+    });
+    svg += `<path id="xc-rail" class="x-rail"/><path id="xc-track" class="x-track"/><g id="xc-tail"></g><g id="xc-vals"></g><g id="xc-packet"></g><g id="xc-motes"></g>`;
+    svg += DOTS.map((p, i) => G.dot(...p, i % 2 ? 1.6 : 2.2, 'xc-dot' + i)).join('');
+
+    stage.setAttribute('viewBox', K.viewBox); stage.innerHTML = svg;
+    const $ = s => stage.querySelector(s);
+    const stacks = [0, 1].map(i => $('#xc-stack' + i)), lights = [0, 1].map(i => $('#xc-light' + i)), shocks = [0, 1].map(i => $('#xc-shock' + i));
+    const rail = $('#xc-rail'), track = $('#xc-track'), tail = $('#xc-tail'), vals = $('#xc-vals'), packet = $('#xc-packet'), dots = DOTS.map((_, i) => $('#xc-dot' + i));
+    const motes = [0, 1].map(i => G.motes($('#xc-motes'), { cx: CH[i].cx, cy: CH[i].cy, r: 16, z0: PZ + 10, h: 120, n: 8 }));
+
+    const TOKENS = [['USDC', 250], ['ETH', 1.2], ['USDT', 500], ['ETH', 0.35], ['USDC', 1200]];
+    const st = { n: [3, 3], dir: 0, anim: null, ti: 0, sig: 0, last: null, sent: 0, flare: [0, 0] };
+
+    // one chain: stacked blocks joined by lit links; the top block wears the chain's mark
+    function drawStack(i) {
+      const c = CH[i], n = st.n[i], x = c.cx - BS / 2, y = c.cy - BS / 2;
+      let s = '';
+      for (let k = 0; k < n; k++) {
+        const z = PZ + k * (BH + GAP);
+        if (k) s += G.cyl(c.cx, c.cy, z - GAP, 3.2, GAP, 'rw-litcyl', 'rw-hi');
+        s += G.box(x, y, z, BS, BS, BH, 4);
+      }
+      const tz = topZ(n), u = BS / 2, v = BH / 2;
+      const mark = c.mark === 'diamond'
+        ? `<polygon class="x-glyph" points="${u},${v - 6} ${u + 5},${v} ${u},${v + 6} ${u - 5},${v}"/>`
+        : `<polygon class="x-glyph" points="${[0, 1, 2, 3, 4, 5].map(k => { const a = Math.PI / 3 * k; return `${f(u + 5.5 * Math.cos(a))},${f(v + 5.5 * Math.sin(a))}`; }).join(' ')}"/>`;
+      s += `<g transform="${SIDE(x + BS, y + BS, tz)}">${mark}</g>`;
+      s += `<g transform="${FRONT(x, y + BS, tz)}"><rect class="rw-hi" x="6" y="${BH - 5}" width="${BS - 12}" height="2" rx="1"/></g>`;
+      stacks[i].innerHTML = s;
+      lights[i].innerHTML = `<path class="rw-cone" d="${G.cone(c.cx, c.cy, tz, BS * .45, BS * .8, 64)}"/>`;
+    }
+    // the bridge arc between the two current chain tops
+    const ends = () => { const a = CH[st.dir], b = CH[1 - st.dir];
+      return [[a.cx, a.cy, topZ(st.n[st.dir]) + 8], [b.cx, b.cy, topZ(st.n[1 - st.dir]) + 8]]; };
+    const arcAt = u => { const [A, B] = ends();
+      return [A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u, A[2] + (B[2] - A[2]) * u + PEAK * 4 * u * (1 - u)]; };
+    const VU = [.32, .5, .68];
+    function drawBridge() {
+      const d = 'M' + Array.from({ length: 41 }, (_, i) => P(...arcAt(i / 40)).map(f).join(' ')).join('L');
+      track.setAttribute('d', d); rail.setAttribute('d', d);
+      vals.innerHTML = VU.map((u, k) => { const p = arcAt(u); return G.box(p[0] - 7, p[1] - 7, p[2] + 16, 14, 14, 14, 3, 'xv' + (k < st.sig ? ' on' : '')); }).join('');
+    }
+    function render() {
+      api.power(true);
+      const [tk, amt] = TOKENS[st.ti % TOKENS.length], from = CH[st.dir].name, to = CH[1 - st.dir].name;
+      const a = st.anim;
+      api.readout(!a ? (st.last ? `bridged ${st.last} · ${st.sent} tx · ${from} → ${to} ready` : `ready · ${amt} ${tk} · ${from} → ${to}`)
+        : a.phase === 'lock' ? `locking ${amt} ${tk} on chain ${from}`
+        : a.phase === 'fly' ? `relaying ${amt} ${tk} · ${st.sig}/3 signatures`
+        : `minted ${st.last} on chain ${to}`);
+    }
+    function send() {
+      if (st.anim) return;
+      st.sig = 0; st.anim = { t0: performance.now(), phase: 'lock', done: false }; drawBridge(); render();
+    }
+    function flip() { if (st.anim) return; st.dir = 1 - st.dir; drawBridge(); render(); }
+
+    const ease = p => p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;
+    api.loop(t => {
+      const a = st.anim, src = st.dir, dst = 1 - st.dir;
+      let pk = null, tl = '';
+      if (a) {
+        const e = t - a.t0;
+        if (e < 650) {                                                       // lock: token rises off the source chain
+          a.phase = 'lock';
+          const [A] = ends(), u = ease(e / 650); pk = [A[0], A[1], A[2] - 6 + 14 * u];
+          const sk = e / 650; shocks[src].setAttribute('r', (10 + sk * 34).toFixed(1)); shocks[src].style.opacity = (1 - sk).toFixed(2);
+          shocks[src].setAttribute('transform', '');
+        } else if (e < 2350) {                                               // fly the arc, collecting signatures
+          if (a.phase !== 'fly') { a.phase = 'fly'; render(); }
+          shocks[src].style.opacity = 0;
+          const u = ease((e - 650) / 1700); pk = arcAt(u);
+          const s = VU.filter(v => u >= v).length;
+          if (s !== st.sig) { st.sig = s; drawBridge(); render(); }
+          for (let k = 0; k < 9; k++) {
+            const u0 = Math.max(0, u - (k + 1) * .025), u1 = Math.max(0, u - k * .025); if (u1 <= 0) break;
+            const p0 = P(...arcAt(u0)), p1 = P(...arcAt(u1));
+            tl += `<line class="x-tail" x1="${f(p0[0])}" y1="${f(p0[1])}" x2="${f(p1[0])}" y2="${f(p1[1])}" style="opacity:${(1 - k / 9).toFixed(2)}"/>`;
+          }
+        } else if (!a.done) {                                                // mint: a new block lands on the destination chain
+          a.done = true; a.phase = 'mint';
+          st.n[dst] = st.n[dst] >= MAXN ? 3 : st.n[dst] + 1;
+          const [tk, amt] = TOKENS[st.ti % TOKENS.length]; st.last = `${amt} ${tk}`; st.sent++; st.ti++;
+          st.flare[dst] = t; drawStack(dst); drawBridge(); render();
+        }
+        if (a.done) {
+          const k = (t - st.flare[dst]) / 700;
+          shocks[dst].setAttribute('r', (10 + Math.min(1, k) * 40).toFixed(1)); shocks[dst].style.opacity = Math.max(0, 1 - k).toFixed(2);
+          if (t - st.flare[dst] > 900) { st.anim = null; st.sig = 0; drawBridge(); render(); }
+        }
+      }
+      tail.innerHTML = tl;
+      if (pk) {
+        const [x, y] = P(...pk).map((v, i) => v - O0[i]);
+        packet.innerHTML = `<g transform="translate(${f(x)} ${f(y)})">${G.box(-5, -5, -5, 10, 10, 10, 2, 'xp')}</g>`;
+      } else if (packet.firstChild) packet.innerHTML = '';
+      [0, 1].forEach(i => {
+        const lv = st.flare[i] ? Math.max(0, 1 - (t - st.flare[i]) / 2200) : 0;
+        lights[i].style.opacity = Math.max(.28, lv).toFixed(2);
+        motes[i](t, Math.max(.15, lv), lv > 0 ? 2 : 1);
+      });
+      const hv = Math.sin(t / 900) * 2;
+      vals.setAttribute('transform', `translate(0 ${hv.toFixed(2)})`);
+      dots.forEach((el, i) => el.setAttribute('transform', `translate(0 ${(Math.sin(t / 900 + i * 1.7) * 4).toFixed(2)})`));
+    });
+
+    stage.addEventListener('click', send);
+    const mark = RW.auto(api, stage, 3600, () => { if (st.sent && st.sent % 3 === 0 && !st.anim && Math.random() < .5) flip(); send(); });
+    drawStack(0); drawStack(1); drawBridge(); render();
+    return {
+      key: e => {
+        mark();
+        if (e.key === ' ' || e.key === 'Enter') return send(), true;
+        if (e.key === 'd' || e.key === 'D') return flip(), true;
+        return false;
+      },
+      demo: () => api.after(400, send),
+    };
+  },
+});
+
+/* Lumen gradient picker: one gradient chip in the header opens a Figma-style editor —
+   presets, a gradient bar with two draggable stops (colour, hex, position %), an angle dial,
+   reverse and rotate. Drives --accent / --accent2 and the shared #rw-theme / #rw-themehi
+   gradients (angle + stop offsets) in whichever figure is mounted. Remembered per viewer. */
+(() => {
+  // Lumen is dark-only: lock the theme, whatever the system or a theme toggle says
+  const lockDark = () => { if (document.documentElement.dataset.theme !== 'dark') document.documentElement.dataset.theme = 'dark'; };
+  lockDark(); new MutationObserver(lockDark).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  const KEY = 'iso-glow-lumen-grad';
+  const PRESETS = [   // curated: neighbouring hues, both ends bright enough to glow on dark faces (no grey middle)
+    ['Aurora', '#b8f53d', '#2ee6d6'], ['Sunset', '#ff8a3d', '#ff4fa3'], ['Ocean', '#38e1ff', '#6c7bff'], ['Nebula', '#c084fc', '#f472b6'],
+    ['Solar', '#ffd23f', '#ff4d5e'], ['Mint', '#5cffb0', '#38bdf8'], ['Ultraviolet', '#8b7bff', '#22d3ee'], ['Rose gold', '#ffb38a', '#ff6fa8'],
+  ];
+  const DEF = { stops: [{ c: '#b8f53d', p: 0 }, { c: '#2ee6d6', p: 100 }], angle: 135 };
+  const hexOk = s => /^#[0-9a-f]{6}$/i.test(s);
+  // body tint: orange/gold/yellow turn muddy brown when darkened, so tint bodies with the other stop;
+  // if both are warm, use the redder one
+  const hue = h => { const r = parseInt(h.slice(1, 3), 16) / 255, g = parseInt(h.slice(3, 5), 16) / 255, b = parseInt(h.slice(5, 7), 16) / 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; if (!d) return -1;
+    const x = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return (x * 60 + 360) % 360; };
+  const muddy = h => { const x = hue(h); return x >= 18 && x <= 70; };
+  const tintOf = (a, b) => !muddy(a) ? a : !muddy(b) ? b : (hue(a) < hue(b) ? a : b);
+  const css = g => `linear-gradient(${g.angle}deg, ${g.stops[0].c} ${g.stops[0].p}%, ${g.stops[1].c} ${g.stops[1].p}%)`;
+
+  const init = () => {
+    const sw = document.getElementById('swatches');
+    if (!sw || sw.dataset.lumen) return;
+    sw.dataset.lumen = '1';
+    const root = document.documentElement, holder = document.getElementById('stageHolder');
+    let g; try { g = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { g = null; }
+    if (!g || !g.stops || g.stops.length !== 2 || !g.stops.every(s => hexOk(s.c))) g = JSON.parse(JSON.stringify(DEF));
+    let sel = 0;
+
+    const style = document.createElement('style');
+    style.textContent = `
+      #swatches > button[data-accent] { display:none; }
+      #swatches { flex-wrap:wrap !important; height:auto !important; max-width:100%; row-gap:6px; border-radius:16px; overflow:visible !important; }
+      .dh-theme { display:none !important; }
+      #swatches .lg-pre i { width:14px; height:14px; }
+      #swatches .lg-pre[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--ink-hi); }
+      #swatches .lg-chip { width:auto; display:flex; place-items:normal; align-items:center; gap:7px; height:26px; padding:0 10px 0 3px; margin-left:4px; border:1px solid var(--edge); border-radius:999px;
+        background:none; color:var(--ink-hi); font:inherit; font-size:11px; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
+      #swatches .lg-chip:hover, #swatches .lg-chip[aria-expanded="true"] { border-color:var(--line); }
+      #swatches .lg-chip[aria-checked="true"] { border-color:var(--ink-hi); }
+      #swatches .lg-chip i { width:18px; height:18px; border-radius:50%; border:1px solid var(--line); box-shadow:none; transform:none; flex:none; }
+      .lg-pop { position:fixed; z-index:50; width:272px; padding:14px; border:1px solid var(--edge); border-radius:14px; background:var(--panel);
+        box-shadow:0 18px 50px rgba(0,0,0,.45); display:grid; gap:12px; font-family:var(--mono); font-size:11px; color:var(--ink); text-transform:none; letter-spacing:.02em; }
+      .lg-pop[hidden] { display:none; }
+      .lg-h { display:flex; justify-content:space-between; align-items:center; color:var(--ink-hi); text-transform:uppercase; letter-spacing:.14em; }
+      .lg-h small { color:var(--ink); letter-spacing:.06em; text-transform:none; }
+      .lg-presets { display:grid; grid-template-columns:repeat(8, 1fr); gap:6px; }
+      .lg-presets button { aspect-ratio:1; border-radius:7px; border:1px solid var(--edge); cursor:pointer; padding:0; }
+      .lg-presets button:hover { outline:1px solid var(--line); outline-offset:1px; }
+      .lg-bar { position:relative; height:26px; border-radius:7px; border:1px solid var(--edge); margin:6px 7px 4px; cursor:copy; }
+      .lg-stop { position:absolute; top:50%; width:16px; height:16px; margin:-8px 0 0 -8px; border-radius:5px; border:2px solid #fff;
+        box-shadow:0 0 0 1px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.4); cursor:grab; touch-action:none; }
+      .lg-stop.on { outline:2px solid var(--ink-hi); outline-offset:2px; }
+      .lg-row { display:grid; grid-template-columns:auto 1fr auto; gap:8px; align-items:center; }
+      .lg-sw { position:relative; width:28px; height:28px; border-radius:7px; border:1px solid var(--edge); overflow:hidden; }
+      .lg-sw input { position:absolute; inset:-6px; width:40px; height:40px; border:0; padding:0; cursor:pointer; }
+      .lg-pop input[type="text"], .lg-pop input[type="number"] { width:100%; height:28px; box-sizing:border-box; padding:0 8px; border:1px solid var(--edge); border-radius:7px;
+        background:var(--bg); color:var(--ink-hi); font:inherit; }
+      .lg-pop input[type="number"] { width:64px; }
+      .lg-pop input:focus { outline:1px solid var(--line); }
+      .lg-ang { display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:center; }
+      .lg-dial { position:relative; width:52px; height:52px; border-radius:50%; border:1px solid var(--line); cursor:grab; touch-action:none; background:var(--bg); }
+      .lg-dial b { position:absolute; left:50%; top:50%; width:2px; height:22px; margin-left:-1px; transform-origin:50% 0; background:var(--ink-hi); border-radius:1px; }
+      .lg-dial b::after { content:''; position:absolute; left:-3px; bottom:-4px; width:8px; height:8px; border-radius:50%; background:var(--ink-hi); }
+      .lg-tools { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+      .lg-tools button { height:28px; padding:0 9px; border:1px solid var(--edge); border-radius:7px; background:none; color:var(--ink-hi); font:inherit; cursor:pointer; }
+      .lg-tools button:hover { border-color:var(--line); }
+      .lg-lbl { color:var(--ink); }`;
+    document.head.appendChild(style);
+
+    const chip = document.createElement('button');
+    chip.type = 'button'; chip.className = 'lg-chip'; chip.setAttribute('aria-haspopup', 'dialog'); chip.setAttribute('aria-expanded', 'false');
+    chip.innerHTML = '<i></i>Custom'; chip.title = 'Edit gradient: stops, angle, colours';
+    // the presets live in the row itself, always visible; the chip opens the full editor
+    const pres = PRESETS.map(([n, a, b], i) => {
+      const el = document.createElement('button');
+      el.type = 'button'; el.className = 'lg-pre'; el.title = n; el.setAttribute('role', 'radio'); el.setAttribute('aria-label', `${n} gradient`);
+      el.innerHTML = `<i style="background:linear-gradient(135deg, ${a}, ${b})"></i>`;
+      el.addEventListener('click', () => { g.stops = [{ c: a, p: 0 }, { c: b, p: 100 }]; apply(); });
+      sw.appendChild(el); return el;
+    });
+    sw.appendChild(chip);
+    const pop = document.createElement('div');
+    pop.className = 'lg-pop'; pop.hidden = true; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Gradient');
+    pop.innerHTML = `
+      <div class="lg-h">Custom gradient <small>linear</small></div>
+      <div class="lg-bar" title="Drag a stop to move it"><div class="lg-stop" data-s="0" tabindex="0" aria-label="Start colour stop"></div><div class="lg-stop" data-s="1" tabindex="0" aria-label="End colour stop"></div></div>
+      <div class="lg-row"><label class="lg-sw" title="Stop colour"><input type="color" aria-label="Stop colour"></label>
+        <input type="text" class="lg-hex" aria-label="Stop hex colour" spellcheck="false" maxlength="7">
+        <input type="number" class="lg-pos" min="0" max="100" step="1" aria-label="Stop position %"></div>
+      <div class="lg-ang"><div class="lg-dial" tabindex="0" aria-label="Angle"><b></b></div>
+        <div style="display:grid; gap:8px">
+          <div class="lg-tools"><span class="lg-lbl">Angle</span><input type="number" class="lg-deg" min="0" max="359" step="1" aria-label="Angle in degrees"><span class="lg-lbl">°</span></div>
+          <div class="lg-tools"><button type="button" data-act="rot" title="Rotate 90°">↻ 90°</button><button type="button" data-act="rev" title="Reverse">⇄ Reverse</button></div>
+        </div></div>`;
+    document.body.appendChild(pop);
+    const $ = s => pop.querySelector(s);
+    const bar = $('.lg-bar'), stops = [...pop.querySelectorAll('.lg-stop')], colIn = $('.lg-sw input'), hexIn = $('.lg-hex'), posIn = $('.lg-pos'),
+          degIn = $('.lg-deg'), dial = $('.lg-dial'), needle = dial.querySelector('b');
+
+    // ---- apply to the page + current figure ----
+    function applySvg() {
+      const a = g.angle * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a);
+      document.querySelectorAll('#rw-theme, #rw-themehi').forEach(el => {
+        el.setAttribute('x1', (.5 - dx / 2).toFixed(3)); el.setAttribute('y1', (.5 - dy / 2).toFixed(3));
+        el.setAttribute('x2', (.5 + dx / 2).toFixed(3)); el.setAttribute('y2', (.5 + dy / 2).toFixed(3));
+        const st = el.querySelectorAll('stop');
+        if (st[0]) st[0].setAttribute('offset', (g.stops[0].p / 100).toFixed(3));
+        if (st[1]) st[1].setAttribute('offset', (g.stops[1].p / 100).toFixed(3));
+      });
+    }
+    function apply(save = true) {
+      const [s0, s1] = g.stops;
+      root.style.setProperty('--accent', s0.c);
+      root.style.setProperty('--accent2', s1.c);
+      root.style.setProperty('--rw-tint', tintOf(s0.c, s1.c));
+      root.style.setProperty('--accent-hi', `color-mix(in srgb, ${s0.c} 55%, #ffffff)`);
+      root.style.setProperty('--accent-dim', `color-mix(in srgb, ${s0.c} 10%, transparent)`);
+      root.style.setProperty('--glass-on', `color-mix(in srgb, ${s0.c} 9%, #101112)`);
+      applySvg();
+      const bg = css(g);
+      chip.querySelector('i').style.background = bg;
+      const k = PRESETS.findIndex(([, a, b]) => a === s0.c && b === s1.c && s0.p === 0 && s1.p === 100);
+      pres.forEach((el, i) => el.setAttribute('aria-checked', i === k ? 'true' : 'false'));
+      chip.setAttribute('aria-checked', k < 0 ? 'true' : 'false');
+      bar.style.background = `linear-gradient(90deg, ${s0.c} ${s0.p}%, ${s1.c} ${s1.p}%)`;
+      stops.forEach((el, i) => { el.style.left = g.stops[i].p + '%'; el.style.background = g.stops[i].c; el.classList.toggle('on', i === sel); });
+      const s = g.stops[sel];
+      colIn.value = s.c; if (document.activeElement !== hexIn) hexIn.value = s.c.toUpperCase();
+      if (document.activeElement !== posIn) posIn.value = Math.round(s.p);
+      if (document.activeElement !== degIn) degIn.value = Math.round(g.angle);
+      needle.style.transform = `rotate(${g.angle + 180}deg)`;
+      if (save) { try { localStorage.setItem(KEY, JSON.stringify(g)); } catch (e) {} }
+    }
+    // re-apply angle/offsets whenever a new figure mounts
+    if (holder) new MutationObserver(applySvg).observe(holder, { childList: true });
+
+    // ---- popover open/close ----
+    function place() {
+      const r = chip.getBoundingClientRect(), w = 272, h = pop.offsetHeight || 330;
+      let left = Math.min(window.innerWidth - w - 12, Math.max(12, r.right - w));
+      let top = r.bottom + 8; if (top + h > window.innerHeight - 12) top = Math.max(12, r.top - h - 8);
+      pop.style.left = left + 'px'; pop.style.top = top + 'px';
+    }
+    function open(v) { pop.hidden = !v; chip.setAttribute('aria-expanded', v ? 'true' : 'false'); if (v) { place(); } }
+    chip.addEventListener('click', e => { e.stopPropagation(); open(pop.hidden); });
+    document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target) && !chip.contains(e.target)) open(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { open(false); chip.focus(); } });
+    window.addEventListener('resize', () => { if (!pop.hidden) place(); });
+    window.addEventListener('scroll', () => { if (!pop.hidden) place(); }, true);
+    pop.addEventListener('keydown', e => e.stopPropagation());       // typing in the editor never drives the figure
+
+    // ---- stops: select + drag along the bar ----
+    const pct = x => { const r = bar.getBoundingClientRect(); return Math.max(0, Math.min(100, (x - r.left) / r.width * 100)); };
+    stops.forEach((el, i) => {
+      el.addEventListener('pointerdown', e => {
+        e.preventDefault(); e.stopPropagation(); sel = i; el.setPointerCapture(e.pointerId); el.style.cursor = 'grabbing';
+        const mv = ev => { g.stops[i].p = Math.round(pct(ev.clientX)); apply(false); };
+        const up = () => { el.removeEventListener('pointermove', mv); el.style.cursor = ''; apply(); };
+        el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up, { once: true }); apply(false);
+      });
+      el.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { sel = i; g.stops[i].p = Math.max(0, Math.min(100, g.stops[i].p + (e.key === 'ArrowLeft' ? -1 : 1) * (e.shiftKey ? 10 : 1))); apply(); e.preventDefault(); }
+      });
+      el.addEventListener('focus', () => { sel = i; apply(false); });
+    });
+    // clicking the bar moves the nearest stop there
+    bar.addEventListener('pointerdown', e => {
+      if (e.target.classList.contains('lg-stop')) return;
+      const p = pct(e.clientX), i = Math.abs(g.stops[0].p - p) <= Math.abs(g.stops[1].p - p) ? 0 : 1;
+      sel = i; g.stops[i].p = Math.round(p); apply();
+    });
+    // ---- selected stop: colour, hex, position ----
+    colIn.addEventListener('input', () => { g.stops[sel].c = colIn.value; apply(); });
+    hexIn.addEventListener('input', () => { let v = hexIn.value.trim(); if (v[0] !== '#') v = '#' + v; if (hexOk(v)) { g.stops[sel].c = v.toLowerCase(); apply(); } });
+    hexIn.addEventListener('blur', () => apply(false));
+    posIn.addEventListener('input', () => { const v = +posIn.value; if (!isNaN(v)) { g.stops[sel].p = Math.max(0, Math.min(100, v)); apply(); } });
+    // ---- angle: dial + number + tools ----
+    const setAngle = a => { g.angle = ((Math.round(a) % 360) + 360) % 360; apply(); };
+    degIn.addEventListener('input', () => { const v = +degIn.value; if (!isNaN(v)) setAngle(v); });
+    dial.addEventListener('pointerdown', e => {
+      e.preventDefault(); dial.setPointerCapture(e.pointerId);
+      const mv = ev => { const r = dial.getBoundingClientRect(), x = ev.clientX - (r.left + r.width / 2), y = ev.clientY - (r.top + r.height / 2);
+        let a = Math.atan2(x, -y) * 180 / Math.PI; if (ev.shiftKey) a = Math.round(a / 15) * 15; setAngle(a); };
+      mv(e); dial.addEventListener('pointermove', mv); dial.addEventListener('pointerup', () => dial.removeEventListener('pointermove', mv), { once: true });
+    });
+    dial.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { setAngle(g.angle - (e.shiftKey ? 15 : 1)); e.preventDefault(); }
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { setAngle(g.angle + (e.shiftKey ? 15 : 1)); e.preventDefault(); } });
+    pop.querySelector('[data-act="rot"]').addEventListener('click', () => setAngle(g.angle + 90));
+    pop.querySelector('[data-act="rev"]').addEventListener('click', () => {
+      const [a, b] = g.stops; g.stops = [{ c: b.c, p: 100 - b.p }, { c: a.c, p: 100 - a.p }]; apply();
+    });
+
+    apply(false);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else setTimeout(init, 0);
+})();
+
+
+<!-- CORE: kernel, api, navigation, palette picker. Keep after the figures. -->
+
+/* ============================================================
+   iso gallery core: kernel, shared api, navigation.
+   Figures register with FIGS.push({...}) — see CONTRACT below.
+   ============================================================ */
+// FIGS is declared inline in the page before the figure scripts
+</script>
+<!-- CORE: kernel, api, navigation, palette picker. Keep after the figures. -->
+<script>
+/* ============================================================
+   iso gallery core: kernel, shared api, navigation.
+   Figures register with FIGS.push({...}) — see CONTRACT below.
+   ============================================================ */
+// FIGS is declared inline in the page before the figure scripts
+
+const ISO = (() => {
+  const C = Math.cos(Math.PI / 6), S = Math.sin(Math.PI / 6);
+  function kernel(OX, OY) {
+    const P = (x,y,z) => [(x-y)*C + OX, (x+y)*S - z + OY];
+    const D = (x,y,z) => [(x-y)*C, (x+y)*S - z];
+    const plane = (O,U,V) => { const o=P(...O), u=D(...U), v=D(...V);
+      return `matrix(${u[0]} ${u[1]} ${v[0]} ${v[1]} ${o[0]} ${o[1]})`; };
+    const TOP   = (x,y,z) => plane([x,y,z],[1,0,0],[0,1,0]);
+    const FRONT = (x,y,z) => plane([x,y,z],[1,0,0],[0,0,-1]);
+    const SIDE  = (x,y,z) => plane([x,y,z],[0,-1,0],[0,0,-1]);
+    const rect = (t,w,h,r=0,cls='face') => `<g transform="${t}"><rect class="${cls}" width="${w}" height="${h}" rx="${r}"/></g>`;
+    // Rounded box: one rounded top plus one continuous side wall along the visible part of the
+    // outline, so the corners meet cleanly. r = 0 keeps the classic three flat faces.
+    const rounded = (x,y,z,w,d,h,r,cls) => {
+      r = Math.min(r, w/2, d/2);
+      const n = 10, z1 = z + h, q = Math.PI/4, H = Math.PI/2, c = cls ? ' ' + cls : '';
+      const arc = (cx,cy,a0,a1) => { const o = []; for (let i = 0; i <= n; i++) { const a = a0 + (a1-a0)*i/n; o.push([cx + r*Math.cos(a), cy + r*Math.sin(a)]); } return o; };
+      const ring = [...arc(x+w-r,y+r,-H,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,2*H), ...arc(x+r,y+r,2*H,3*H)];
+      const vis  = [...arc(x+w-r,y+r,-q,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,3*q)];
+      const d3 = pts => 'M' + pts.map(p => P(...p).map(v => v.toFixed(2)).join(' ')).join('L') + 'Z';
+      const wall = [...vis.map(([a,b]) => [a,b,z]), ...vis.slice().reverse().map(([a,b]) => [a,b,z1])];
+      return `<path class="face${c}" d="${d3(wall)}"/><path class="face top${c}" d="${d3(ring.map(([a,b]) => [a,b,z1]))}"/>`;
+    };
+    const box = (x,y,z,w,d,h,r=0) => r > 0 ? rounded(x,y,z,w,d,h,r,'') :
+      rect(SIDE(x+w,y+d,z+h), d,h) + rect(FRONT(x,y+d,z+h), w,h) + rect(TOP(x,y,z+h), w,d,0,'face top');
+    const boxc = (x,y,z,w,d,h,r,cls) => r > 0 ? rounded(x,y,z,w,d,h,r,cls) :
+      rect(SIDE(x+w,y+d,z+h), d,h,0,'face '+cls) + rect(FRONT(x,y+d,z+h), w,h,0,'face '+cls) + rect(TOP(x,y,z+h), w,d,0,'face top '+cls);
+    // 3D polyline -> SVG path "d"
+    const path = pts => 'M' + pts.map(p => P(...p).map(n => n.toFixed(2)).join(' ')).join('L');
+    return { C, S, P, D, plane, TOP, FRONT, SIDE, rect, box, boxc, path };
+  }
+  // Frame a scene: pass its extreme 3D corners. Returns kernel + viewBox padded to ~4:3.
+  function frame(points, margin = 0.09, aspect = 4 / 3) {
+    const d = points.map(([x,y,z]) => [(x-y)*C, (x+y)*S - z]);
+    let x0 = Math.min(...d.map(p => p[0])), x1 = Math.max(...d.map(p => p[0]));
+    let y0 = Math.min(...d.map(p => p[1])), y1 = Math.max(...d.map(p => p[1]));
+    const m = margin * Math.max(x1 - x0, y1 - y0);
+    let w = x1 - x0 + 2*m, h = y1 - y0 + 2*m;
+    let ox = m - x0, oy = m - y0;
+    if (w / h < aspect) { const nw = h * aspect; ox += (nw - w) / 2; w = nw; }
+    else { const nh = w / aspect; oy += (nh - h) / 2; h = nh; }
+    return { ...kernel(ox, oy), viewBox: `0 0 ${w.toFixed(1)} ${h.toFixed(1)}`, W: w, H: h };
+  }
+  // repeated detail lines in a face-local group
+  const slits = (a0, a1, step, b0, b1, vertical = true, cls = 'detail') => {
+    let s = ''; for (let a = a0; a <= a1 + 1e-6; a += step)
+      s += vertical ? `<line class="${cls}" x1="${a}" y1="${b0}" x2="${a}" y2="${b1}"/>` : `<line class="${cls}" x1="${b0}" y1="${a}" x2="${b1}" y2="${a}"/>`;
+    return s;
+  };
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return { kernel, frame, slits, esc };
+})();
+
+/* ---------- shared audio (created on first user gesture) ---------- */
+const AUDIO = (() => {
+  let ctx = null, out = null, analyser = null;
+  return () => {
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      out = ctx.createGain(); out.gain.value = 0.5;
+      analyser = ctx.createAnalyser(); analyser.fftSize = 1024;
+      out.connect(analyser); analyser.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return { ctx, out, analyser };
+  };
+})();
+
+/* ---------- app ---------- */
+(function app() {
+  const $ = id => document.getElementById(id);
+  const CFG = window.GALLERY || {};
+  const holder = $('stageHolder'), readoutEl = $('readout'), hintEl = $('hint'), numEl = $('fignum'), nameEl = $('figname');
+  const nav = $('nav');
+  let active = null, handle = null, timers = [], frames = [], idx = 0;
+
+  const api = {
+    iso: ISO,
+    readout: s => { readoutEl.textContent = s; },
+    hint: s => { hintEl.textContent = s; },
+    audio: AUDIO,
+    after: (ms, fn) => { const t = setTimeout(fn, ms); timers.push(t); return t; },
+    every: (ms, fn) => { const t = setInterval(fn, ms); timers.push(t); return t; },
+    loop: fn => { let alive = true; const f = ts => { if (!alive) return; fn(ts); requestAnimationFrame(f); };
+      requestAnimationFrame(f); const stop = () => { alive = false; }; frames.push(stop); return stop; },
+    // light a pressable briefly (orange flash + glow, then fade)
+    flash: (el, ms = 160) => { if (!el) return; el.classList.add('down', 'lit'); clearTimeout(el._f1); clearTimeout(el._f2);
+      el._f1 = setTimeout(() => el.classList.remove('down'), 110); el._f2 = setTimeout(() => el.classList.remove('lit'), ms); },
+    // restart a one-shot CSS animation class (e.g. '.pulse' -> 'go')
+    replay: (el, cls = 'go') => { if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); },
+    power: on => { holder.classList.toggle('glow', !!on); },
+  };
+
+  function mount(i) {
+    if (handle && handle.unmount) handle.unmount();
+    timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = [];
+    frames.forEach(stop => stop()); frames = [];
+    idx = (i + FIGS.length) % FIGS.length; active = FIGS[idx];
+    holder.classList.remove('glow');
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('id', 'stage'); svg.setAttribute('role', 'img'); svg.setAttribute('tabindex', '0');
+    svg.setAttribute('aria-label', active.aria || active.name);
+    svg.dataset.fig = active.id;
+    holder.replaceChildren(svg);
+    numEl.textContent = `Fig ${idx + 1}`; nameEl.textContent = active.name;
+    hintEl.textContent = active.hint || ''; readoutEl.textContent = '';
+    document.title = `Fig ${idx + 1} · ${active.name}`;
+    [...nav.querySelectorAll('button[data-i]')].forEach(b => b.setAttribute('aria-current', +b.dataset.i === idx ? 'true' : 'false'));
+    const cur = nav.querySelector(`button[data-i="${idx}"]`);
+    if (cur && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2, behavior: 'smooth' });
+    if (location.hash.slice(1) !== active.id) history.replaceState(null, '', '#' + active.id);
+    handle = active.mount(svg, api) || {};
+    // demo(): runs on arrival unless ?still is in the URL
+    const runDemo = !/still/.test(location.search);
+    if (runDemo && handle.demo) setTimeout(() => handle.demo(), 120);
+  }
+
+  // ---------- glow colour choice ----------
+  const PALETTES = {
+    // [name, dark accent, dark hi, light accent, light hi]
+    ember: [['Ember','#ff7a1a','#ffb070','#ff7a1a','#ffb070'], ['Cyan','#22d3ee','#9beefa','#22d3ee','#9beefa'], ['Lime','#a3e635','#d6f79f','#a3e635','#d6f79f'],
+            ['Violet','#a78bfa','#d6caff','#a78bfa','#d6caff'], ['Rose','#fb7185','#fdb8c2','#fb7185','#fdb8c2'], ['Ice','#dfe9ef','#ffffff','#1f2937','#3b4656']],
+    city:  [['Sodium','#ff9a2e','#ffc77a','#ff9a2e','#ffc77a'], ['Tungsten','#ffd166','#ffe7a8','#ffd166','#ffe7a8'], ['Neon','#ff4fa3','#ff9fcb','#ff4fa3','#ff9fcb'],
+            ['Signal','#3ee8a0','#a3f5cf','#3ee8a0','#a3f5cf'], ['Dusk','#6f9dff','#b5ccff','#6f9dff','#b5ccff'], ['Moon','#dfe7f5','#ffffff','#273246','#3d4a61']],
+  };
+  const ACCENTS = Array.isArray(CFG.palette) ? CFG.palette : (PALETTES[CFG.palette] || PALETTES.ember);
+  const vars = (a, hi, dark) => `--accent:${a}; --accent-hi:${hi}; --accent-dim:color-mix(in srgb, ${a} 10%, transparent);` +
+    ` --glass-on:color-mix(in srgb, ${a} ${dark ? 9 : 12}%, ${dark ? '#101112' : '#eef0f0'});`;
+  const accentCss = ACCENTS.map(([n, da, dh, la, lh]) => { const k = n.toLowerCase();
+    return `:root[data-accent="${k}"] { ${vars(da, dh, true)} }
+@media (prefers-color-scheme: light) { :root[data-accent="${k}"]:not([data-theme="dark"]) { ${vars(la, lh, false)} } }
+:root[data-accent="${k}"][data-theme="light"] { ${vars(la, lh, false)} }`; }).join('\n');
+  const accentStyle = document.createElement('style'); accentStyle.textContent = accentCss; document.head.appendChild(accentStyle);
+  const sw = $('swatches');
+  sw.innerHTML = ACCENTS.map(([n, da]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${da}"><i></i></button>`).join('');
+  function setAccent(k) {
+    if (!ACCENTS.some(a => a[0].toLowerCase() === k)) k = ACCENTS[0][0].toLowerCase();
+    document.documentElement.dataset.accent = k;
+    sw.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
+    try { localStorage.setItem((CFG.storageKey || 'iso-glow-accent'), k); } catch (e) {}
+  }
+  let saved = null; try { saved = localStorage.getItem((CFG.storageKey || 'iso-glow-accent')); } catch (e) {}
+  setAccent(saved || ACCENTS[0][0].toLowerCase());
+  sw.addEventListener('click', e => { const b = e.target.closest('button[data-accent]'); if (b) { setAccent(b.dataset.accent); const s = $('stage'); if (s) s.focus({ preventScroll: true }); } });
+
+  // per-figure css
+  FIGS.forEach(f => { if (f.css) { const st = document.createElement('style'); st.textContent = f.css; document.head.appendChild(st); } });
+
+  // navigation markup
+  nav.innerHTML = FIGS.map((f, i) =>
+    `<button data-i="${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="t">${f.name}</span></button>`).join('');
+  // after a nav click, hand keyboard focus to the figure so space/enter go to it, not the button
+  const focusStage = () => { const s = $('stage'); if (s) s.focus({ preventScroll: true }); };
+  nav.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) { mount(+b.dataset.i); focusStage(); } });
+  $('prev').addEventListener('click', () => { mount(idx - 1); focusStage(); });
+  $('next').addEventListener('click', () => { mount(idx + 1); focusStage(); });
+  window.addEventListener('hashchange', () => { const i = FIGS.findIndex(f => f.id === location.hash.slice(1)); if (i >= 0 && i !== idx) mount(i); });
+
+  window.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target.closest && e.target.closest('button') && (e.key === 'Enter' || e.key === ' ')) return;
+    if (handle && handle.key && handle.key(e)) { e.preventDefault(); return; }
+    if (e.key === 'PageDown') mount(idx + 1);
+    if (e.key === 'PageUp') mount(idx - 1);
+  });
+  window.addEventListener('keyup', e => { if (handle && handle.keyup) handle.keyup(e); });
+  window.addEventListener('blur', () => { if (handle && handle.blur) handle.blur(); });
+
+  if (!FIGS.length) {   // nothing registered yet (figures still being built)
+    holder.innerHTML = '<p style="display:grid;place-items:center;height:100%;margin:0;letter-spacing:.14em;text-transform:uppercase">No figures yet</p>';
+    numEl.textContent = 'Fig —'; return;
+  }
+  const start = FIGS.findIndex(f => f.id === location.hash.slice(1));
+  mount(start >= 0 ? start : 0);
+})();
+
+</script>
+<style>/* light theme: the same accent as the dark theme, but no ambient glow (halos, bloom, light pools, soft blur) */
+  :root[data-theme="light"] .halo, :root[data-theme="light"] #lamp-pool, :root[data-theme="light"] #lamp-bookpool, :root[data-theme="light"] #lamp-cone { display:none !important; }
+  :root[data-theme="light"] .top .dot { box-shadow:none; }
+  :root[data-theme="light"] .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .halo, :root:not([data-theme="dark"]) #lamp-pool, :root:not([data-theme="dark"]) #lamp-bookpool, :root:not([data-theme="dark"]) #lamp-cone { display:none !important; }
+    :root:not([data-theme="dark"]) .top .dot { box-shadow:none; }
+    :root:not([data-theme="dark"]) .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
+  }
+</style>
+<script>/* light theme: the glow filters pass the drawing through unblurred, bloom draws nothing */
+(function () {
+  var root = document.documentElement, mq = matchMedia('(prefers-color-scheme: light)'), orig = {};
+  function apply() {
+    var t = root.dataset.theme, light = t === 'light' || (t !== 'dark' && mq.matches);
+    ['glow', 'soft', 'bloom'].forEach(function (id) {
+      var f = document.getElementById(id); if (!f) return;
+      if (!(id in orig)) orig[id] = f.innerHTML;
+      f.innerHTML = !light ? orig[id] : id === 'bloom' ? '<feFlood flood-opacity="0"/>' : '<feMerge><feMergeNode in="SourceGraphic"/></feMerge>';
+    });
+  }
+  new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  if (mq.addEventListener) mq.addEventListener('change', apply);
+  apply();
+})();
+</script>
+</body>
+</html>

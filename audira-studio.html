@@ -1,0 +1,2349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUDIRA GLOW STUDIO · Live Interactive</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg:#0c0d0e; --panel:#141516; --edge:#222426;
+    --line:#3d4144; --detail:#2b2e30; --body:#17181a; --deck:#1b1d1f;
+    --ink:#868b8f; --ink-hi:#e6e8e9; --live:#f4f5f5;
+    --glass:#0f1011; --glass-on:#1a1410; --recess:#0e0f10;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
+    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
+    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
+    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+  } }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
+    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
+    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
+    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--mono); font-size:13px; padding:20px 16px 32px; }
+  .wrap { max-width:1180px; margin-inline:auto; display:grid; gap:14px; }
+  .top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 18px; text-transform:uppercase; letter-spacing:.14em; padding:0 4px; }
+  .top .hi { color:var(--ink-hi); }
+  .top .dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); margin-right:10px; vertical-align:1px; }
+  .arrows { display:flex; gap:6px; }
+  .arrows button, nav button { font:inherit; color:inherit; background:none; border:1px solid var(--edge); border-radius:10px; cursor:pointer; }
+  .arrows button { padding:6px 12px; letter-spacing:.14em; text-transform:uppercase; }
+  .arrows button:hover { color:var(--ink-hi); border-color:var(--line); }
+  .top .hi { margin-right:auto; }
+  .swatches { display:flex; align-items:center; gap:4px; padding:4px; border:1px solid var(--edge); border-radius:999px; }
+  .swatches button { width:26px; height:26px; border-radius:50%; border:1px solid transparent; background:none; cursor:pointer; display:grid; place-items:center; padding:0; }
+  .swatches button i { width:12px; height:12px; border-radius:50%; background:var(--sw); border:1px solid var(--line); box-shadow:0 0 0 0 var(--sw); transition:box-shadow .2s, transform .2s; }
+  .swatches button:hover i { transform:scale(1.15); }
+  .swatches button[aria-checked="true"] { border-color:var(--line); }
+  .swatches button[aria-checked="true"] i { box-shadow:0 0 10px 1px var(--sw); }
+  .swatches button:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+  .layout { display:grid; grid-template-columns:230px minmax(0,1fr); grid-template-rows:auto 1fr; grid-template-areas:"nav fig" "credit fig"; gap:14px; align-items:start; }
+  .layout > nav { grid-area:nav; } .layout > figure { grid-area:fig; } .layout > .credit { grid-area:credit; }
+  .made-with { display:flex; justify-content:flex-end; padding:2px 6px 0; font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+  .made-with a { color:var(--line); text-decoration:none; transition:color .2s; }
+  .made-with a:hover { color:var(--ink); }
+  .credit { align-self:end; display:grid; gap:3px; padding:0 16px 22px; font-size:12px; line-height:1.5; letter-spacing:.04em; }
+  .credit a { color:var(--ink); text-decoration:none; width:fit-content; transition:color .2s; }
+  .credit a:hover { color:var(--ink-hi); }
+  .credit a:hover .ar { color:var(--accent); }
+  .credit .ar { color:var(--line); transition:color .2s; }
+  .credit .by { color:var(--line); }
+  .credit .nm { color:var(--ink); }
+  .credit .cr { color:var(--line); margin-top:8px; font-size:11px; display:grid; gap:1px; }
+  .credit .cr .hs { white-space:nowrap; }
+  .credit .cr a { color:var(--line); }
+  .credit .cr a:hover { color:var(--ink-hi); }
+  .credit .soc { display:flex; gap:12px; margin-top:4px; }
+  .credit .soc a { display:grid; place-items:center; width:16px; height:16px; }
+  .credit .soc svg { width:14px; height:14px; fill:currentColor; transition:fill .2s; }
+  .credit .soc a:hover svg { fill:var(--accent); }
+  .credit a:focus-visible { outline:1px solid var(--accent); outline-offset:2px; border-radius:3px; }
+  nav { display:grid; gap:4px; background:var(--panel); border:1px solid var(--edge); border-radius:22px; padding:14px; }
+  nav button { display:flex; gap:12px; align-items:center; text-align:left; padding:9px 12px; border-color:transparent; letter-spacing:.06em; }
+  nav button .n { color:var(--line); font-size:12px; transition:color .2s; }
+  nav button:hover { color:var(--ink-hi); }
+  nav button[aria-current="true"] { color:var(--ink-hi); border-color:var(--edge); background:var(--bg); }
+  nav button[aria-current="true"] .n { color:var(--accent); text-shadow:0 0 8px var(--accent); }
+  figure { margin:0; background:var(--panel); border:1px solid var(--edge); border-radius:22px; padding:22px 26px; display:grid; gap:6px; min-width:0; }
+  .cap { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 18px; text-transform:uppercase; letter-spacing:.14em; }
+  .cap .hi { color:var(--ink-hi); text-transform:none; letter-spacing:.05em; }
+  #stageHolder { aspect-ratio:4/3; border-radius:14px; transition:background .5s; background:radial-gradient(ellipse 50% 45% at 50% 52%, transparent, transparent); }
+  #stageHolder.glow { background:radial-gradient(ellipse 50% 45% at 50% 52%, var(--accent-dim), transparent 72%); }
+  #stage { width:100%; height:100%; display:block; touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+  #stage:focus { outline:none; }
+  #stage:focus-visible { outline:1px dashed var(--line); outline-offset:4px; border-radius:8px; }
+  .fx { position:absolute; width:0; height:0; overflow:hidden; }
+  @media (max-width: 820px) {
+    .layout { grid-template-columns:1fr; grid-template-rows:auto; grid-template-areas:"nav" "fig" "credit"; }
+    .credit { padding:4px 8px 0; display:flex; flex-wrap:wrap; align-items:center; gap:4px 14px; }
+    .credit .soc { margin-top:0; }
+    .credit .cr { margin-top:0; flex-basis:100%; }
+    nav { position:relative; top:0; display:flex; overflow-x:auto; border-radius:16px; padding:8px; scrollbar-width:none; }
+    nav button { flex:none; padding:8px 10px; }
+    figure { padding:16px; }
+  }
+
+  /* ---------- shared figure vocabulary ---------- */
+  #stage text { font-family:var(--mono); }
+  .face { fill:var(--body); stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linejoin:round; }
+  .face.top { fill:var(--deck); }
+  .face.recess { fill:var(--recess); }
+  .detail { fill:none; stroke:var(--detail); stroke-width:1; vector-effect:non-scaling-stroke; }
+  .label { fill:var(--ink); font-family:var(--mono); }
+  .glass { fill:var(--glass); transition:fill .3s, stroke .3s; }
+  .glass.hot { fill:var(--glass-on); stroke:var(--accent); }
+  .halo { fill:var(--accent); opacity:0; transition:opacity .4s; }
+  .halo.hot { opacity:.22; }
+  .scr { fill:var(--accent-hi); font-family:var(--mono); }
+  .scr-accent { fill:var(--accent); }
+  .led { fill:var(--detail); transition:fill .2s; }
+  .led.hot { fill:var(--accent); }
+  .wire { fill:none; stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linecap:round; stroke-linejoin:round; transition:stroke .4s; }
+  .wire.hot { stroke:var(--accent); }
+  .wire-under { fill:none; stroke:var(--panel); stroke-width:3.5; stroke-linecap:round; stroke-linejoin:round; }
+  .pulse { fill:none; stroke:var(--accent-hi); stroke-width:2.2; stroke-linecap:round; vector-effect:non-scaling-stroke;
+           stroke-dasharray:70 1200; stroke-dashoffset:70; opacity:0; }
+  .pulse.go { animation:flow .55s linear; }
+  @keyframes flow { 0% { stroke-dashoffset:70; opacity:1; } 90% { opacity:1; } 100% { stroke-dashoffset:-1000; opacity:0; } }
+  .press { cursor:pointer; transition:transform 60ms ease-out; }
+  .press.down { transform:translateY(3px); }
+  .press .face { transition:fill .6s ease-out, stroke .6s ease-out; }
+  .press.lit .face, .press.latched .face { fill:var(--accent); stroke:var(--accent-hi); transition:none; }
+  .press.lit .face.top, .press.latched .face.top { fill:var(--accent-hi); }
+  .press.lit { filter:url(#glow); }
+  .press.latched { filter:url(#soft); }
+  .press:hover .face.top { stroke:var(--ink); }
+  .blink { animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  @media (prefers-reduced-motion:reduce) {
+    .press, .glass, .halo, .press .face, .wire { transition:none; } .blink { animation:none; } .pulse.go { animation:none; }
+  }
+</style>
+<style>
+  :root { --dh-w: 1280px; }
+  body { padding-top: 74px !important; }
+  .dh { position:fixed; z-index:20; top:0; left:0; right:0; padding:12px 16px 10px; font:12px/1.45 "DM Mono", monospace; background:linear-gradient(var(--bg) 60%, rgba(12,13,14,0)); }
+  .dh-in { max-width:var(--dh-w, 1280px); margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:10px 18px; }
+  .dh-brand { flex:none; display:flex; align-items:center; gap:8px; color:var(--ink-hi); text-decoration:none; font-weight:500; font-size:12px; letter-spacing:.14em; text-transform:uppercase; }
+  .dh-brand .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
+  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:3px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:var(--panel); }
+  .dh-seg a { flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; padding:5px 13px; border-radius:999px; color:var(--ink); text-decoration:none; font-size:11px; letter-spacing:.06em; transition:all .2s; }
+  .dh-seg a:hover { color:var(--ink-hi); }
+  .dh-seg a.active { color:var(--ink-hi); background:var(--bg); box-shadow:0 0 0 1px var(--accent) inset; }
+  .dh-seg .n { opacity:.6; font-size:10px; }
+</style>
+</head>
+<body>
+
+<header class="dh">
+  <div class="dh-in">
+    <a class="dh-brand" href="index.html"><span class="dot"></span><span>AUDIRA GLOW</span></a>
+    <nav class="dh-seg" aria-label="Collections"><a href="audira-studio.html" class=" active">AUDIRA STUDIO <span class="n">5</span></a><a href="datacenter.html" class="">DATA CENTER <span class="n">12</span></a><a href="cyberlab.html" class="">CYBER LAB <span class="n">5</span></a><a href="objects.html" class="">OBJECTS <span class="n">10</span></a><a href="cities.html" class="">CITIES <span class="n">10</span></a><a href="lumen.html" class="">LUMEN <span class="n">12</span></a><a href="computer-demo.html" class="">DESK COMPUTER <span class="n">1</span></a><a href="assets/gallery-3d.html" class="">3D DEMO <span class="n">12</span></a></nav>
+  </div>
+</header>
+
+<svg class="fx" aria-hidden="true">
+  <defs>
+    <filter id="glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="soft" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="bloom" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+</svg>
+<div class="wrap">
+  <div class="top">
+    <span class="hi"><span class="dot"></span>AUDIRA STUDIO</span>
+    <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+    <div class="arrows"><button id="prev" aria-label="Previous figure">← Prev</button><button id="next" aria-label="Next figure">Next →</button></div>
+  </div>
+  <div class="layout">
+    <nav id="nav" aria-label="Figures"></nav>
+    <!-- optional: <aside class="credit">Made by … <a href="…">…</a></aside> (styles below) -->
+    <figure>
+      <div class="cap"><span class="hi" id="fignum">Fig 1</span><span id="figname"></span></div>
+      <div id="stageHolder"></div>
+      <div class="cap"><span id="hint"></span><span class="hi" id="readout"></span></div>
+    </figure>
+  </div>
+  <!-- Made-with credit: keep by default; delete this footer if you don't want it. -->
+  <footer class="made-with"><a href="https://iso-glow.vercel.app" target="_blank" rel="noopener">Made with ISO-GLOW ↗</a></footer>
+</div>
+<script>
+  // Gallery settings: palette 'ember' | 'city' | your own [[name, darkAccent, darkHi, lightAccent, lightHi], ...]
+  window.GALLERY = { palette: 'city', autoDemo: true, storageKey: 'iso-glow-accent' };
+  const FIGS = [];
+</script>
+<!-- FIGURES: one script per figure, each calling FIGS.push({...}). Order here = Fig 1, 2, 3 ... -->
+<script>
+/* Fig 1 — Audira DJ Synth & Performance Mixer */
+FIGS.push({
+  id: 'audira-synth',
+  name: 'Audira DJ Synth',
+  hint: 'Pads 1-4 & Q-R · Space loop · Click faders & knobs',
+  aria: 'Isometric DJ synthesizer and mixer with 8 performance pads, OLED spectrum visualizer, 3 channel faders, crossfader, and rotary knobs. Press keys 1-4 and Q-R to trigger drum and synth voices, or press space to start the groove loop.',
+  css: `
+    [data-fig="audira-synth"] .pad { cursor:pointer; }
+    [data-fig="audira-synth"] .pad:hover .face.top { stroke:var(--ink-hi); }
+    [data-fig="audira-synth"] .pad.lit .face { fill:var(--accent); stroke:var(--accent-hi); }
+    [data-fig="audira-synth"] .pad.lit .face.top { fill:var(--accent-hi); }
+    [data-fig="audira-synth"] .fader-cap { cursor:pointer; transition:transform .12s cubic-bezier(.2,.8,.3,1); }
+    [data-fig="audira-synth"] .fader-cap:hover .face.top { stroke:var(--accent); }
+    [data-fig="audira-synth"] .oled-spec { fill:none; stroke:var(--accent); stroke-width:1.4; vector-effect:non-scaling-stroke; }
+    [data-fig="audira-synth"] .oled-bar { fill:var(--accent); opacity:.85; transition:height .08s ease-out, y .08s ease-out; }
+    [data-fig="audira-synth"] .rotary { cursor:pointer; }
+    [data-fig="audira-synth"] .rotary:hover .face.top { stroke:var(--accent); }
+    [data-fig="audira-synth"] .play-btn.latched .face { fill:var(--accent); stroke:var(--accent-hi); }
+    [data-fig="audira-synth"] .play-btn.latched .face.top { fill:var(--accent-hi); }
+    [data-fig="audira-synth"] .play-btn.latched path { fill:var(--panel); }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [320, 0, 7], [320, 260, 0], [0, 0, 7],
+      [20, 20, 52], [300, 20, 52], [20, 240, 52], [300, 240, 52]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits, esc = api.iso.esc;
+
+    const PLZ = 7;
+    const BX = 20, BY = 20, BW = 280, BD = 220, BH = 32, BT = PLZ + BH, BF = BY + BD;
+
+    let svg = `<defs>
+      <clipPath id="synth-screen-clip"><rect x="6" y="6" width="108" height="68" rx="4"/></clipPath>
+    </defs>`;
+
+    // Base plate
+    svg += box(0, 0, 0, 320, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="9" y="9" width="302" height="242" rx="10"/>
+      ${[[18, 18], [302, 18], [18, 242], [302, 242]].map(([x, y]) =>
+        `<circle class="face recess" cx="${x}" cy="${y}" r="3"/><line class="detail" x1="${x - 1.8}" y1="${y}" x2="${x + 1.8}" y2="${y}"/>`
+      ).join('')}
+      <rect class="face recess" x="24" y="238" width="60" height="4" rx="2"/>
+    </g>`;
+
+    // Main chassis
+    svg += box(BX, BY, PLZ, BW, BD, BH, 8);
+
+    // Front face detail
+    svg += `<g transform="${FRONT(BX, BF, BT)}">
+      ${slits(12, 60, 3, 6, 22)}
+      <text class="label" x="80" y="19" font-size="7" letter-spacing="2">AUDIRA · DJ-8X</text>
+      <circle class="led hot" id="synth-power-led" filter="url(#soft)" cx="210" cy="18" r="2"/>
+      <text class="label" x="218" y="20" font-size="5" letter-spacing="1">PWR</text>
+      ${slits(242, 268, 3, 6, 22)}
+    </g>`;
+
+    // Side face detail (audio outputs)
+    svg += `<g transform="${SIDE(BX + BW, BF, BT)}">
+      ${slits(16, 70, 3.5, 8, 24)}
+      <circle class="face recess" cx="120" cy="16" r="6"/>
+      <circle class="face recess" cx="138" cy="16" r="6"/>
+      <text class="label" x="110" y="28" font-size="4">MASTER OUT</text>
+      ${slits(160, 204, 3.5, 8, 24)}
+    </g>`;
+
+    // Top deck plate recess
+    svg += `<g transform="${TOP(BX, BY, BT)}">
+      <rect class="face recess" x="8" y="8" width="${BW - 16}" height="${BD - 16}" rx="6"/>
+      <line class="detail" x1="126" y1="14" x2="126" y2="${BD - 14}"/>
+      <line class="detail" x1="14" y1="120" x2="120" y2="120"/>
+      <line class="detail" x1="134" y1="120" x2="${BW - 14}" y2="120"/>
+      
+      <text class="label" x="18" y="22" font-size="5" letter-spacing="1.5">PERFORMANCE PADS</text>
+      <text class="label" x="136" y="22" font-size="5" letter-spacing="1.5">AUDIO SPECTRUM</text>
+      <text class="label" x="18" y="132" font-size="5" letter-spacing="1.5">MACRO CONTROLS</text>
+      <text class="label" x="136" y="132" font-size="5" letter-spacing="1.5">4-CH MIXER</text>
+    </g>`;
+
+    // SECTION 1: 8 Performance Pads (4x2)
+    const PAD_NAMES = ['KICK', 'SNARE', 'HI-HAT', 'CLAP', 'SUB BASS', 'LEAD', 'CHORD', 'VOCAL FX'];
+    const PAD_KEYS = ['1', '2', '3', '4', 'q', 'w', 'e', 'r'];
+    const PAD_W = 20, PAD_D = 20, PAD_H = 5;
+    const P0X = BX + 16, P0Y = BY + 32;
+
+    for (let row = 0; row < 2; row++) {
+      for (let col = 0; col < 4; col++) {
+        const idx = row * 4 + col;
+        const px = P0X + col * 24;
+        const py = P0Y + row * 26;
+        svg += `<g class="press pad" id="synth-pad-${idx}" data-idx="${idx}" data-key="${PAD_KEYS[idx]}">
+          ${box(px, py, BT, PAD_W, PAD_D, PAD_H, 2)}
+          <g transform="${TOP(px, py, BT + PAD_H)}">
+            <text class="label" x="${PAD_W / 2}" y="${PAD_D / 2 + 1}" font-size="4.2" text-anchor="middle">${PAD_NAMES[idx]}</text>
+            <text class="label" x="${PAD_W - 3}" y="6" font-size="3.2" text-anchor="end">${PAD_KEYS[idx].toUpperCase()}</text>
+          </g>
+        </g>`;
+      }
+    }
+
+    // Macro Knobs below pads (Left bottom)
+    const KNOB_Y = BY + 150;
+    for (let k = 0; k < 3; k++) {
+      const kx = BX + 24 + k * 34;
+      svg += `<g class="rotary" id="synth-macro-${k}" data-k="${k}">
+        ${box(kx, KNOB_Y, BT, 18, 18, 7, 9)}
+        <g transform="${TOP(kx, KNOB_Y, BT + 7)}">
+          <circle class="face recess" cx="9" cy="9" r="6"/>
+          <line class="detail macro-pointer" id="synth-ptr-${k}" x1="9" y1="9" x2="9" y2="3"/>
+          <text class="label" x="9" y="24" font-size="4" text-anchor="middle">${['FILTER', 'REVERB', 'TEMPO'][k]}</text>
+        </g>
+      </g>`;
+    }
+
+    // Play / Loop Button
+    const PLAY_X = BX + 22, PLAY_Y = BY + 190;
+    svg += `<g class="press play-btn latched" id="synth-play-btn">
+      ${box(PLAY_X, PLAY_Y, BT, 38, 18, 5, 3)}
+      <g transform="${TOP(PLAY_X, PLAY_Y, BT + 5)}">
+        <path d="M12 5 L26 9 L12 13 Z" fill="var(--ink)"/>
+        <text class="label" x="25" y="10.5" font-size="4.5" letter-spacing="1">AUTO</text>
+      </g>
+    </g>`;
+
+    // Tap Tempo Button
+    const TAP_X = BX + 68, TAP_Y = BY + 190;
+    svg += `<g class="press" id="synth-tap-btn">
+      ${box(TAP_X, TAP_Y, BT, 38, 18, 5, 3)}
+      <g transform="${TOP(TAP_X, TAP_Y, BT + 5)}">
+        <text class="label" x="19" y="10.5" font-size="4.5" text-anchor="middle" letter-spacing="1">TAP BPM</text>
+      </g>
+    </g>`;
+
+    // SECTION 2: Center OLED Spectrum Display
+    const SX = BX + 144, SY = BY + 28, SW = 120, SD = 80;
+    svg += box(SX, SY, BT, SW, SD, 4, 3);
+    svg += `<g transform="${TOP(SX, SY, BT + 4)}">
+      <rect class="face recess" x="4" y="4" width="${SW - 8}" height="${SD - 8}" rx="4"/>
+      <rect class="halo hot" x="6" y="6" width="${SW - 12}" height="${SD - 12}" rx="3" filter="url(#bloom)"/>
+      <rect class="face glass hot" id="synth-screen-glass" filter="url(#soft)" x="6" y="6" width="${SW - 12}" height="${SD - 12}" rx="3"/>
+      
+      <g clip-path="url(#synth-screen-clip)">
+        <text class="scr" x="12" y="15" font-size="5" letter-spacing="1">128.0 BPM · STEREO</text>
+        <text class="scr-accent" id="synth-status" x="78" y="15" font-size="4.5">GROOVE ON</text>
+        <line class="detail" x1="10" y1="18" x2="104" y2="18"/>
+
+        <!-- Realtime Spectrum Bars -->
+        <g id="synth-bars">
+          ${Array.from({ length: 12 }, (_, i) =>
+            `<rect class="oled-bar" id="synth-bar-${i}" x="${12 + i * 8}" y="${60 - (i % 3 + 1) * 8}" width="5" height="${(i % 3 + 1) * 8}" rx="1"/>`
+          ).join('')}
+        </g>
+
+        <!-- Oscilloscope Waveform Line -->
+        <path class="oled-spec" id="synth-wave" filter="url(#soft)" d="M12 40 Q30 25, 50 40 T90 35 T104 40"/>
+        
+        <text class="scr" x="12" y="70" font-size="4">CH-1: +1.2dB</text>
+        <text class="scr" x="64" y="70" font-size="4">MASTER: 0dB</text>
+      </g>
+    </g>`;
+
+    // SECTION 3: 4-Channel Mixer Faders & Crossfader
+    const FX = BX + 144, FY = BY + 130;
+    for (let ch = 0; ch < 3; ch++) {
+      const cx = FX + 12 + ch * 28;
+      svg += `<g transform="${TOP(cx, FY + 8, BT)}">
+        <rect class="face recess" x="4" y="0" width="3" height="42" rx="1.5"/>
+        ${[0, 10, 20, 30, 40].map(v => `<line class="detail" x1="0" y1="${v}" x2="2" y2="${v}"/>`).join('')}
+        <text class="label" x="5.5" y="48" font-size="4" text-anchor="middle">CH ${ch + 1}</text>
+      </g>`;
+      svg += `<g class="fader-cap" id="synth-fader-${ch}" data-ch="${ch}" data-val="60">
+        ${box(cx - 2, FY + 20, BT, 15, 10, 6, 1.5)}
+        <g transform="${TOP(cx - 2, FY + 20, BT + 6)}">
+          <line class="detail" x1="1" y1="5" x2="14" y2="5"/>
+          <circle class="led hot" filter="url(#soft)" cx="7.5" cy="5" r="1"/>
+        </g>
+      </g>`;
+    }
+
+    // Master Volume Knob
+    const MV_X = FX + 96, MV_Y = FY + 14;
+    svg += `<g class="rotary" id="synth-master-vol">
+      ${box(MV_X, MV_Y, BT, 22, 22, 8, 11)}
+      <g transform="${TOP(MV_X, MV_Y, BT + 8)}">
+        <circle class="face recess" cx="11" cy="11" r="7"/>
+        <line class="detail" id="synth-master-ptr" x1="11" y1="11" x2="11" y2="4"/>
+        <text class="label" x="11" y="27" font-size="4.5" text-anchor="middle">MASTER</text>
+      </g>
+    </g>`;
+
+    // Horizontal Crossfader at bottom right
+    const CF_X = FX + 12, CF_Y = FY + 66;
+    svg += `<g transform="${TOP(CF_X, CF_Y, BT)}">
+      <rect class="face recess" x="0" y="4" width="76" height="3" rx="1.5"/>
+      <text class="label" x="0" y="2" font-size="3.5">A</text>
+      <text class="label" x="76" y="2" font-size="3.5" text-anchor="end">B</text>
+    </g>`;
+    svg += `<g class="fader-cap" id="synth-crossfader" data-val="50">
+      ${box(CF_X + 32, CF_Y, BT, 12, 11, 6, 1.5)}
+      <g transform="${TOP(CF_X + 32, CF_Y, BT + 6)}">
+        <line class="detail" x1="6" y1="1" x2="6" y2="10"/>
+      </g>
+    </g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Logic ---------- */
+    const st = {
+      on: true,
+      looping: true,
+      step: 0,
+      bpm: 128,
+      lastVoice: 'GROOVE ON',
+      faderVals: [75, 60, 85],
+      crossVal: 50,
+      macros: [50, 30, 65],
+      masterVol: 80,
+      timer: null,
+      idleAnim: null
+    };
+
+    const q = s => stage.querySelector(s);
+    const pads = [...stage.querySelectorAll('.pad')];
+
+    /* ---------- Web Audio Synthesis ---------- */
+    let A = null;
+    function getAudio() {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+      } catch (e) {
+        A = null;
+      }
+      return A;
+    }
+
+    const PITCHES = [55, 110, 440, 220, 65.4, 329.6, 261.6, 523.2];
+
+    function triggerVoice(idx, playSound = true) {
+      st.lastVoice = PAD_NAMES[idx];
+      api.flash(pads[idx], 120);
+
+      if (playSound) {
+        const a = getAudio();
+        if (a) {
+          const t = a.ctx.currentTime;
+          const dest = a.out;
+          try {
+            if (idx === 0) {
+              const osc = a.ctx.createOscillator(), gain = a.ctx.createGain();
+              osc.frequency.setValueAtTime(140, t);
+              osc.frequency.exponentialRampToValueAtTime(38, t + 0.35);
+              gain.gain.setValueAtTime(1, t);
+              gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+              osc.connect(gain); gain.connect(dest);
+              osc.start(t); osc.stop(t + 0.36);
+            } else if (idx === 1) {
+              const osc = a.ctx.createOscillator(), oscG = a.ctx.createGain();
+              osc.type = 'triangle'; osc.frequency.setValueAtTime(180, t);
+              oscG.gain.setValueAtTime(0.6, t); oscG.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+              osc.connect(oscG); oscG.connect(dest);
+              osc.start(t); osc.stop(t + 0.16);
+            } else if (idx === 2) {
+              const osc = a.ctx.createOscillator(), g = a.ctx.createGain();
+              osc.type = 'square'; osc.frequency.setValueAtTime(8000, t);
+              g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+              osc.connect(g); g.connect(dest);
+              osc.start(t); osc.stop(t + 0.07);
+            } else {
+              const osc = a.ctx.createOscillator(), gain = a.ctx.createGain();
+              osc.type = idx === 4 ? 'sine' : idx === 5 ? 'sawtooth' : 'triangle';
+              osc.frequency.setValueAtTime(PITCHES[idx], t);
+              gain.gain.setValueAtTime(0.5, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+              osc.connect(gain); gain.connect(dest);
+              osc.start(t); osc.stop(t + 0.42);
+            }
+          } catch (e) {}
+        }
+      }
+
+      bounchWaveform();
+      render();
+    }
+
+    let tCount = 0;
+    function bounchWaveform() {
+      tCount++;
+      const bars = stage.querySelectorAll('.oled-bar');
+      bars.forEach((b, i) => {
+        const wave = Math.sin((tCount * 0.4) + i * 0.6);
+        const h = Math.floor(10 + Math.abs(wave) * 22 + Math.random() * 6);
+        b.setAttribute('y', 64 - h);
+        b.setAttribute('height', h);
+      });
+      const wave = q('#synth-wave');
+      if (wave) {
+        const y1 = 26 + Math.sin(tCount * 0.5) * 14;
+        const y2 = 48 - Math.cos(tCount * 0.4) * 16;
+        wave.setAttribute('d', `M12 40 Q30 ${y1.toFixed(1)}, 50 40 T90 ${y2.toFixed(1)} T104 40`);
+      }
+    }
+
+    // Ambient living motion: waves and spectrum bounce continuously
+    st.idleAnim = api.every(90, bounchWaveform);
+
+    function render() {
+      api.power(st.on);
+      q('#synth-power-led').classList.toggle('hot', st.on);
+      q('#synth-screen-glass').classList.toggle('hot', st.on);
+      q('.halo').classList.toggle('hot', st.on);
+      q('#synth-play-btn').classList.toggle('latched', st.looping);
+      const stEl = q('#synth-status');
+      if (stEl) stEl.textContent = st.looping ? 'LOOP ON' : st.lastVoice;
+
+      api.readout(
+        st.looping
+          ? `GROOVING · ${st.bpm} BPM · STEP ${st.step + 1}/8 · PAD ${st.lastVoice}`
+          : `AUDIRA DJ · ${st.lastVoice} · 128 BPM`
+      );
+    }
+
+    function startLoopTimer() {
+      if (st.timer) clearInterval(st.timer);
+      const PATTERN = [0, 2, 1, 2, 4, 2, 1, 6];
+      st.timer = api.every(60000 / st.bpm / 2, () => {
+        if (!st.looping) return;
+        const v = PATTERN[st.step];
+        triggerVoice(v, true);
+        st.step = (st.step + 1) % 8;
+      });
+    }
+
+    function toggleLoop() {
+      getAudio();
+      st.looping = !st.looping;
+      if (st.looping) {
+        st.step = 0;
+        startLoopTimer();
+      } else {
+        if (st.timer) clearInterval(st.timer);
+        st.timer = null;
+      }
+      render();
+    }
+
+    /* Start loop right away so the synth is immediately groove-playing! */
+    startLoopTimer();
+
+    stage.addEventListener('click', e => {
+      const pad = e.target.closest('.pad');
+      if (pad) {
+        triggerVoice(+pad.dataset.idx, true);
+        return;
+      }
+      if (e.target.closest('#synth-play-btn')) {
+        toggleLoop();
+        return;
+      }
+      if (e.target.closest('#synth-tap-btn')) {
+        api.flash(q('#synth-tap-btn'), 80);
+        st.bpm = st.bpm === 128 ? 140 : st.bpm === 140 ? 115 : 128;
+        if (st.looping) startLoopTimer();
+        render();
+        return;
+      }
+      const fader = e.target.closest('.fader-cap');
+      if (fader && fader.dataset.ch) {
+        const ch = +fader.dataset.ch;
+        st.faderVals[ch] = (st.faderVals[ch] + 25) % 100;
+        const dy = (st.faderVals[ch] / 100) * -16;
+        fader.style.transform = `translate(0px, ${dy}px)`;
+        getAudio();
+        bounchWaveform();
+        return;
+      }
+      const rot = e.target.closest('.rotary');
+      if (rot && rot.dataset.k) {
+        const k = +rot.dataset.k;
+        st.macros[k] = (st.macros[k] + 30) % 100;
+        const ang = (st.macros[k] / 100) * 270 - 135;
+        const ptr = q(`#synth-ptr-${k}`);
+        if (ptr) ptr.setAttribute('transform', `rotate(${ang} 9 9)`);
+        bounchWaveform();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          if (!e.repeat) toggleLoop();
+          return true;
+        }
+        const k = e.key.toLowerCase();
+        const idx = PAD_KEYS.indexOf(k);
+        if (idx >= 0) {
+          if (!e.repeat) triggerVoice(idx, true);
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        if (st.idleAnim) clearInterval(st.idleAnim);
+        api.power(false);
+      },
+      demo() {
+        if (!st.looping) toggleLoop();
+      }
+    };
+  }
+});
+
+
+/* Fig 2 — Audira Retro Pocket Console */
+FIGS.push({
+  id: 'audira-pocket',
+  name: 'Audira Pocket',
+  hint: 'Auto-playing game! Arrow keys or D-Pad take control · A/B jump',
+  aria: 'Isometric retro handheld game console with D-pad, A/B buttons, cartridge slot, and playable neon dot-matrix screen. Use arrow keys or click D-pad to bounce the ball.',
+  css: `
+    [data-fig="audira-pocket"] .dpad-btn, [data-fig="audira-pocket"] .act-btn { cursor:pointer; }
+    [data-fig="audira-pocket"] .dpad-btn:hover .face.top, [data-fig="audira-pocket"] .act-btn:hover .face.top { stroke:var(--accent); }
+    [data-fig="audira-pocket"] .cartridge { cursor:pointer; transition:transform .2s ease-out; }
+    [data-fig="audira-pocket"] .cartridge:hover { transform:translateY(-4px); }
+    [data-fig="audira-pocket"] .game-ball { fill:var(--accent-hi); }
+    [data-fig="audira-pocket"] .game-paddle { fill:var(--accent); stroke:var(--accent-hi); stroke-width:.8; transition:x .04s ease-out; }
+    [data-fig="audira-pocket"] .game-brick { fill:var(--accent); opacity:.8; }
+    [data-fig="audira-pocket"] .dpad-btn.lit .face { fill:var(--accent); stroke:var(--accent-hi); }
+    [data-fig="audira-pocket"] .dpad-btn.lit .face.top { fill:var(--accent-hi); }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 240, 0], [260, 0, 7], [260, 240, 0], [0, 0, 7],
+      [65, 30, 75], [195, 30, 75], [65, 210, 75], [195, 210, 75]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits, esc = api.iso.esc;
+
+    const PLZ = 7;
+    const BX = 65, BY = 30, BW = 130, BD = 180, BH = 34, BT = PLZ + BH, BF = BY + BD;
+
+    let svg = `<defs>
+      <clipPath id="pocket-screen-clip"><rect x="10" y="8" width="88" height="66" rx="4"/></clipPath>
+    </defs>`;
+
+    // Base plate
+    svg += box(0, 0, 0, 260, 240, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="9" y="9" width="242" height="222" rx="10"/>
+      ${[[18, 18], [242, 18], [18, 222], [242, 222]].map(([x, y]) =>
+        `<circle class="face recess" cx="${x}" cy="${y}" r="3"/><line class="detail" x1="${x - 1.8}" y1="${y}" x2="${x + 1.8}" y2="${y}"/>`
+      ).join('')}
+      <rect class="face recess" x="22" y="224" width="46" height="4" rx="2"/>
+    </g>`;
+
+    // Game Cartridge (recessed in back top)
+    const CX = BX + 24, CY = BY + 6, CW = 82, CD = 16, CH = 24;
+    svg += `<g class="cartridge" id="pocket-cart">
+      ${box(CX, CY, BT - 8, CW, CD, CH, 3)}
+      <g transform="${TOP(CX, CY, BT - 8 + CH)}">
+        <rect class="face recess" x="6" y="2" width="${CW - 12}" height="${CD - 4}" rx="2"/>
+        <text class="label" x="${CW / 2}" y="10" font-size="4.5" text-anchor="middle" letter-spacing="1">AUDIRA · ROM</text>
+      </g>
+    </g>`;
+
+    // Main console chassis
+    svg += box(BX, BY, PLZ, BW, BD, BH, 10);
+
+    // Front bottom face detail
+    svg += `<g transform="${FRONT(BX, BF, BT)}">
+      <circle class="face recess" cx="40" cy="18" r="4"/>
+      <circle class="led hot" id="pocket-hp-led" filter="url(#soft)" cx="40" cy="18" r="1.8"/>
+      <text class="label" x="48" y="20" font-size="4">PHONES</text>
+      ${slits(70, 110, 3, 10, 22)}
+    </g>`;
+
+    // Side face detail (volume dial & power slider)
+    svg += `<g transform="${SIDE(BX + BW, BF, BT)}">
+      <rect class="face recess" x="30" y="10" width="22" height="6" rx="2"/>
+      <text class="label" x="24" y="22" font-size="4">VOL</text>
+      <rect class="face recess" x="120" y="8" width="16" height="12" rx="2"/>
+      <circle class="led hot" filter="url(#soft)" cx="128" cy="14" r="2"/>
+      <text class="label" x="118" y="26" font-size="4">PWR</text>
+    </g>`;
+
+    // Top deck plate
+    svg += `<g transform="${TOP(BX, BY, BT)}">
+      <rect class="face recess" x="6" y="6" width="${BW - 12}" height="${BD - 12}" rx="6"/>
+      <text class="label" x="12" y="16" font-size="6" font-weight="500" letter-spacing="2">AUDIRA POCKET</text>
+      <line class="detail" x1="12" y1="19" x2="${BW - 12}" y2="19"/>
+    </g>`;
+
+    // SECTION 1: Dot-Matrix LCD Screen
+    const SX = BX + 11, SY = BY + 28, SW = 108, SD = 82;
+    svg += box(SX, SY, BT, SW, SD, 3, 3);
+    svg += `<g transform="${TOP(SX, SY, BT + 3)}">
+      <rect class="face recess" x="4" y="4" width="${SW - 8}" height="${SD - 8}" rx="4"/>
+      <rect class="halo hot" x="6" y="6" width="${SW - 12}" height="${SD - 12}" rx="3" filter="url(#bloom)"/>
+      <rect class="face glass hot" id="pocket-screen-glass" filter="url(#soft)" x="6" y="6" width="${SW - 12}" height="${SD - 12}" rx="3"/>
+
+      <g clip-path="url(#pocket-screen-clip)">
+        <text class="scr" x="14" y="18" font-size="4.5" letter-spacing="1">SCORE</text>
+        <text class="scr-accent" id="pocket-score" x="32" y="18" font-size="5" font-weight="500">000</text>
+        <text class="scr" x="66" y="18" font-size="4.5" letter-spacing="1">AUTO-PLAY</text>
+        <line class="detail" x1="12" y1="21" x2="96" y2="21"/>
+
+        <!-- Bricks row -->
+        <g id="pocket-bricks">
+          ${[0, 1, 2, 3, 4, 5].map(i =>
+            `<rect class="game-brick" id="p-brick-${i}" x="${16 + i * 13}" y="26" width="11" height="4" rx="1"/>`
+          ).join('')}
+        </g>
+        
+        <!-- Bouncing Ball -->
+        <circle class="game-ball" id="pocket-ball" filter="url(#glow)" cx="54" cy="46" r="2.2"/>
+        
+        <!-- Player Paddle -->
+        <rect class="game-paddle" id="pocket-paddle" filter="url(#soft)" x="44" y="64" width="20" height="3" rx="1.5"/>
+
+        ${Array.from({ length: 15 }, (_, i) =>
+          `<line class="detail" x1="12" y1="${24 + i * 3.2}" x2="96" y2="${24 + i * 3.2}" opacity=".15"/>`
+        ).join('')}
+      </g>
+    </g>`;
+
+    // Battery / Power LED next to screen
+    svg += `<g transform="${TOP(BX, BY, BT)}">
+      <circle class="led hot" id="pocket-bat-led" filter="url(#soft)" cx="14" cy="56" r="1.4"/>
+      <text class="label" x="18" y="57" font-size="3">BAT</text>
+    </g>`;
+
+    // SECTION 2: D-PAD (Directional Cross)
+    const DPX = BX + 24, DPY = BY + 124;
+    svg += box(DPX + 11, DPY + 11, BT, 11, 11, 4, 1);
+    const DPAD_BTNS = [
+      { id: 'left',  x: DPX,       y: DPY + 11, w: 11, d: 11, lbl: '◀' },
+      { id: 'right', x: DPX + 22,  y: DPY + 11, w: 11, d: 11, lbl: '▶' },
+      { id: 'up',    x: DPX + 11,  y: DPY,      w: 11, d: 11, lbl: '▲' },
+      { id: 'down',  x: DPX + 11,  y: DPY + 22, w: 11, d: 11, lbl: '▼' },
+    ];
+    DPAD_BTNS.forEach(b => {
+      svg += `<g class="press dpad-btn" id="dpad-${b.id}" data-dir="${b.id}">
+        ${box(b.x, b.y, BT, b.w, b.d, 5, 2)}
+        <g transform="${TOP(b.x, b.y, BT + 5)}">
+          <text class="label" x="${b.w / 2}" y="${b.d / 2 + 1.2}" font-size="4" text-anchor="middle">${b.lbl}</text>
+        </g>
+      </g>`;
+    });
+
+    // SECTION 3: Action Buttons A & B
+    const BTNS = [
+      { id: 'b', x: BX + 78, y: BY + 140, lbl: 'B' },
+      { id: 'a', x: BX + 98, y: BY + 126, lbl: 'A' },
+    ];
+    BTNS.forEach(b => {
+      svg += `<g class="press act-btn" id="btn-${b.id}" data-btn="${b.id}">
+        ${box(b.x, b.y, BT, 16, 16, 6, 8)}
+        <g transform="${TOP(b.x, b.y, BT + 6)}">
+          <circle class="face recess" cx="8" cy="8" r="6"/>
+          <text class="label" x="8" y="10" font-size="5" text-anchor="middle" font-weight="500">${b.lbl}</text>
+        </g>
+      </g>`;
+    });
+
+    // SECTION 4: SELECT & START Pill Buttons
+    const PILLS = [
+      { id: 'select', x: BX + 44, y: BY + 168, lbl: 'SELECT' },
+      { id: 'start',  x: BX + 68, y: BY + 168, lbl: 'START' },
+    ];
+    PILLS.forEach(p => {
+      svg += `<g class="press act-btn" id="btn-${p.id}" data-btn="${p.id}">
+        ${box(p.x, p.y, BT, 18, 7, 3, 2)}
+        <g transform="${TOP(p.x, p.y, BT + 3)}">
+          <text class="label" x="9" y="5.5" font-size="3" text-anchor="middle" letter-spacing=".5">${p.lbl}</text>
+        </g>
+      </g>`;
+    });
+
+    // Speaker grill slits at bottom right
+    svg += `<g transform="${TOP(BX + 96, BY + 154, BT)}">
+      ${slits(0, 18, 3, 0, 14, false)}
+    </g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- Game Engine & Audio ---------- */
+    const st = {
+      score: 120,
+      paddleX: 44,
+      ballX: 54,
+      ballY: 46,
+      ballVX: 1.2,
+      ballVY: -1.1,
+      active: true,
+      userControl: false,
+      lastUserTime: 0,
+      bricks: [true, true, true, true, true, true],
+      timer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function beep(freq, dur = 0.08, type = 'square') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        g.gain.setValueAtTime(0.2, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function movePaddle(dir) {
+      st.userControl = true;
+      st.lastUserTime = performance.now();
+      if (dir === 'left') {
+        st.paddleX = Math.max(14, st.paddleX - 6);
+        api.flash(q('#dpad-left'), 60);
+      } else if (dir === 'right') {
+        st.paddleX = Math.min(74, st.paddleX + 6);
+        api.flash(q('#dpad-right'), 60);
+      }
+      const padEl = q('#pocket-paddle');
+      if (padEl) padEl.setAttribute('x', st.paddleX);
+    }
+
+    function gameTick() {
+      if (!st.active) return;
+
+      st.ballX += st.ballVX;
+      st.ballY += st.ballVY;
+
+      // Auto-Paddle AI: smoothly tracks the ball if user hasn't pressed keys recently
+      if (!st.userControl || performance.now() - st.lastUserTime > 3000) {
+        st.userControl = false;
+        const targetX = Math.max(14, Math.min(74, st.ballX - 10));
+        st.paddleX += (targetX - st.paddleX) * 0.25;
+        const padEl = q('#pocket-paddle');
+        if (padEl) padEl.setAttribute('x', st.paddleX.toFixed(1));
+      }
+
+      // Wall bounce
+      if (st.ballX <= 14) {
+        st.ballX = 14;
+        st.ballVX = Math.abs(st.ballVX);
+        beep(440);
+      } else if (st.ballX >= 94) {
+        st.ballX = 94;
+        st.ballVX = -Math.abs(st.ballVX);
+        beep(440);
+      }
+
+      // Ceiling bounce
+      if (st.ballY <= 24) {
+        st.ballY = 24;
+        st.ballVY = Math.abs(st.ballVY);
+        beep(520);
+      }
+
+      // Paddle bounce
+      if (st.ballY >= 62 && st.ballY <= 66) {
+        if (st.ballX >= st.paddleX - 4 && st.ballX <= st.paddleX + 24) {
+          st.ballVY = -Math.abs(st.ballVY);
+          st.ballVX += (Math.random() - 0.5) * 0.5;
+          beep(660);
+        }
+      }
+
+      // Bottom out
+      if (st.ballY > 72) {
+        st.ballX = 54;
+        st.ballY = 46;
+        st.ballVY = -1.0;
+        st.score = Math.max(0, st.score - 5);
+        beep(180, 0.2, 'sawtooth');
+      }
+
+      // Check Brick collision
+      if (st.ballY <= 32 && st.ballY >= 25) {
+        const brickIdx = Math.floor((st.ballX - 16) / 13);
+        if (brickIdx >= 0 && brickIdx < 6 && st.bricks[brickIdx]) {
+          st.bricks[brickIdx] = false;
+          st.ballVY = Math.abs(st.ballVY);
+          st.score += 20;
+          beep(880, 0.1);
+          const bEl = q(`#p-brick-${brickIdx}`);
+          if (bEl) bEl.style.display = 'none';
+
+          if (st.bricks.every(b => !b)) {
+            st.bricks = [true, true, true, true, true, true];
+            stage.querySelectorAll('.game-brick').forEach(b => (b.style.display = ''));
+            beep(1200, 0.25);
+          }
+        }
+      }
+
+      // Update ball SVG
+      const bEl = q('#pocket-ball');
+      if (bEl) {
+        bEl.setAttribute('cx', st.ballX.toFixed(1));
+        bEl.setAttribute('cy', st.ballY.toFixed(1));
+      }
+      const scoreEl = q('#pocket-score');
+      if (scoreEl) scoreEl.textContent = String(st.score).padStart(3, '0');
+    }
+
+    st.timer = api.every(35, gameTick);
+
+    function render() {
+      api.power(true);
+      q('#pocket-screen-glass').classList.add('hot');
+      q('.halo').classList.add('hot');
+      api.readout(`AUDIRA POCKET · LIVE RUNNING · SCORE: ${st.score}`);
+    }
+
+    stage.addEventListener('click', e => {
+      const dpad = e.target.closest('.dpad-btn');
+      if (dpad && dpad.dataset.dir) {
+        movePaddle(dpad.dataset.dir);
+        return;
+      }
+      const act = e.target.closest('.act-btn');
+      if (act && act.dataset.btn) {
+        api.flash(act, 80);
+        if (act.dataset.btn === 'a') {
+          beep(980);
+          movePaddle('right');
+        } else if (act.dataset.btn === 'b') {
+          beep(330);
+          movePaddle('left');
+        }
+        return;
+      }
+      if (e.target.closest('#pocket-cart')) {
+        api.flash(q('#pocket-cart'), 120);
+        beep(1400, 0.2);
+        st.score += 50;
+        render();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+          movePaddle('left');
+          return true;
+        }
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+          movePaddle('right');
+          return true;
+        }
+        if (e.key === ' ' || e.key === 'Enter') {
+          beep(880, 0.1);
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        api.power(false);
+      },
+      demo() {
+        // Auto-play is already running continuously!
+      }
+    };
+  }
+});
+
+
+/* Fig 3 — Audira Valve Interface & Studio Tube DAC */
+FIGS.push({
+  id: 'audira-tube',
+  name: 'Audira Valve DAC',
+  hint: 'Warm tube audio active · Click volume knob or tubes to switch',
+  aria: 'Isometric studio tube DAC and audio interface with dual glowing vacuum tubes, analog VU meters, heavy knurled volume knob, and coiled headphone cable. Space plays an audio loop and moves the meter needles.',
+  css: `
+    [data-fig="audira-tube"] .tube-group { cursor:pointer; }
+    [data-fig="audira-tube"] .tube-group:hover .tube-glass { stroke:var(--accent); }
+    [data-fig="audira-tube"] .tube-filament { fill:none; stroke:var(--accent); stroke-width:1.8; stroke-linecap:round; filter:url(#glow); transition:opacity .3s; }
+    [data-fig="audira-tube"] .vu-needle { stroke:var(--accent-hi); stroke-width:1.4; stroke-linecap:round; vector-effect:non-scaling-stroke; transition:transform .08s ease-out; }
+    [data-fig="audira-tube"] .vol-knob { cursor:pointer; }
+    [data-fig="audira-tube"] .vol-knob:hover .face.top { stroke:var(--accent); }
+    [data-fig="audira-tube"] .headphone-plug { cursor:pointer; }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [320, 0, 7], [320, 260, 0], [0, 0, 7],
+      [24, 24, 76], [296, 24, 76], [24, 236, 76], [296, 236, 76],
+      [310, 240, 10]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits, esc = api.iso.esc;
+
+    const PLZ = 7;
+    const BX = 24, BY = 24, BW = 272, BD = 212, BH = 40, BT = PLZ + BH, BF = BY + BD;
+
+    let svg = `<defs>
+      <clipPath id="tube-vu-clip-l"><rect x="6" y="6" width="76" height="52" rx="4"/></clipPath>
+      <clipPath id="tube-vu-clip-r"><rect x="6" y="6" width="76" height="52" rx="4"/></clipPath>
+    </defs>`;
+
+    // Base plate
+    svg += box(0, 0, 0, 320, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="9" y="9" width="302" height="242" rx="10"/>
+      ${[[18, 18], [302, 18], [18, 242], [302, 242]].map(([x, y]) =>
+        `<circle class="face recess" cx="${x}" cy="${y}" r="3"/><line class="detail" x1="${x - 1.8}" y1="${y}" x2="${x + 1.8}" y2="${y}"/>`
+      ).join('')}
+    </g>`;
+
+    // Main chassis
+    svg += box(BX, BY, PLZ, BW, BD, BH, 8);
+
+    // Front Face
+    svg += `<g transform="${FRONT(BX, BF, BT)}">
+      <circle class="face recess" cx="42" cy="22" r="7"/>
+      <circle class="detail" cx="42" cy="22" r="5"/>
+      <text class="label" x="42" y="34" font-size="4" text-anchor="middle">HEADPHONES</text>
+
+      ${[90, 110, 130].map((x, i) => `
+        <rect class="face recess" x="${x - 4}" y="14" width="8" height="14" rx="2"/>
+        <line class="detail" x1="${x}" y1="17" x2="${x}" y2="25"/>
+        <circle class="led hot" filter="url(#soft)" cx="${x}" cy="10" r="1.2"/>
+        <text class="label" x="${x}" y="34" font-size="3.5" text-anchor="middle">${['48V', 'PAD', 'MONO'][i]}</text>
+      `).join('')}
+
+      <text class="label" x="180" y="24" font-size="6" letter-spacing="1.5">AUDIRA · VALVE DAC</text>
+
+      <circle class="face recess" cx="240" cy="20" r="6"/>
+      <circle class="led hot" id="tube-power-led" filter="url(#soft)" cx="240" cy="20" r="2.5"/>
+      <text class="label" x="240" y="32" font-size="4" text-anchor="middle">POWER</text>
+    </g>`;
+
+    // Side face detail
+    svg += `<g transform="${SIDE(BX + BW, BF, BT)}">
+      ${slits(16, 80, 3.5, 10, 30)}
+      <circle class="face recess" cx="130" cy="20" r="8"/>
+      <text class="label" x="118" y="34" font-size="4">USB-C</text>
+      ${slits(150, 196, 3.5, 10, 30)}
+    </g>`;
+
+    // Top deck plate
+    svg += `<g transform="${TOP(BX, BY, BT)}">
+      <rect class="face recess" x="8" y="8" width="${BW - 16}" height="${BD - 16}" rx="6"/>
+      <line class="detail" x1="12" y1="92" x2="${BW - 12}" y2="92"/>
+      <text class="label" x="16" y="20" font-size="5" letter-spacing="1.5">CLASS-A TUBE STAGE</text>
+      <text class="label" x="16" y="104" font-size="5" letter-spacing="1.5">ANALOG VU MONITORING</text>
+    </g>`;
+
+    // SECTION 1: Dual Vacuum Tubes
+    const TUBE_Z = BT + 2;
+    const TUBES = [
+      { x: BX + 58, y: BY + 34, id: 'l' },
+      { x: BX + 158, y: BY + 34, id: 'r' },
+    ];
+
+    TUBES.forEach((tb) => {
+      svg += box(tb.x, tb.y, TUBE_Z, 56, 50, 6, 8);
+      svg += `<g transform="${TOP(tb.x, tb.y, TUBE_Z + 6)}">
+        <circle class="face recess" cx="28" cy="25" r="22"/>
+        ${Array.from({ length: 12 }, (_, a) => {
+          const rad = (a * 30 * Math.PI) / 180;
+          return `<circle class="face recess" cx="${(28 + 17 * Math.cos(rad)).toFixed(1)}" cy="${(25 + 17 * Math.sin(rad)).toFixed(1)}" r="1.4"/>`;
+        }).join('')}
+      </g>`;
+
+      const GX = tb.x + 8, GY = tb.y + 7, GW = 40, GD = 36, GH = 34;
+      svg += `<g class="tube-group" id="tube-${tb.id}">`;
+      svg += box(GX, GY, TUBE_Z + 6, GW, GD, GH, 16);
+      
+      svg += `<g transform="${FRONT(GX, GY + GD, TUBE_Z + 6 + GH)}">
+        <rect class="halo tube-halo hot" x="6" y="6" width="${GW - 12}" height="${GH - 8}" rx="8" filter="url(#bloom)"/>
+        <rect class="face recess" x="12" y="8" width="16" height="20" rx="2"/>
+        <line class="detail" x1="14" y1="12" x2="26" y2="12"/>
+        <line class="detail" x1="14" y1="18" x2="26" y2="18"/>
+        <path class="tube-filament" filter="url(#glow)" d="M16 26 L16 16 L20 12 L20 26 L24 16 L24 26"/>
+      </g>`;
+      svg += `</g>`;
+    });
+
+    // SECTION 2: Dual Analog VU Meters
+    const VU_Y = BY + 116, VU_W = 88, VU_D = 64, VU_H = 4;
+    const METERS = [
+      { x: BX + 16,  id: 'l', name: 'VU CH-L' },
+      { x: BX + 168, id: 'r', name: 'VU CH-R' },
+    ];
+
+    METERS.forEach(m => {
+      svg += box(m.x, VU_Y, BT, VU_W, VU_D, VU_H, 4);
+      svg += `<g transform="${TOP(m.x, VU_Y, BT + VU_H)}">
+        <rect class="face recess" x="4" y="4" width="${VU_W - 8}" height="${VU_D - 8}" rx="4"/>
+        <rect class="halo vu-halo hot" x="6" y="6" width="${VU_W - 12}" height="${VU_D - 12}" rx="3" filter="url(#bloom)"/>
+        <rect class="face glass hot" filter="url(#soft)" x="6" y="6" width="${VU_W - 12}" height="${VU_D - 12}" rx="3"/>
+
+        <g clip-path="url(#tube-vu-clip-${m.id})">
+          <text class="label" x="12" y="16" font-size="4.5" letter-spacing="1">${m.name}</text>
+          <path class="detail" d="M16 46 Q44 24, 72 46"/>
+          <text class="label" x="18" y="42" font-size="3">-20</text>
+          <text class="label" x="32" y="32" font-size="3">-7</text>
+          <text class="label" x="44" y="27" font-size="3">0dB</text>
+          <text class="scr-accent" x="60" y="34" font-size="3.2">+3</text>
+
+          <line class="vu-needle" id="vu-needle-${m.id}" x1="44" y1="58" x2="44" y2="28" transform="rotate(-15 44 58)"/>
+          <circle class="face recess" cx="44" cy="58" r="4"/>
+        </g>
+      </g>`;
+    });
+
+    // SECTION 3: Giant Master Volume Knob
+    const VOL_X = BX + 112, VOL_Y = BY + 120, VOL_SIZE = 48, VOL_H = 14;
+    svg += `<g class="vol-knob" id="tube-master-vol">
+      ${box(VOL_X, VOL_Y, BT, VOL_SIZE, VOL_SIZE, VOL_H, 24)}
+      <g transform="${TOP(VOL_X, VOL_Y, BT + VOL_H)}">
+        <circle class="face recess" cx="24" cy="24" r="18"/>
+        ${Array.from({ length: 16 }, (_, i) => {
+          const a = (i * 22.5 * Math.PI) / 180;
+          return `<line class="detail" x1="${(24 + 19 * Math.cos(a)).toFixed(1)}" y1="${(24 + 19 * Math.sin(a)).toFixed(1)}" x2="${(24 + 23 * Math.cos(a)).toFixed(1)}" y2="${(24 + 23 * Math.sin(a)).toFixed(1)}"/>`;
+        }).join('')}
+        
+        <g id="tube-vol-indicator">
+          <circle class="led hot" filter="url(#soft)" cx="24" cy="11" r="1.8"/>
+          <line class="detail" x1="24" y1="24" x2="24" y2="10"/>
+        </g>
+        <text class="label" x="24" y="30" font-size="4.5" text-anchor="middle">LEVEL</text>
+      </g>
+    </g>`;
+
+    // SECTION 4: Headphone Jack & Coiled Cable
+    const PLUG_X = BX + 42, PLUG_Y = BF, PLUG_Z = BT - 18;
+    svg += `<g class="headphone-plug">
+      ${box(PLUG_X - 4, PLUG_Y, PLUG_Z - 4, 8, 14, 8, 2)}
+    </g>`;
+
+    const P0 = [PLUG_X, PLUG_Y + 14, PLUG_Z];
+    const P1 = [PLUG_X + 20, PLUG_Y + 35, 10];
+    const P2 = [PLUG_X + 70, PLUG_Y + 15, 8];
+    const P3 = [290, 240, 9];
+    const bez = t => P0.map((_, i) => (1 - t) ** 3 * P0[i] + 3 * (1 - t) ** 2 * t * P1[i] + 3 * (1 - t) * t ** 2 * P2[i] + t ** 3 * P3[i]);
+
+    const pts = [];
+    for (let i = 0; i <= 600; i++) {
+      const t = i / 600, p = bez(t);
+      const ang = t * 24 * 2 * Math.PI;
+      const env = Math.min(1, Math.max(0, (t - 0.05) / 0.05)) * Math.min(1, Math.max(0, (0.95 - t) / 0.05));
+      pts.push([p[0] + env * 3 * Math.cos(ang), p[1] + env * 3 * Math.sin(ang), p[2]]);
+    }
+    const wireD = path(pts);
+    svg += `<path class="wire-under" d="${wireD}"/>
+      <path class="wire hot" id="tube-wire" filter="url(#soft)" d="${wireD}"/>
+      <path class="pulse go" id="tube-pulse" filter="url(#glow)" pathLength="1000" d="${wireD}"/>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- Logic & Real Audio ---------- */
+    const st = {
+      playing: true,
+      volume: 80,
+      meterAngleL: -12,
+      meterAngleR: -15,
+      timer: null,
+      pulseTimer: null,
+      animTimer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function getAudio() {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+      } catch (e) {
+        A = null;
+      }
+      return A;
+    }
+
+    const CHORDS = [
+      [220, 261.6, 329.6, 392],    // Am7
+      [174.6, 220, 261.6, 329.6],  // Fmaj7
+      [130.8, 164.8, 196, 246.9],  // Cmaj7
+      [196, 246.9, 293.7, 349.2],  // G7
+    ];
+    let chordIdx = 0;
+
+    function playChord() {
+      const a = getAudio();
+      if (a) {
+        const t = a.ctx.currentTime;
+        const chord = CHORDS[chordIdx];
+        chordIdx = (chordIdx + 1) % CHORDS.length;
+
+        try {
+          chord.forEach(freq => {
+            const osc = a.ctx.createOscillator();
+            const gain = a.ctx.createGain();
+            const filt = a.ctx.createBiquadFilter();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, t);
+
+            filt.type = 'lowpass';
+            filt.frequency.setValueAtTime(900 + (st.volume / 100) * 800, t);
+
+            gain.gain.setValueAtTime(0.001, t);
+            gain.gain.exponentialRampToValueAtTime(0.12 * (st.volume / 100), t + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+
+            osc.connect(filt); filt.connect(gain); gain.connect(a.out);
+            osc.start(t); osc.stop(t + 1.25);
+          });
+        } catch (e) {}
+      }
+
+      api.replay(q('#tube-pulse'));
+    }
+
+    let breathCount = 0;
+    function ambientJitter() {
+      breathCount++;
+      // Warm breathing filament glow
+      const filaments = stage.querySelectorAll('.tube-filament');
+      const breath = 0.7 + Math.sin(breathCount * 0.15) * 0.25;
+      filaments.forEach(f => f.style.opacity = breath.toFixed(2));
+
+      // Dynamic dancing VU needles
+      const baseJitter = st.playing ? 18 : 6;
+      st.meterAngleL = -15 + Math.sin(breathCount * 0.3) * baseJitter + Math.random() * 4;
+      st.meterAngleR = -18 + Math.cos(breathCount * 0.25) * baseJitter + Math.random() * 4;
+      updateNeedles();
+    }
+
+    st.animTimer = api.every(80, ambientJitter);
+
+    function updateNeedles() {
+      const nl = q('#vu-needle-l');
+      const nr = q('#vu-needle-r');
+      if (nl) nl.setAttribute('transform', `rotate(${st.meterAngleL.toFixed(1)} 44 58)`);
+      if (nr) nr.setAttribute('transform', `rotate(${st.meterAngleR.toFixed(1)} 44 58)`);
+    }
+
+    function togglePlay() {
+      st.playing = !st.playing;
+      getAudio();
+      if (st.playing) {
+        playChord();
+        st.timer = api.every(1300, playChord);
+      } else {
+        if (st.timer) clearInterval(st.timer);
+        st.timer = null;
+      }
+      render();
+    }
+
+    // Auto-pulse wire periodically
+    st.pulseTimer = api.every(1800, () => {
+      if (st.playing) api.replay(q('#tube-pulse'));
+    });
+
+    function render() {
+      api.power(true);
+      q('#tube-power-led').classList.toggle('hot', true);
+      q('#tube-wire').classList.toggle('hot', st.playing);
+
+      api.readout(
+        st.playing
+          ? `TUBE AUDIO ACTIVE · VOL ${st.volume}% · DUAL VU METERING`
+          : `AUDIRA VALVE DAC · READY · SPACE TO PLAY`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      if (e.target.closest('#tube-master-vol')) {
+        st.volume = (st.volume + 20) % 100;
+        if (st.volume === 0) st.volume = 40;
+        const ang = (st.volume / 100) * 270 - 135;
+        const ind = q('#tube-vol-indicator');
+        if (ind) ind.setAttribute('transform', `rotate(${ang} 24 24)`);
+        render();
+        return;
+      }
+      if (e.target.closest('.tube-group') || e.target.closest('.headphone-plug')) {
+        togglePlay();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          if (!e.repeat) togglePlay();
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.timer) clearInterval(st.timer);
+        if (st.pulseTimer) clearInterval(st.pulseTimer);
+        if (st.animTimer) clearInterval(st.animTimer);
+        api.power(false);
+      },
+      demo() {
+        togglePlay();
+      }
+    };
+  }
+});
+
+
+/* Fig 4 — Audira Cyberdeck Hacker Terminal */
+FIGS.push({
+  id: 'audira-deck',
+  name: 'Audira Cyberdeck',
+  hint: 'Live stream active · Type anywhere to inject hex · Space overdrive',
+  aria: 'Isometric cyberpunk hacker console with triple monitor array, toggle switches, real-time matrix terminal, and glowing data cores. Type on your keyboard to stream hex code.',
+  css: `
+    [data-fig="audira-deck"] .deck-sw { cursor:pointer; }
+    [data-fig="audira-deck"] .deck-sw:hover .face.top { stroke:var(--accent); }
+    [data-fig="audira-deck"] .deck-sw.on .face { fill:var(--accent); stroke:var(--accent-hi); }
+    [data-fig="audira-deck"] .deck-sw.on .face.top { fill:var(--accent-hi); }
+    [data-fig="audira-deck"] .overdrive-btn { cursor:pointer; }
+    [data-fig="audira-deck"] .overdrive-btn:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-deck"] .radar-beam { stroke:var(--accent); stroke-width:1.2; opacity:.85; }
+    [data-fig="audira-deck"] .matrix-txt { fill:var(--accent-hi); font-family:var(--mono); font-size:4.2px; }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [340, 0, 7], [340, 260, 0], [0, 0, 7],
+      [20, 20, 68], [300, 20, 68], [20, 240, 68], [300, 240, 68]
+    ]);
+    const { TOP, FRONT, SIDE, box, path } = K, slits = api.iso.slits, esc = api.iso.esc;
+
+    const PLZ = 7;
+    const BX = 20, BY = 20, BW = 280, BD = 220, BH = 32, BT = PLZ + BH, BF = BY + BD;
+
+    let svg = `<defs>
+      <clipPath id="deck-main-clip"><rect x="8" y="8" width="134" height="74" rx="4"/></clipPath>
+      <clipPath id="deck-left-clip"><rect x="6" y="6" width="48" height="74" rx="4"/></clipPath>
+      <clipPath id="deck-right-clip"><rect x="6" y="6" width="48" height="74" rx="4"/></clipPath>
+    </defs>`;
+
+    // Base plate
+    svg += box(0, 0, 0, 340, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="9" y="9" width="322" height="242" rx="10"/>
+      ${[[18, 18], [322, 18], [18, 242], [322, 242]].map(([x, y]) =>
+        `<circle class="face recess" cx="${x}" cy="${y}" r="3"/><line class="detail" x1="${x - 1.8}" y1="${y}" x2="${x + 1.8}" y2="${y}"/>`
+      ).join('')}
+    </g>`;
+
+    // Cyberdeck chassis
+    svg += box(BX, BY, PLZ, BW, BD, BH, 8);
+
+    // Front Face
+    svg += `<g transform="${FRONT(BX, BF, BT)}">
+      ${slits(12, 60, 3, 6, 20)}
+      <text class="label" x="80" y="19" font-size="7" letter-spacing="2">AUDIRA · CYBERDECK 09</text>
+      <rect class="face recess" x="210" y="8" width="50" height="12" rx="2"/>
+      <text class="scr-accent" x="216" y="17" font-size="5" letter-spacing="1">ROOT: OK</text>
+    </g>`;
+
+    // Side face detail
+    svg += `<g transform="${SIDE(BX + BW, BF, BT)}">
+      ${slits(16, 70, 3.5, 8, 22)}
+      <rect class="face recess" x="110" y="10" width="30" height="12" rx="2"/>
+      <text class="label" x="114" y="19" font-size="4">NEURAL BUS</text>
+      ${slits(160, 204, 3.5, 8, 22)}
+    </g>`;
+
+    // Top deck plate
+    svg += `<g transform="${TOP(BX, BY, BT)}">
+      <rect class="face recess" x="6" y="6" width="${BW - 12}" height="${BD - 12}" rx="6"/>
+      <line class="detail" x1="12" y1="116" x2="${BW - 12}" y2="116"/>
+    </g>`;
+
+    // SECTION 1: Triple Monitor Array
+    // Left Screen: Radar
+    const LS_X = BX + 14, LS_Y = BY + 16, LS_W = 60, LS_D = 86;
+    svg += box(LS_X, LS_Y, BT, LS_W, LS_D, 4, 3);
+    svg += `<g transform="${TOP(LS_X, LS_Y, BT + 4)}">
+      <rect class="face recess" x="4" y="4" width="${LS_W - 8}" height="${LS_D - 8}" rx="4"/>
+      <rect class="halo hot" x="6" y="6" width="${LS_W - 12}" height="${LS_D - 12}" rx="3" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="6" y="6" width="${LS_W - 12}" height="${LS_D - 12}" rx="3"/>
+      
+      <g clip-path="url(#deck-left-clip)">
+        <text class="scr" x="10" y="15" font-size="4">RADAR SCAN</text>
+        <circle class="detail" cx="30" cy="46" r="20"/>
+        <circle class="detail" cx="30" cy="46" r="12"/>
+        <circle class="detail" cx="30" cy="46" r="5"/>
+        <line class="detail" x1="10" y1="46" x2="50" y2="46"/>
+        <line class="detail" x1="30" y1="26" x2="30" y2="66"/>
+        <line class="radar-beam" id="deck-radar" filter="url(#soft)" x1="30" y1="46" x2="48" y2="34"/>
+        <circle class="led hot" filter="url(#soft)" cx="42" cy="38" r="1.4"/>
+      </g>
+    </g>`;
+
+    // Center Ultrawide Screen: Real-Time Matrix Terminal
+    const CS_X = BX + 80, CS_Y = BY + 14, CS_W = 150, CS_D = 90;
+    svg += box(CS_X, CS_Y, BT, CS_W, CS_D, 5, 4);
+    svg += `<g transform="${TOP(CS_X, CS_Y, BT + 5)}">
+      <rect class="face recess" x="4" y="4" width="${CS_W - 8}" height="${CS_D - 8}" rx="4"/>
+      <rect class="halo hot" x="6" y="6" width="${CS_W - 12}" height="${CS_D - 12}" rx="3" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="6" y="6" width="${CS_W - 12}" height="${CS_D - 12}" rx="3"/>
+      
+      <g clip-path="url(#deck-main-clip)">
+        <text class="scr" x="12" y="16" font-size="4.5" letter-spacing="1">TERMINAL: /DEV/TTY0</text>
+        <text class="scr-accent" id="deck-sec-status" x="90" y="16" font-size="4">SYSTEM SECURE</text>
+        <line class="detail" x1="10" y1="19" x2="140" y2="19"/>
+        
+        <g id="deck-matrix-lines">
+          <text class="matrix-txt" id="deck-line-0" x="12" y="28">0x7F4B > QUANTUM LINK ACTIVE</text>
+          <text class="matrix-txt" id="deck-line-1" x="12" y="36">0x8A12 > ROUTE 127.0.0.1 VERIFIED</text>
+          <text class="matrix-txt" id="deck-line-2" x="12" y="44">0x3D90 > DECRYPTING PACKET STREAM...</text>
+          <text class="matrix-txt" id="deck-line-3" x="12" y="52">0xC401 > INJECT: READY [KEYBOARD HOOKED]</text>
+          <text class="matrix-txt" id="deck-user-line" x="12" y="60">> LIVE RUNNING_</text>
+        </g>
+      </g>
+    </g>`;
+
+    // Right Screen: CPU Core & Telemetry
+    const RS_X = BX + 236, RS_Y = BY + 16, RS_W = 60, RS_D = 86;
+    svg += box(RS_X, RS_Y, BT, RS_W, RS_D, 4, 3);
+    svg += `<g transform="${TOP(RS_X, RS_Y, BT + 4)}">
+      <rect class="face recess" x="4" y="4" width="${RS_W - 8}" height="${RS_D - 8}" rx="4"/>
+      <rect class="halo hot" x="6" y="6" width="${RS_W - 12}" height="${RS_D - 12}" rx="3" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="6" y="6" width="${RS_W - 12}" height="${RS_D - 12}" rx="3"/>
+      
+      <g clip-path="url(#deck-right-clip)">
+        <text class="scr" x="8" y="15" font-size="4">CORE LOAD</text>
+        ${[0, 1, 2, 3].map(c => `
+          <text class="label" x="8" y="${28 + c * 11}" font-size="3.5">C${c}</text>
+          <rect class="face recess" x="18" y="${22 + c * 11}" width="34" height="5" rx="1"/>
+          <rect class="oled-bar" id="deck-core-${c}" x="18" y="${22 + c * 11}" width="${14 + c * 5}" height="5" rx="1"/>
+        `).join('')}
+        <text class="scr" x="8" y="74" font-size="3.8">TEMP: 42°C</text>
+      </g>
+    </g>`;
+
+    // SECTION 2: 4 Heavy Industrial Toggle Switches
+    const SW_Y = BY + 130;
+    const SWITCHES = ['NET LINK', 'FIREWALL', 'SONAR', 'OVERDRIVE'];
+    SWITCHES.forEach((name, i) => {
+      const sx = BX + 24 + i * 36;
+      svg += `<g class="deck-sw on" id="deck-sw-${i}" data-i="${i}">
+        ${box(sx, SW_Y, BT, 22, 28, 6, 2)}
+        <g transform="${TOP(sx, SW_Y, BT + 6)}">
+          <rect class="face recess" x="8" y="4" width="6" height="20" rx="2"/>
+          <circle class="face" cx="11" cy="8" r="4"/>
+          <circle class="led hot" id="deck-sw-led-${i}" filter="url(#soft)" cx="11" cy="8" r="1.6"/>
+          <text class="label" x="11" y="35" font-size="3.6" text-anchor="middle">${name}</text>
+        </g>
+      </g>`;
+    });
+
+    // Big Protected Overdrive Button
+    const OVD_X = BX + 190, OVD_Y = BY + 134;
+    svg += `<g class="overdrive-btn" id="deck-overdrive">
+      ${box(OVD_X - 4, OVD_Y - 4, BT, 44, 44, 4, 6)}
+      ${box(OVD_X, OVD_Y, BT + 4, 36, 36, 10, 18)}
+      <g transform="${TOP(OVD_X, OVD_Y, BT + 14)}">
+        <circle class="face recess" cx="18" cy="18" r="14"/>
+        <circle class="led hot" id="deck-ovd-led" filter="url(#glow)" cx="18" cy="18" r="8"/>
+        <text class="label" x="18" y="38" font-size="4.5" text-anchor="middle" letter-spacing="1">PURGE</text>
+      </g>
+    </g>`;
+
+    // Translucent glowing data core
+    const CORE_X = BX + 248, CORE_Y = BY + 132;
+    svg += box(CORE_X, CORE_Y, BT, 24, 46, 12, 3);
+    svg += `<g transform="${TOP(CORE_X, CORE_Y, BT + 12)}">
+      <rect class="halo hot" x="2" y="2" width="20" height="42" rx="2" filter="url(#bloom)"/>
+      <rect class="face glass hot" filter="url(#soft)" x="2" y="2" width="20" height="42" rx="2"/>
+      ${[6, 14, 22, 30, 38].map(y => `<line class="detail" x1="4" y1="${y}" x2="20" y2="${y}"/>`).join('')}
+    </g>`;
+
+    stage.setAttribute('viewBox', K.viewBox);
+    stage.innerHTML = svg;
+
+    /* ---------- State & Cyber Audio ---------- */
+    const st = {
+      switches: [true, true, true, false],
+      radarAngle: 0,
+      typedChars: 'LIVE RUNNING',
+      overdrive: false,
+      radarTimer: null,
+      streamTimer: null
+    };
+
+    const q = s => stage.querySelector(s);
+
+    let A = null;
+    function cyberBeep(f, dur = 0.06, type = 'sine') {
+      try {
+        if (!A) A = api.audio();
+        else if (A.ctx.state === 'suspended') A.ctx.resume();
+        const t = A.ctx.currentTime;
+        const osc = A.ctx.createOscillator();
+        const g = A.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.2, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(A.out);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      } catch (e) {}
+    }
+
+    function rotateRadar() {
+      st.radarAngle = (st.radarAngle + 9) % 360;
+      const rad = (st.radarAngle * Math.PI) / 180;
+      const x2 = (30 + 18 * Math.cos(rad)).toFixed(1);
+      const y2 = (46 + 18 * Math.sin(rad)).toFixed(1);
+      const rEl = q('#deck-radar');
+      if (rEl) {
+        rEl.setAttribute('x2', x2);
+        rEl.setAttribute('y2', y2);
+      }
+
+      // Live fluctuating CPU bars
+      for (let c = 0; c < 4; c++) {
+        const bar = q(`#deck-core-${c}`);
+        if (bar) {
+          const w = Math.floor(10 + Math.random() * (st.overdrive ? 22 : 14));
+          bar.setAttribute('width', w);
+        }
+      }
+    }
+
+    st.radarTimer = api.every(60, rotateRadar);
+
+    // Continuous Matrix Stream generator
+    const PACKETS = [
+      'SYN_ACK >> NODE 192.168.1.42 [OK]',
+      '0xFA09 >> MEMORY BUS INTEGRITY: 99.4%',
+      'SEC_TOKEN >> RE-ENCRYPTING HANDSHAKE...',
+      'FIREWALL >> PACKET 1024 FILTERED',
+      'QUANTUM >> ENTANGLEMENT LOCKED',
+      'CPU_THROTTLE >> NORMAL TEMP: 41.8°C',
+      'OVERLINK >> BANDWIDTH 10.4 GB/S'
+    ];
+    let pIdx = 0;
+    st.streamTimer = api.every(900, () => {
+      const line0 = q('#deck-line-0'), line1 = q('#deck-line-1');
+      const line2 = q('#deck-line-2'), line3 = q('#deck-line-3');
+      if (line0 && line1 && line2 && line3) {
+        line0.textContent = line1.textContent;
+        line1.textContent = line2.textContent;
+        line2.textContent = line3.textContent;
+        line3.textContent = PACKETS[pIdx % PACKETS.length];
+        pIdx++;
+      }
+    });
+
+    function triggerOverdrive() {
+      st.overdrive = !st.overdrive;
+      cyberBeep(1200, 0.4, 'sawtooth');
+      api.flash(q('#deck-overdrive'), 240);
+      const secEl = q('#deck-sec-status');
+      if (secEl) {
+        secEl.textContent = st.overdrive ? 'OVERDRIVE ACTIVE!' : 'SYSTEM SECURE';
+      }
+      render();
+    }
+
+    function addKeyInput(char) {
+      if (char.length === 1) {
+        st.typedChars = (st.typedChars + char).slice(-26);
+        cyberBeep(600 + Math.random() * 800, 0.04);
+        const line = q('#deck-user-line');
+        if (line) line.textContent = `> ${st.typedChars}_`;
+      }
+    }
+
+    function toggleSwitch(idx) {
+      st.switches[idx] = !st.switches[idx];
+      cyberBeep(st.switches[idx] ? 900 : 350, 0.08);
+      const swEl = q(`#deck-sw-${idx}`);
+      if (swEl) swEl.classList.toggle('on', st.switches[idx]);
+      const ledEl = q(`#deck-sw-led-${idx}`);
+      if (ledEl) ledEl.classList.toggle('hot', st.switches[idx]);
+      if (idx === 3) triggerOverdrive();
+      render();
+    }
+
+    function render() {
+      api.power(true);
+      q('#deck-ovd-led').classList.toggle('hot', st.overdrive);
+      api.readout(
+        st.overdrive
+          ? `CYBERDECK · OVERDRIVE SPEED · CPU 98% · BUFFER: ${st.typedChars.length}`
+          : `AUDIRA CYBERDECK · LIVE ACTIVE · TYPE TO INJECT HEX`
+      );
+    }
+
+    stage.addEventListener('click', e => {
+      const sw = e.target.closest('.deck-sw');
+      if (sw && sw.dataset.i) {
+        toggleSwitch(+sw.dataset.i);
+        return;
+      }
+      if (e.target.closest('#deck-overdrive')) {
+        triggerOverdrive();
+        return;
+      }
+    });
+
+    render();
+
+    return {
+      key(e) {
+        if (e.key === ' ') {
+          triggerOverdrive();
+          return true;
+        }
+        if (e.key.length === 1) {
+          addKeyInput(e.key);
+          return true;
+        }
+        return false;
+      },
+      unmount() {
+        if (st.radarTimer) clearInterval(st.radarTimer);
+        if (st.streamTimer) clearInterval(st.streamTimer);
+        api.power(false);
+      },
+      demo() {
+        // Continuous stream is already running
+      }
+    };
+  }
+});
+
+
+/* Fig 5 — Audira Radiophonic World Band Tube Radio (Vintage Valve Shortwave Receiver) */
+FIGS.push({
+  id: 'audira-radio',
+  name: 'Audira Tube Radio',
+  hint: 'Click Tuning Dial or Keys 1–5 to tune stations · Space auto-seeks · Band AM/FM/SW',
+  aria: 'Isometric vintage world-band tube radio with backlit analog frequency glass, sweeping tuning needle, glowing EM84 magic eye tube, exposed triode valves, signal strength meter, and telescopic antenna.',
+  css: `
+    [data-fig="audira-radio"] .tuning-glass { cursor:pointer; }
+    [data-fig="audira-radio"] .tuning-glass:hover .face.top { stroke:var(--accent-hi); }
+    [data-fig="audira-radio"] .radio-knob { cursor:pointer; }
+    [data-fig="audira-radio"] .radio-knob:hover .face.top { stroke:var(--accent); }
+    [data-fig="audira-radio"] .magic-eye { fill:#00e676; filter:url(#glow); }
+    [data-fig="audira-radio"] .sound-ripple { fill:none; stroke:var(--accent-hi); stroke-width:1.5; stroke-linecap:round; opacity:0; }
+    [data-fig="audira-radio"] .rf-wave { fill:none; stroke:var(--accent); stroke-linecap:round; opacity:0.6; }
+    [data-fig="audira-radio"] .tube-filament { fill:#ffd54f; filter:url(#glow); }
+    .dial-static { animation:rad-flicker 0.15s infinite alternate; }
+    @keyframes rad-flicker { 0% { opacity:0.3; } 100% { opacity:0.8; } }
+  `,
+  mount(stage, api) {
+    const K = api.iso.frame([
+      [0, 260, 0], [320, 0, 7], [320, 260, 0], [0, 0, 7],
+      [20, 20, 240], [300, 20, 240], [20, 240, 240], [300, 240, 240]
+    ]);
+    const { TOP, FRONT, SIDE, box, boxc, path, P } = K;
+    const slits = api.iso.slits;
+
+    const PLZ = 8;
+    const BX = 26, BY = 26, BW = 268, BD = 208, BH = 100, BT = PLZ + BH, BF = BY + BD;
+
+    let svg = `<defs>
+      <linearGradient id="radio-dial-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#ffb300" stop-opacity="0.25"/>
+        <stop offset="50%" stop-color="#ffd54f" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="#ffb300" stop-opacity="0.25"/>
+      </linearGradient>
+      <radialGradient id="magic-eye-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="40%" stop-color="#00e676"/>
+        <stop offset="85%" stop-color="#00897b"/>
+        <stop offset="100%" stop-color="#004d40"/>
+      </radialGradient>
+    </defs>`;
+
+    // 1. Base Dais Foundation (Polished dark walnut stand)
+    svg += box(0, 0, 0, 320, 260, PLZ, 14);
+    svg += `<g transform="${TOP(0, 0, PLZ)}">
+      <rect class="detail" x="10" y="10" width="300" height="240" rx="10"/>
+      <circle class="face recess" cx="20" cy="20" r="3"/>
+      <circle class="face recess" cx="300" cy="20" r="3"/>
+      <circle class="face recess" cx="20" cy="240" r="3"/>
+      <circle class="face recess" cx="300" cy="240" r="3"/>
+      <text class="label" x="25" y="248" font-size="4.2" letter-spacing="1.5">AUDIRA RADIOPHONIC LABORATORY · MODEL WR-88 VALVE RECEIVER</text>
+    </g>`;
+
+    // 2. MAIN VINTAGE BAKELITE / WALNUT CABINET
+    svg += boxc(BX, BY, PLZ, BW, BD, BH, 12, 'radio-cabinet');
+
+    // 3. FRONT CONTROL PANEL & LOUVERED SPEAKER GRILLE
+    svg += `<g transform="${FRONT(BX, BF, BT)}">
+      <!-- Outer Brass Bezel Rim -->
+      <rect class="detail" x="8" y="8" width="${BW - 16}" height="${BH - 16}" rx="6" stroke-width="1.5"/>
+
+      <!-- LEFT SIDE: Vintage Woven Acoustic Cloth Speaker Louvers with Live Sound Ripples -->
+      <g id="speaker-grille">
+        <rect class="face recess" x="14" y="14" width="96" height="${BH - 28}" rx="4"/>
+        ${slits(18, 106, 4.5, 18, BH - 18, true, 'detail')}
+        <!-- Dynamic Acoustic Sound Waves Expanding from Speaker Center -->
+        <circle id="sound-ripple-1" class="sound-ripple" cx="62" cy="${BH / 2}" r="18"/>
+        <circle id="sound-ripple-2" class="sound-ripple" cx="62" cy="${BH / 2}" r="28"/>
+        <circle id="sound-ripple-3" class="sound-ripple" cx="62" cy="${BH / 2}" r="38"/>
+        <circle cx="62" cy="${BH / 2}" r="32" fill="none" stroke="var(--line)" stroke-width="1"/>
+        <circle cx="62" cy="${BH / 2}" r="16" fill="var(--deck)" stroke="var(--detail)" stroke-width="1"/>
+        <!-- Golden Center Badge -->
+        <rect class="face" x="48" y="${BH / 2 - 5}" width="28" height="10" rx="2" fill="#ffd54f" stroke="#ffb300"/>
+        <text class="label" x="62" y="${BH / 2 + 2}" font-size="3" font-weight="bold" text-anchor="middle" fill="#000000">AUDIRA</text>
+      </g>
+
+      <!-- RIGHT TOP: Illuminated Analog Tuning Glass Scale -->
+      <g id="tuning-dial-panel" class="tuning-glass">
+        <!-- Backlit Glass Window Frame -->
+        <rect class="face recess" x="120" y="14" width="134" height="42" rx="3"/>
+        <rect id="dial-backlight" x="122" y="16" width="130" height="38" rx="2" fill="url(#radio-dial-glow)"/>
+
+        <!-- Frequency Scales: FM, AM, SW -->
+        <text class="scr" x="126" y="24" font-size="3">FM  88  · 92  · 96  · 100 · 104 · 108 MHz</text>
+        <text class="scr" x="126" y="32" font-size="3">AM  530 · 700 · 900 · 1200 · 1400 · 1700 kHz</text>
+        <text class="scr" x="126" y="40" font-size="3">SW  3.2 · 6.0 · 9.5 · 12.0 · 15.4 · 21.5 MHz</text>
+
+        <!-- Frequency Scale Ticks -->
+        ${slits(128, 246, 3, 20, 22, true, 'wire hot')}
+        ${slits(128, 246, 3, 28, 30, true, 'wire hot')}
+        ${slits(128, 246, 3, 36, 38, true, 'wire hot')}
+
+        <!-- Red Glowing Sweeping Tuning Needle (Animated smoothly with flywheel inertia) -->
+        <line id="dial-needle" x1="165" y1="16" x2="165" y2="52" stroke="#ff1744" stroke-width="2.2" stroke-linecap="round" filter="url(#glow)"/>
+      </g>
+
+      <!-- RIGHT MIDDLE: EM84 Magic Eye Green Tuning Indicator Tube -->
+      <g id="magic-eye-unit">
+        <rect class="face recess" x="120" y="60" width="48" height="12" rx="2"/>
+        <!-- Phosphor Green Tuning Target Beams (Animated closing & fluttering) -->
+        <rect id="magic-eye-beam-l" class="magic-eye" x="124" y="63" width="16" height="6" rx="1"/>
+        <rect id="magic-eye-beam-r" class="magic-eye" x="148" y="63" width="16" height="6" rx="1"/>
+        <text class="label" x="120" y="78" font-size="3">MAGIC EYE (EM84)</text>
+      </g>
+
+      <!-- S-METER / SIGNAL STRENGTH VU METER -->
+      <g id="s-meter-unit">
+        <rect class="face recess" x="180" y="60" width="40" height="22" rx="2"/>
+        <path d="M 184 76 Q 200 66 216 76" fill="none" stroke="var(--detail)" stroke-width="1"/>
+        <line id="s-meter-needle" x1="200" y1="80" x2="208" y2="65" stroke="var(--accent-hi)" stroke-width="1.4" stroke-linecap="round" filter="url(#soft)"/>
+        <text class="label" x="200" y="80" font-size="2.5" text-anchor="middle">SIGNAL dB</text>
+      </g>
+
+      <!-- Power On Pilot Jewel Indicator -->
+      <circle cx="236" cy="68" r="4" fill="none" stroke="var(--line)" stroke-width="1"/>
+      <circle id="radio-pilot-led" class="tube-filament" cx="236" cy="68" r="2.5"/>
+      <text class="label" x="236" y="78" font-size="2.8" text-anchor="middle">MAINS</text>
+
+      <!-- BOTTOM CONTROL KNOBS -->
+      <!-- Knob 1: Tuning Flywheel (Right) with rotating indicator pointer -->
+      <g id="knob-tuning" class="radio-knob">
+        <circle class="face recess" cx="235" cy="88" r="10"/>
+        <circle cx="235" cy="88" r="8" fill="var(--deck)" stroke="var(--accent)" stroke-width="1.2"/>
+        <line id="knob-tuning-ptr" x1="235" y1="88" x2="235" y2="80" stroke="var(--accent-hi)" stroke-width="2" stroke-linecap="round"/>
+        <text class="label" x="235" y="103" font-size="3" text-anchor="middle">TUNING</text>
+      </g>
+
+      <!-- Knob 2: Volume / Power (Center Right) -->
+      <g id="knob-vol" class="radio-knob">
+        <circle class="face recess" cx="195" cy="88" r="9"/>
+        <circle cx="195" cy="88" r="7" fill="var(--deck)" stroke="var(--line)" stroke-width="1.2"/>
+        <line id="knob-vol-ptr" x1="195" y1="88" x2="190" y2="82" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/>
+        <text class="label" x="195" y="103" font-size="3" text-anchor="middle">VOLUME</text>
+      </g>
+
+      <!-- Knob 3: Band Selector Rotary Switch (Center Left) -->
+      <g id="knob-band" class="radio-knob">
+        <circle class="face recess" cx="155" cy="88" r="9"/>
+        <circle cx="155" cy="88" r="7" fill="var(--deck)" stroke="var(--line)" stroke-width="1.2"/>
+        <line id="knob-band-ptr" x1="155" y1="88" x2="155" y2="81" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
+        <text class="label" id="lbl-band-name" x="155" y="103" font-size="3" text-anchor="middle">BAND: FM</text>
+      </g>
+    </g>`;
+
+    // 4. TOP DECK: EXPOSED DUAL VACUUM TUBES & TELESCOPIC ANTENNA
+    // Valve 1 (Left Triode Preamp)
+    const TUBE1_X = BX + 65, TUBE1_Y = BY + 45, TUBE_Z = BT;
+    svg += `<g id="tube-valve-1" class="radio-knob">`;
+    svg += box(TUBE1_X - 12, TUBE1_Y - 12, TUBE_Z, 24, 24, 6, 4);
+    svg += `<g transform="${TOP(TUBE1_X - 12, TUBE1_Y - 12, TUBE_Z + 6)}">
+      <circle cx="12" cy="12" r="10" fill="none" stroke="var(--line)" stroke-width="1"/>
+      <circle id="valve-filament-1" class="tube-filament" cx="12" cy="12" r="7"/>
+      <circle cx="12" cy="12" r="3" fill="#ffffff"/>
+    </g>`;
+    const [t1Px, t1Py] = P(TUBE1_X, TUBE1_Y, TUBE_Z + 36);
+    svg += `<ellipse id="valve-glass-1" cx="${t1Px}" cy="${t1Py}" rx="14" ry="22" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.65"/>`;
+    svg += `</g>`;
+
+    // Valve 2 (Right Power Pentode)
+    const TUBE2_X = BX + 115, TUBE2_Y = BY + 45;
+    svg += `<g id="tube-valve-2" class="radio-knob">`;
+    svg += box(TUBE2_X - 12, TUBE2_Y - 12, TUBE_Z, 24, 24, 6, 4);
+    svg += `<g transform="${TOP(TUBE2_X - 12, TUBE2_Y - 12, TUBE_Z + 6)}">
+      <circle cx="12" cy="12" r="10" fill="none" stroke="var(--line)" stroke-width="1"/>
+      <circle id="valve-filament-2" class="tube-filament" cx="12" cy="12" r="7"/>
+      <circle cx="12" cy="12" r="3" fill="#ffffff"/>
+    </g>`;
+    const [t2Px, t2Py] = P(TUBE2_X, TUBE2_Y, TUBE_Z + 36);
+    svg += `<ellipse id="valve-glass-2" cx="${t2Px}" cy="${t2Py}" rx="14" ry="22" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.65"/>`;
+    svg += `</g>`;
+
+    // 5. TELESCOPIC CHROME ANTENNA WITH RADIATING RF PROPAGATION RINGS
+    const ANT_X = BX + 22, ANT_Y = BY + 25, ANT_Z = BT;
+    const [antBaseX, antBaseY] = P(ANT_X, ANT_Y, ANT_Z);
+    const [antTipX, antTipY] = P(ANT_X - 35, ANT_Y - 45, ANT_Z + 115);
+
+    svg += `<g id="radio-antenna">
+      <circle cx="${antBaseX}" cy="${antBaseY}" r="4" fill="var(--deck)" stroke="var(--line)" stroke-width="1.2"/>
+      <line x1="${antBaseX}" y1="${antBaseY}" x2="${antTipX}" y2="${antTipY}" stroke="#cfd8dc" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="${antTipX}" cy="${antTipY}" r="3.5" fill="#ffd54f" filter="url(#soft)"/>
+      <!-- Radiating Skywave RF propagation rings -->
+      <circle id="rf-wave-1" class="rf-wave" cx="${antTipX}" cy="${antTipY}" r="12"/>
+      <circle id="rf-wave-2" class="rf-wave" cx="${antTipX}" cy="${antTipY}" r="22"/>
+      <circle id="rf-wave-3" class="rf-wave" cx="${antTipX}" cy="${antTipY}" r="32"/>
+    </g>`;
+
+    stage.innerHTML = svg;
+
+    // -------------------------------------------------------------
+    // AUDIO ENGINE: Real Web Audio Tuner with Music & Shortwave
+    // -------------------------------------------------------------
+    const STATIONS = [
+      { name: '88.5 CYBER-FM · SYNTH ARPEGGIO', pos: 135, freq: '88.5 MHz', band: 'FM', type: 'synth' },
+      { name: '96.4 TOKYO-JAZZ · ELECTRIC CHORD', pos: 165, freq: '96.4 MHz', band: 'FM', type: 'jazz' },
+      { name: '104.2 SYNTHWAVE · COSMIC LO-FI', pos: 205, freq: '104.2 MHz', band: 'FM', type: 'ambient' },
+      { name: '7.200 NUMBERS · MYSTERY SHORTWAVE', pos: 150, freq: '7.20 MHz', band: 'SW', type: 'numbers' },
+      { name: '14.150 BEACON · MORSE TELEGRAPHY', pos: 220, freq: '14.15 MHz', band: 'SW', type: 'morse' }
+    ];
+
+    let currentStationIdx = 1;
+    let targetNeedleX = 165;
+    let currentNeedleX = 165;
+    let isTuning = false;
+
+    let audioLoopStep = 0;
+    let audioBeatTrigger = 0;
+
+    const playRadioTone = () => {
+      try {
+        const audio = api.audio();
+        if (!audio || !audio.ctx) return;
+        const { ctx, out } = audio;
+        const now = ctx.currentTime;
+        const st = STATIONS[currentStationIdx];
+        audioBeatTrigger = 1.0;
+
+        if (st.type === 'synth') {
+          const scale = [220, 277.18, 329.63, 440, 554.37];
+          const freq = scale[audioLoopStep % scale.length];
+          audioLoopStep++;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (st.type === 'jazz') {
+          const chord = [330, 415.3, 493.88];
+          chord.forEach(f => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, now);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+            osc.connect(gain);
+            gain.connect(out);
+            osc.start(now);
+            osc.stop(now + 0.38);
+          });
+        } else if (st.type === 'ambient') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(164.81 + (audioLoopStep % 3) * 20, now);
+          audioLoopStep++;
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.5);
+        } else if (st.type === 'numbers') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600 + (audioLoopStep % 5) * 150, now);
+          audioLoopStep++;
+          gain.gain.setValueAtTime(0.07, now);
+          gain.gain.linearRampToValueAtTime(0, now + 0.12);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        } else if (st.type === 'morse') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.linearRampToValueAtTime(0, now + 0.08);
+          osc.connect(gain);
+          gain.connect(out);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        }
+      } catch (e) {}
+    };
+
+    const playStaticTuning = () => {
+      try {
+        const audio = api.audio();
+        if (!audio || !audio.ctx) return;
+        const { ctx, out } = audio;
+        const now = ctx.currentTime;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1400, now);
+        osc.frequency.exponentialRampToValueAtTime(350, now + 0.2);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc.connect(gain);
+        gain.connect(out);
+        osc.start(now);
+        osc.stop(now + 0.25);
+
+        const bufferSize = ctx.sampleRate * 0.2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const nGain = ctx.createGain();
+        nGain.gain.setValueAtTime(0.12, now);
+        nGain.gain.linearRampToValueAtTime(0, now + 0.2);
+        noise.connect(nGain);
+        noise.connect(out);
+        noise.start(now);
+      } catch (e) {}
+    };
+
+    // -------------------------------------------------------------
+    // REAL-TIME ANIMATION LOOP & FLYWHEEL TUNING PHYSICS
+    // -------------------------------------------------------------
+    const needleEl = stage.querySelector('#dial-needle');
+    const eyeBeamL = stage.querySelector('#magic-eye-beam-l');
+    const eyeBeamR = stage.querySelector('#magic-eye-beam-r');
+    const sMeterNeedle = stage.querySelector('#s-meter-needle');
+    const bandLabel = stage.querySelector('#lbl-band-name');
+    const dialBacklight = stage.querySelector('#dial-backlight');
+    const tuningPtr = stage.querySelector('#knob-tuning-ptr');
+
+    const rip1 = stage.querySelector('#sound-ripple-1');
+    const rip2 = stage.querySelector('#sound-ripple-2');
+    const rip3 = stage.querySelector('#sound-ripple-3');
+
+    const rf1 = stage.querySelector('#rf-wave-1');
+    const rf2 = stage.querySelector('#rf-wave-2');
+    const rf3 = stage.querySelector('#rf-wave-3');
+
+    const fil1 = stage.querySelector('#valve-filament-1');
+    const fil2 = stage.querySelector('#valve-filament-2');
+
+    let tick = 0;
+
+    api.every(30, () => {
+      tick++;
+
+      // 1. Smooth Flywheel Needle Sweeping (Lerp physics)
+      if (needleEl) {
+        currentNeedleX += (targetNeedleX - currentNeedleX) * 0.22;
+        needleEl.setAttribute('x1', currentNeedleX.toFixed(1));
+        needleEl.setAttribute('x2', currentNeedleX.toFixed(1));
+
+        // Rotate tuning knob pointer in sync with needle
+        if (tuningPtr) {
+          const ang = currentNeedleX * 0.15;
+          const kx = 235 + 8 * Math.cos(ang);
+          const ky = 88 + 8 * Math.sin(ang);
+          tuningPtr.setAttribute('x2', kx.toFixed(1));
+          tuningPtr.setAttribute('y2', ky.toFixed(1));
+        }
+      }
+
+      // 2. Speaker Grille Acoustic Sound Ripples (Expanding on audio beat)
+      if (audioBeatTrigger > 0) {
+        audioBeatTrigger -= 0.08;
+      }
+      if (rip1 && rip2 && rip3) {
+        const rBase = 18 + (tick % 24) * 0.8;
+        rip1.setAttribute('r', rBase.toFixed(1));
+        rip1.style.opacity = (Math.max(0, audioBeatTrigger) * (1 - (tick % 24) / 24)).toFixed(2);
+
+        const r2 = 28 + (tick % 24) * 0.6;
+        rip2.setAttribute('r', r2.toFixed(1));
+        rip2.style.opacity = (Math.max(0, audioBeatTrigger * 0.8) * (1 - (tick % 24) / 24)).toFixed(2);
+
+        const r3 = 38 + (tick % 24) * 0.4;
+        rip3.setAttribute('r', r3.toFixed(1));
+        rip3.style.opacity = (Math.max(0, audioBeatTrigger * 0.5) * (1 - (tick % 24) / 24)).toFixed(2);
+      }
+
+      // 3. EM84 Magic Eye Tube Live Audio Flutter
+      if (eyeBeamL && eyeBeamR) {
+        if (isTuning) {
+          eyeBeamL.setAttribute('width', '8');
+          eyeBeamR.setAttribute('x', '156');
+          eyeBeamR.setAttribute('width', '8');
+        } else {
+          // Closed beams with music vibration pulse
+          const beamW = 20 + Math.sin(tick * 0.3) * 3 * audioBeatTrigger;
+          eyeBeamL.setAttribute('width', beamW.toFixed(1));
+          eyeBeamR.setAttribute('x', (164 - beamW).toFixed(1));
+          eyeBeamR.setAttribute('width', beamW.toFixed(1));
+        }
+      }
+
+      // 4. Ballistic S-Meter Flutter
+      if (sMeterNeedle) {
+        if (isTuning) {
+          sMeterNeedle.setAttribute('x2', '190');
+          sMeterNeedle.setAttribute('y2', '75');
+        } else {
+          const meterPeak = 206 + Math.sin(tick * 0.25) * 4 * Math.max(0.2, audioBeatTrigger);
+          sMeterNeedle.setAttribute('x2', meterPeak.toFixed(1));
+          sMeterNeedle.setAttribute('y2', (65 - (meterPeak - 206) * 0.5).toFixed(1));
+        }
+      }
+
+      // 5. Radiating RF Waves from Antenna Tip
+      if (rf1 && rf2 && rf3) {
+        const rfR1 = 10 + (tick % 30) * 1.0;
+        rf1.setAttribute('r', rfR1.toFixed(1));
+        rf1.style.opacity = (0.7 * (1 - (tick % 30) / 30)).toFixed(2);
+
+        const rfR2 = 18 + (tick % 30) * 1.0;
+        rf2.setAttribute('r', rfR2.toFixed(1));
+        rf2.style.opacity = (0.5 * (1 - (tick % 30) / 30)).toFixed(2);
+
+        const rfR3 = 26 + (tick % 30) * 1.0;
+        rf3.setAttribute('r', rfR3.toFixed(1));
+        rf3.style.opacity = (0.3 * (1 - (tick % 30) / 30)).toFixed(2);
+      }
+
+      // 6. Filament Thermal Hum
+      if (fil1 && fil2) {
+        const fR = 7 + Math.sin(tick * 0.15) * 0.6;
+        fil1.setAttribute('r', fR.toFixed(1));
+        fil2.setAttribute('r', fR.toFixed(1));
+      }
+    });
+
+    const tuneToStation = (idx) => {
+      playStaticTuning();
+      isTuning = true;
+      currentStationIdx = (idx + STATIONS.length) % STATIONS.length;
+      const st = STATIONS[currentStationIdx];
+      targetNeedleX = st.pos;
+
+      if (dialBacklight) dialBacklight.classList.add('dial-static');
+      if (bandLabel) bandLabel.textContent = `BAND: ${st.band}`;
+
+      setTimeout(() => {
+        isTuning = false;
+        if (dialBacklight) dialBacklight.classList.remove('dial-static');
+        api.readout(`TUNED: ${st.name} · SIGNAL 99% · MAGIC EYE LOCKED`);
+        playRadioTone();
+      }, 250);
+    };
+
+    // Continuous Periodic Music Notes
+    api.every(260, () => {
+      if (!isTuning) playRadioTone();
+    });
+
+    // CLICK HANDLERS
+    const dialGlass = stage.querySelector('#tuning-dial-panel');
+    if (dialGlass) dialGlass.addEventListener('click', () => tuneToStation(currentStationIdx + 1));
+
+    const tuningKnob = stage.querySelector('#knob-tuning');
+    if (tuningKnob) tuningKnob.addEventListener('click', () => tuneToStation(currentStationIdx + 1));
+
+    const bandKnob = stage.querySelector('#knob-band');
+    if (bandKnob) {
+      bandKnob.addEventListener('click', () => {
+        tuneToStation(currentStationIdx + 1);
+      });
+    }
+
+    const st0 = STATIONS[currentStationIdx];
+    api.readout(`TUNED: ${st0.name} · SIGNAL 99% · MAGIC EYE LOCKED`);
+
+    return {
+      key(e) {
+        if (e.key === ' ' || e.code === 'Space') {
+          tuneToStation(currentStationIdx + 1);
+          return true;
+        }
+        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+          tuneToStation(currentStationIdx + 1);
+          return true;
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+          tuneToStation(currentStationIdx - 1);
+          return true;
+        }
+        if (['1', '2', '3', '4', '5'].includes(e.key)) {
+          tuneToStation(parseInt(e.key, 10) - 1);
+          return true;
+        }
+        return false;
+      },
+      unmount() {}
+    };
+  }
+});
+
+</script>
+<!-- CORE: kernel, api, navigation, palette picker. Keep after the figures. -->
+<script>
+/* ============================================================
+   iso gallery core: kernel, shared api, navigation.
+   Figures register with FIGS.push({...}) — see CONTRACT below.
+   ============================================================ */
+// FIGS is declared inline in the page before the figure scripts
+
+const ISO = (() => {
+  const C = Math.cos(Math.PI / 6), S = Math.sin(Math.PI / 6);
+  function kernel(OX, OY) {
+    const P = (x,y,z) => [(x-y)*C + OX, (x+y)*S - z + OY];
+    const D = (x,y,z) => [(x-y)*C, (x+y)*S - z];
+    const plane = (O,U,V) => { const o=P(...O), u=D(...U), v=D(...V);
+      return `matrix(${u[0]} ${u[1]} ${v[0]} ${v[1]} ${o[0]} ${o[1]})`; };
+    const TOP   = (x,y,z) => plane([x,y,z],[1,0,0],[0,1,0]);
+    const FRONT = (x,y,z) => plane([x,y,z],[1,0,0],[0,0,-1]);
+    const SIDE  = (x,y,z) => plane([x,y,z],[0,-1,0],[0,0,-1]);
+    const rect = (t,w,h,r=0,cls='face') => `<g transform="${t}"><rect class="${cls}" width="${w}" height="${h}" rx="${r}"/></g>`;
+    // Rounded box: one rounded top plus one continuous side wall along the visible part of the
+    // outline, so the corners meet cleanly. r = 0 keeps the classic three flat faces.
+    const rounded = (x,y,z,w,d,h,r,cls) => {
+      r = Math.min(r, w/2, d/2);
+      const n = 10, z1 = z + h, q = Math.PI/4, H = Math.PI/2, c = cls ? ' ' + cls : '';
+      const arc = (cx,cy,a0,a1) => { const o = []; for (let i = 0; i <= n; i++) { const a = a0 + (a1-a0)*i/n; o.push([cx + r*Math.cos(a), cy + r*Math.sin(a)]); } return o; };
+      const ring = [...arc(x+w-r,y+r,-H,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,2*H), ...arc(x+r,y+r,2*H,3*H)];
+      const vis  = [...arc(x+w-r,y+r,-q,0), ...arc(x+w-r,y+d-r,0,H), ...arc(x+r,y+d-r,H,3*q)];
+      const d3 = pts => 'M' + pts.map(p => P(...p).map(v => v.toFixed(2)).join(' ')).join('L') + 'Z';
+      const wall = [...vis.map(([a,b]) => [a,b,z]), ...vis.slice().reverse().map(([a,b]) => [a,b,z1])];
+      return `<path class="face${c}" d="${d3(wall)}"/><path class="face top${c}" d="${d3(ring.map(([a,b]) => [a,b,z1]))}"/>`;
+    };
+    const box = (x,y,z,w,d,h,r=0) => r > 0 ? rounded(x,y,z,w,d,h,r,'') :
+      rect(SIDE(x+w,y+d,z+h), d,h) + rect(FRONT(x,y+d,z+h), w,h) + rect(TOP(x,y,z+h), w,d,0,'face top');
+    const boxc = (x,y,z,w,d,h,r,cls) => r > 0 ? rounded(x,y,z,w,d,h,r,cls) :
+      rect(SIDE(x+w,y+d,z+h), d,h,0,'face '+cls) + rect(FRONT(x,y+d,z+h), w,h,0,'face '+cls) + rect(TOP(x,y,z+h), w,d,0,'face top '+cls);
+    // 3D polyline -> SVG path "d"
+    const path = pts => 'M' + pts.map(p => P(...p).map(n => n.toFixed(2)).join(' ')).join('L');
+    return { C, S, P, D, plane, TOP, FRONT, SIDE, rect, box, boxc, path };
+  }
+  // Frame a scene: pass its extreme 3D corners. Returns kernel + viewBox padded to ~4:3.
+  function frame(points, margin = 0.09, aspect = 4 / 3) {
+    const d = points.map(([x,y,z]) => [(x-y)*C, (x+y)*S - z]);
+    let x0 = Math.min(...d.map(p => p[0])), x1 = Math.max(...d.map(p => p[0]));
+    let y0 = Math.min(...d.map(p => p[1])), y1 = Math.max(...d.map(p => p[1]));
+    const m = margin * Math.max(x1 - x0, y1 - y0);
+    let w = x1 - x0 + 2*m, h = y1 - y0 + 2*m;
+    let ox = m - x0, oy = m - y0;
+    if (w / h < aspect) { const nw = h * aspect; ox += (nw - w) / 2; w = nw; }
+    else { const nh = w / aspect; oy += (nh - h) / 2; h = nh; }
+    return { ...kernel(ox, oy), viewBox: `0 0 ${w.toFixed(1)} ${h.toFixed(1)}`, W: w, H: h };
+  }
+  // repeated detail lines in a face-local group
+  const slits = (a0, a1, step, b0, b1, vertical = true, cls = 'detail') => {
+    let s = ''; for (let a = a0; a <= a1 + 1e-6; a += step)
+      s += vertical ? `<line class="${cls}" x1="${a}" y1="${b0}" x2="${a}" y2="${b1}"/>` : `<line class="${cls}" x1="${b0}" y1="${a}" x2="${b1}" y2="${a}"/>`;
+    return s;
+  };
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return { kernel, frame, slits, esc };
+})();
+
+/* ---------- shared audio (created on first user gesture) ---------- */
+const AUDIO = (() => {
+  let ctx = null, out = null, analyser = null;
+  return () => {
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      out = ctx.createGain(); out.gain.value = 0.5;
+      analyser = ctx.createAnalyser(); analyser.fftSize = 1024;
+      out.connect(analyser); analyser.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return { ctx, out, analyser };
+  };
+})();
+
+/* ---------- app ---------- */
+(function app() {
+  const $ = id => document.getElementById(id);
+  const CFG = window.GALLERY || {};
+  const holder = $('stageHolder'), readoutEl = $('readout'), hintEl = $('hint'), numEl = $('fignum'), nameEl = $('figname');
+  const nav = $('nav');
+  let active = null, handle = null, timers = [], frames = [], idx = 0;
+
+  const api = {
+    iso: ISO,
+    readout: s => { readoutEl.textContent = s; },
+    hint: s => { hintEl.textContent = s; },
+    audio: AUDIO,
+    after: (ms, fn) => { const t = setTimeout(fn, ms); timers.push(t); return t; },
+    every: (ms, fn) => { const t = setInterval(fn, ms); timers.push(t); return t; },
+    loop: fn => { let alive = true; const f = ts => { if (!alive) return; fn(ts); requestAnimationFrame(f); };
+      requestAnimationFrame(f); const stop = () => { alive = false; }; frames.push(stop); return stop; },
+    // light a pressable briefly (orange flash + glow, then fade)
+    flash: (el, ms = 160) => { if (!el) return; el.classList.add('down', 'lit'); clearTimeout(el._f1); clearTimeout(el._f2);
+      el._f1 = setTimeout(() => el.classList.remove('down'), 110); el._f2 = setTimeout(() => el.classList.remove('lit'), ms); },
+    // restart a one-shot CSS animation class (e.g. '.pulse' -> 'go')
+    replay: (el, cls = 'go') => { if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); },
+    power: on => { holder.classList.toggle('glow', !!on); },
+  };
+
+  function mount(i) {
+    if (handle && handle.unmount) handle.unmount();
+    timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = [];
+    frames.forEach(stop => stop()); frames = [];
+    idx = (i + FIGS.length) % FIGS.length; active = FIGS[idx];
+    holder.classList.remove('glow');
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('id', 'stage'); svg.setAttribute('role', 'img'); svg.setAttribute('tabindex', '0');
+    svg.setAttribute('aria-label', active.aria || active.name);
+    svg.dataset.fig = active.id;
+    holder.replaceChildren(svg);
+    numEl.textContent = `Fig ${idx + 1}`; nameEl.textContent = active.name;
+    hintEl.textContent = active.hint || ''; readoutEl.textContent = '';
+    document.title = `Fig ${idx + 1} · ${active.name}`;
+    [...nav.querySelectorAll('button[data-i]')].forEach(b => b.setAttribute('aria-current', +b.dataset.i === idx ? 'true' : 'false'));
+    const cur = nav.querySelector(`button[data-i="${idx}"]`);
+    if (cur && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2, behavior: 'smooth' });
+    if (location.hash.slice(1) !== active.id) history.replaceState(null, '', '#' + active.id);
+    handle = active.mount(svg, api) || {};
+    // demo(): runs on arrival unless ?still is in the URL
+    const runDemo = !/still/.test(location.search);
+    if (runDemo && handle.demo) setTimeout(() => handle.demo(), 120);
+  }
+
+  // ---------- glow colour choice ----------
+  const PALETTES = {
+    // [name, dark accent, dark hi, light accent, light hi]
+    ember: [['Ember','#ff7a1a','#ffb070','#ff7a1a','#ffb070'], ['Cyan','#22d3ee','#9beefa','#22d3ee','#9beefa'], ['Lime','#a3e635','#d6f79f','#a3e635','#d6f79f'],
+            ['Violet','#a78bfa','#d6caff','#a78bfa','#d6caff'], ['Rose','#fb7185','#fdb8c2','#fb7185','#fdb8c2'], ['Ice','#dfe9ef','#ffffff','#1f2937','#3b4656']],
+    city:  [['Sodium','#ff9a2e','#ffc77a','#ff9a2e','#ffc77a'], ['Tungsten','#ffd166','#ffe7a8','#ffd166','#ffe7a8'], ['Neon','#ff4fa3','#ff9fcb','#ff4fa3','#ff9fcb'],
+            ['Signal','#3ee8a0','#a3f5cf','#3ee8a0','#a3f5cf'], ['Dusk','#6f9dff','#b5ccff','#6f9dff','#b5ccff'], ['Moon','#dfe7f5','#ffffff','#273246','#3d4a61']],
+  };
+  const ACCENTS = Array.isArray(CFG.palette) ? CFG.palette : (PALETTES[CFG.palette] || PALETTES.ember);
+  const vars = (a, hi, dark) => `--accent:${a}; --accent-hi:${hi}; --accent-dim:color-mix(in srgb, ${a} 10%, transparent);` +
+    ` --glass-on:color-mix(in srgb, ${a} ${dark ? 9 : 12}%, ${dark ? '#101112' : '#eef0f0'});`;
+  const accentCss = ACCENTS.map(([n, da, dh, la, lh]) => { const k = n.toLowerCase();
+    return `:root[data-accent="${k}"] { ${vars(da, dh, true)} }
+@media (prefers-color-scheme: light) { :root[data-accent="${k}"]:not([data-theme="dark"]) { ${vars(la, lh, false)} } }
+:root[data-accent="${k}"][data-theme="light"] { ${vars(la, lh, false)} }`; }).join('\n');
+  const accentStyle = document.createElement('style'); accentStyle.textContent = accentCss; document.head.appendChild(accentStyle);
+  const sw = $('swatches');
+  sw.innerHTML = ACCENTS.map(([n, da]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${da}"><i></i></button>`).join('');
+  function setAccent(k) {
+    if (!ACCENTS.some(a => a[0].toLowerCase() === k)) k = ACCENTS[0][0].toLowerCase();
+    document.documentElement.dataset.accent = k;
+    sw.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
+    try { localStorage.setItem((CFG.storageKey || 'iso-glow-accent'), k); } catch (e) {}
+  }
+  let saved = null; try { saved = localStorage.getItem((CFG.storageKey || 'iso-glow-accent')); } catch (e) {}
+  setAccent(saved || ACCENTS[0][0].toLowerCase());
+  sw.addEventListener('click', e => { const b = e.target.closest('button[data-accent]'); if (b) { setAccent(b.dataset.accent); const s = $('stage'); if (s) s.focus({ preventScroll: true }); } });
+
+  // per-figure css
+  FIGS.forEach(f => { if (f.css) { const st = document.createElement('style'); st.textContent = f.css; document.head.appendChild(st); } });
+
+  // navigation markup
+  nav.innerHTML = FIGS.map((f, i) =>
+    `<button data-i="${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="t">${f.name}</span></button>`).join('');
+  // after a nav click, hand keyboard focus to the figure so space/enter go to it, not the button
+  const focusStage = () => { const s = $('stage'); if (s) s.focus({ preventScroll: true }); };
+  nav.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) { mount(+b.dataset.i); focusStage(); } });
+  $('prev').addEventListener('click', () => { mount(idx - 1); focusStage(); });
+  $('next').addEventListener('click', () => { mount(idx + 1); focusStage(); });
+  window.addEventListener('hashchange', () => { const i = FIGS.findIndex(f => f.id === location.hash.slice(1)); if (i >= 0 && i !== idx) mount(i); });
+
+  window.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target.closest && e.target.closest('button') && (e.key === 'Enter' || e.key === ' ')) return;
+    if (handle && handle.key && handle.key(e)) { e.preventDefault(); return; }
+    if (e.key === 'PageDown') mount(idx + 1);
+    if (e.key === 'PageUp') mount(idx - 1);
+  });
+  window.addEventListener('keyup', e => { if (handle && handle.keyup) handle.keyup(e); });
+  window.addEventListener('blur', () => { if (handle && handle.blur) handle.blur(); });
+
+  if (!FIGS.length) {   // nothing registered yet (figures still being built)
+    holder.innerHTML = '<p style="display:grid;place-items:center;height:100%;margin:0;letter-spacing:.14em;text-transform:uppercase">No figures yet</p>';
+    numEl.textContent = 'Fig —'; return;
+  }
+  const start = FIGS.findIndex(f => f.id === location.hash.slice(1));
+  mount(start >= 0 ? start : 0);
+})();
+
+</script>
+<style>/* light theme: the same accent as the dark theme, but no ambient glow (halos, bloom, light pools, soft blur) */
+  :root[data-theme="light"] .halo, :root[data-theme="light"] #lamp-pool, :root[data-theme="light"] #lamp-bookpool, :root[data-theme="light"] #lamp-cone { display:none !important; }
+  :root[data-theme="light"] .top .dot { box-shadow:none; }
+  :root[data-theme="light"] .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .halo, :root:not([data-theme="dark"]) #lamp-pool, :root:not([data-theme="dark"]) #lamp-bookpool, :root:not([data-theme="dark"]) #lamp-cone { display:none !important; }
+    :root:not([data-theme="dark"]) .top .dot { box-shadow:none; }
+    :root:not([data-theme="dark"]) .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
+  }
+</style>
+<script>/* light theme: the glow filters pass the drawing through unblurred, bloom draws nothing */
+(function () {
+  var root = document.documentElement, mq = matchMedia('(prefers-color-scheme: light)'), orig = {};
+  function apply() {
+    var t = root.dataset.theme, light = t === 'light' || (t !== 'dark' && mq.matches);
+    ['glow', 'soft', 'bloom'].forEach(function (id) {
+      var f = document.getElementById(id); if (!f) return;
+      if (!(id in orig)) orig[id] = f.innerHTML;
+      f.innerHTML = !light ? orig[id] : id === 'bloom' ? '<feFlood flood-opacity="0"/>' : '<feMerge><feMergeNode in="SourceGraphic"/></feMerge>';
+    });
+  }
+  new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  if (mq.addEventListener) mq.addEventListener('change', apply);
+  apply();
+})();
+</script>
+</body>
+</html>
