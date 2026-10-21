@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Iso 3D</title>
 <style>
-  :root { --bg:#121314; --panel:rgba(22,23,24,.85); --line:#26292b; --ink:#c9d0db; --dim:#7d8796; --accent:#ff9d3c; }
-:root { color-scheme:dark; }
-  :root[data-theme="light"] { color-scheme:light; --bg:#e9eaea; --panel:rgba(246,246,245,.9); --line:#d6d8d8; --ink:#2b2e30; --dim:#6b7075; }
+  :root { --bg:#090a0b; --panel:rgba(20,21,23,.85); --line:#222528; --ink:#888e93; --dim:#57606a; --accent:#ff9a2e; }
+  :root { color-scheme:dark; }
+  :root[data-theme="light"] { color-scheme:light; --bg:#f4f5f7; --panel:rgba(255,255,255,.9); --line:#d8dde3; --ink:#0e1217; --dim:#555d67; --accent:#ff9a2e; }
   * { box-sizing:border-box; }
   @media (max-width:900px) { .build { display:none; } }
   .tops { display:flex; gap:8px; align-items:center; min-width:0; max-width:100%; }
@@ -2950,8 +2950,8 @@ document.querySelectorAll('.seg button').forEach(b => { b.hidden = !SHOW_FIGS.in
 if (SHOW_FIGS.length < 2) document.querySelector('.seg').hidden = true;   // one figure: no tab bar
 setFigure(SHOW_FIGS.includes(load('fig')) ? load('fig') : SHOW_FIGS[0]);
 if (load('ortho') === '1') setOrtho(true, view().dist());
-// ── glow colour: same names and order as the 2D galleries (Ember is the 3D orange); shared choice with them via 'iso-accent' ──
-const ACCENTS3 = [['Ember', '#ff9d3c'], ['Cyan', '#22d3ee'], ['Lime', '#a3e635'], ['Violet', '#a78bfa'], ['Rose', '#fb7185'], ['Ice', '#dfe9ef']];
+// ── glow colour: synchronized with AUDIRA GLOW master palettes ──
+const ACCENTS3 = [['Ember', '#ff9a2e'], ['Ice', '#40c4ff'], ['Mint', '#00e676'], ['Gold', '#ffd54f'], ['Neon', '#ff4fa3'], ['Dusk', '#7c4dff']];
 const swEl = document.getElementById('swatches');
 swEl.innerHTML = ACCENTS3.map(([n, c]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${c}"><i></i></button>`).join('');
 function pickAccent(k) {
@@ -2964,12 +2964,12 @@ function pickAccent(k) {
   accentLineMat.color.copy(accent); ledOnMat.color.copy(accent);
   themeHooks.forEach(f => f(theme));                                // screens, labels and pools redraw with the new colour
   swEl.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
-  try { localStorage.setItem('iso-accent', k); } catch (e) {}
-  try { if (parent !== window) parent.document.documentElement.style.setProperty('--accent', a[1]); } catch (e) {}   // the /demo shell around this page follows the choice
+  try { localStorage.setItem('audira-glow-accent', k); } catch (e) {}
+  try { if (parent !== window) parent.document.documentElement.style.setProperty('--accent', a[1]); } catch (e) {}
 }
 swEl.addEventListener('click', e => { const b = e.target.closest('button[data-accent]'); if (b) { pickAccent(b.dataset.accent); b.blur(); } });
-addEventListener('storage', e => { if (e.key === 'iso-accent' && e.newValue) pickAccent(e.newValue); });
-{ let k = null; try { k = localStorage.getItem('iso-accent'); } catch (e) {} pickAccent(k || 'ember'); }
+addEventListener('storage', e => { if (e.key === 'audira-glow-accent' && e.newValue) pickAccent(e.newValue); });
+{ let k = null; try { k = localStorage.getItem('audira-glow-accent') || localStorage.getItem('iso-accent'); } catch (e) {} pickAccent(k || 'ember'); }
 requestAnimationFrame(frame);
 </script>
 </body>

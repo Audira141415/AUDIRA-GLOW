@@ -20,7 +20,7 @@
 - **6 Master Collections**: Enterprise Data Center, Cyber Lab, Audira Studio, Architectural Cities, Classic Objects, and Lumen Light Sculptures.
 - **Zero External Dependencies**: Pure Vanilla ES6+, semantic HTML5, and native SVG. No heavy frameworks or large asset bundles.
 - **Procedural Sound Engine**: 100% native Web Audio API audio synthesis (plasma blasts, vacuum tube harmonics, radio static, and jet turbines) with zero MP3/WAV download overhead.
-- **Dynamic Luminous Glow System**: Multi-stage SVG Gaussian blur filters (`#glow`, `#soft`, `#bloom`) and a universal 6-color accent matrix with instant theme switching.
+- **Dual Theme & Dynamic Luminous System**: Instant one-click toggle between obsidian **Dark Mode** (retaining the signature deep neon aesthetic) and clean **Light Mode** (architectural vector CAD styling), paired with a universal 6-color accent matrix (Ember, Ice, Mint, Gold, Neon, Dusk) and `localStorage` persistence.
 - **Living Animation Physics**: Active animation loops (`api.every` & `api.loop`) powering real-time waveforms, particle packet streams, and flywheel lerp kinematics.
 
 ---
@@ -144,6 +144,7 @@ The script will automatically initialize Git if needed, configure the remote rep
 | **`PageUp` / `PageDown`** | Gallery | Cycle to Previous / Next model in collection |
 | **Mouse Click** | On Elements | Click server blades, breaker switches, valves, antenna dials, and buttons directly |
 | **Palette Swatches** | Top Header | Instant one-click switch between **Ember, Ice Cyan, Mint, Gold, Neon, and Dusk** |
+| **Theme Switcher** | Top Header | Instant one-click toggle between **🌙 Dark** and **☀️ Light** modes with `localStorage` persistence |
 
 ---
 

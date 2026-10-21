@@ -6,13 +6,23 @@
 <title>AUDIRA GLOW · Interactive Isometric Systems & Frontier Technology</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@400;500;600;700;800&display=swap">
 <style>
-  :root {
+  :root, :root[data-theme="dark"] {
     color-scheme: dark;
     --bg:#090a0b; --bg-card:#111214; --panel:#141517; --edge:#222528;
     --line:#383c40; --detail:#242729; --body:#151618; --deck:#1a1c1e;
     --ink:#888e93; --ink-hi:#f0f2f4; --live:#ffffff;
     --glass:#0f1012; --glass-on:#1c1712; --recess:#0d0e0f;
     --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.12);
+    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+    --sans:"Outfit",system-ui,-apple-system,sans-serif;
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg:#f4f5f7; --bg-card:#ffffff; --panel:#ffffff; --edge:#d8dde3;
+    --line:#b0b8c2; --detail:#c8d0d8; --body:#e6ebf0; --deck:#f2f5f8;
+    --ink:#555d67; --ink-hi:#0e1217; --live:#000000;
+    --glass:#e7ecf2; --glass-on:#ffe7cc; --recess:#d8dde4;
+    --accent:#ff9a2e; --accent-hi:#d97706; --accent-dim:rgba(255,154,46,.14);
     --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
     --sans:"Outfit",system-ui,-apple-system,sans-serif;
   }
@@ -29,26 +39,63 @@
       linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px),
       linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px);
     background-size: 100% 100%, 48px 48px, 48px 48px;
+    transition:background-color .3s, color .3s;
+  }
+  :root[data-theme="light"] body {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--accent-dim), transparent 70%),
+      linear-gradient(to bottom, rgba(0,0,0,0.035) 1px, transparent 1px),
+      linear-gradient(to right, rgba(0,0,0,0.035) 1px, transparent 1px);
   }
 
   /* TOP NAVIGATION HEADER */
-  .dh { position:fixed; z-index:40; top:0; left:0; right:0; padding:12px 24px; font:12px/1.45 var(--mono); background:linear-gradient(var(--bg) 65%, rgba(9,10,11,0)); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+  .dh { position:fixed; z-index:40; top:0; left:0; right:0; padding:12px 24px; font:12px/1.45 var(--mono); background:linear-gradient(var(--bg) 65%, transparent); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); transition:background .3s; }
   .dh-in { max-width:1320px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; }
   .dh-brand { flex:none; display:flex; align-items:center; gap:10px; color:var(--ink-hi); text-decoration:none; font-weight:600; font-size:13px; letter-spacing:.14em; text-transform:uppercase; }
   .dh-brand .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
-  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:4px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); }
+  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:4px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); transition:background .3s, border-color .3s; }
+  :root[data-theme="light"] .dh-seg { background:rgba(255,255,255,0.9); }
   .dh-seg a { flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; padding:6px 14px; border-radius:999px; color:var(--ink); text-decoration:none; font-size:11px; letter-spacing:.06em; transition:all .2s; }
   .dh-seg a:hover { color:var(--ink-hi); }
   .dh-seg a.active { color:var(--ink-hi); background:var(--bg); box-shadow:0 0 0 1px var(--accent) inset; }
   .dh-seg .n { opacity:.6; font-size:10px; }
 
-  /* SWATCHES PALETTE SELECTOR */
-  .swatches { display:flex; align-items:center; gap:4px; padding:3px 6px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); }
+  /* SWATCHES & THEME CONTROLS */
+  .dh-actions { display:flex; align-items:center; gap:8px; flex:none; }
+  .swatches { display:flex; align-items:center; gap:4px; padding:3px 6px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); transition:background .3s, border-color .3s; }
+  :root[data-theme="light"] .swatches { background:rgba(255,255,255,0.9); }
   .swatches button { width:22px; height:22px; border-radius:50%; border:1px solid transparent; background:none; cursor:pointer; display:grid; place-items:center; padding:0; }
   .swatches button i { width:10px; height:10px; border-radius:50%; background:var(--sw); border:1px solid var(--line); transition:all .2s; }
   .swatches button:hover i { transform:scale(1.2); }
   .swatches button[aria-checked="true"] { border-color:var(--line); }
   .swatches button[aria-checked="true"] i { box-shadow:0 0 10px 1px var(--sw); transform:scale(1.15); }
+
+  /* THEME TOGGLE BUTTON */
+  .theme-toggle {
+    display:flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px;
+    border:1px solid var(--edge); background:rgba(20,21,23,0.85); color:var(--ink);
+    font:500 11px/1 var(--mono); letter-spacing:.08em; cursor:pointer; transition:all .2s;
+    user-select:none;
+  }
+  :root[data-theme="light"] .theme-toggle { background:rgba(255,255,255,0.9); }
+  .theme-toggle:hover { color:var(--ink-hi); border-color:var(--line); }
+  .theme-toggle-icon { display:flex; align-items:center; justify-content:center; }
+  :root[data-theme="dark"] .theme-toggle .sun-icon { display:none; }
+  :root[data-theme="dark"] .theme-toggle .moon-icon { display:block; color:var(--accent); }
+  :root[data-theme="light"] .theme-toggle .moon-icon { display:none; }
+  :root[data-theme="light"] .theme-toggle .sun-icon { display:block; color:var(--accent); }
+
+  /* LIGHT MODE SURFACE REFINEMENTS */
+  :root[data-theme="light"] .hero-tag { background:rgba(255,255,255,0.9); }
+  :root[data-theme="light"] .hero-stage-card { box-shadow:0 20px 50px -15px rgba(0,0,0,0.08), 0 0 60px -30px var(--accent-dim); }
+  :root[data-theme="light"] .stat-item { background:rgba(255,255,255,0.85); box-shadow:0 6px 20px -8px rgba(0,0,0,0.04); }
+  :root[data-theme="light"] .collection-card { box-shadow:0 12px 30px -10px rgba(0,0,0,0.06); }
+  :root[data-theme="light"] .collection-card:hover { box-shadow:0 20px 40px -10px rgba(0,0,0,0.1), 0 0 40px -20px var(--accent-dim); }
+  :root[data-theme="light"] .stage-tab-btn.active { background:rgba(0,0,0,0.04); }
+  :root[data-theme="light"] .tech-spec-table { background:rgba(255,255,255,0.9); }
+  :root[data-theme="light"] .site-footer { background:var(--panel); border-color:var(--edge); }
+  :root[data-theme="light"] .btn-primary { color:#ffffff; }
+  :root[data-theme="light"] .btn-secondary { background:#ffffff; }
 
   /* CONTAINER WRAPPER */
   .container { max-width:1320px; margin:0 auto; padding:0 24px; }
@@ -211,7 +258,16 @@
       <a href="computer-demo.html">DESK COMPUTER <span class="n">1</span></a>
       <a href="assets/gallery-3d.html">3D DEMO <span class="n">12</span></a>
     </nav>
-    <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+    <div class="dh-actions">
+      <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle Light/Dark Theme" title="Toggle Light / Dark Mode">
+        <span class="theme-toggle-icon">
+          <svg class="sun-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </span>
+        <span class="theme-toggle-label">DARK</span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -467,27 +523,64 @@
 
 <!-- CORE SCRIPT: Kernel, Palette, Audio, and Embedded Hero Figures -->
 <script>
-/* --- ACCENT PALETTES --- */
+/* --- THEME & ACCENT MANAGEMENT --- */
 const PALETTES = {
-  ember: [['Ember','#ff9a2e','#ffc77a','#ff9a2e','#ffc77a'], ['Ice','#40c4ff','#80d8ff','#40c4ff','#80d8ff'], ['Mint','#00e676','#69f0ae','#00e676','#69f0ae'], ['Gold','#ffd54f','#fff59d','#ffd54f','#fff59d'], ['Neon','#ff4fa3','#ff9fcb','#ff4fa3','#ff9fcb'], ['Dusk','#7c4dff','#b388ff','#7c4dff','#b388ff']]
+  ember: [
+    ['Ember', '#ff9a2e', '#ffc77a', '#d97706', '#92400e'],
+    ['Ice',   '#40c4ff', '#80d8ff', '#0284c7', '#0369a1'],
+    ['Mint',  '#00e676', '#69f0ae', '#059669', '#047857'],
+    ['Gold',  '#ffd54f', '#fff59d', '#d97706', '#b45309'],
+    ['Neon',  '#ff4fa3', '#ff9fcb', '#db2777', '#be185d'],
+    ['Dusk',  '#7c4dff', '#b388ff', '#7c3aed', '#6d28d9']
+  ]
 };
 const ACCENTS = PALETTES.ember;
-const vars = (a, hi) => `--accent:${a}; --accent-hi:${hi}; --accent-dim:color-mix(in srgb, ${a} 12%, transparent);`;
-const accentCss = ACCENTS.map(([n, da, dh]) => `:root[data-accent="${n.toLowerCase()}"] { ${vars(da, dh)} }`).join('\n');
+const vars = (a, hi, dark) => `--accent:${a}; --accent-hi:${hi}; --accent-dim:color-mix(in srgb, ${a} ${dark ? 12 : 14}%, transparent);` +
+  ` --glass-on:color-mix(in srgb, ${a} ${dark ? 12 : 14}%, ${dark ? '#1c1712' : '#fff2e0'});`;
+const accentCss = ACCENTS.map(([n, da, dh, la, lh]) => {
+  const k = n.toLowerCase();
+  return `:root[data-accent="${k}"], :root[data-accent="${k}"][data-theme="dark"] { ${vars(da, dh, true)} }
+:root[data-accent="${k}"][data-theme="light"] { ${vars(la, lh, false)} }`;
+}).join('\n');
 const st = document.createElement('style'); st.textContent = accentCss; document.head.appendChild(st);
 
 const sw = document.getElementById('swatches');
-sw.innerHTML = ACCENTS.map(([n, da]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${da}"><i></i></button>`).join('');
+if (sw) {
+  sw.innerHTML = ACCENTS.map(([n, da]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${da}"><i></i></button>`).join('');
+  sw.addEventListener('click', e => { const b = e.target.closest('button[data-accent]'); if (b) setAccent(b.dataset.accent); });
+}
 
 function setAccent(k) {
   if (!ACCENTS.some(a => a[0].toLowerCase() === k)) k = ACCENTS[0][0].toLowerCase();
   document.documentElement.dataset.accent = k;
-  sw.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
+  if (sw) sw.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
   try { localStorage.setItem('audira-glow-accent', k); } catch (e) {}
 }
 let savedAcc = null; try { savedAcc = localStorage.getItem('audira-glow-accent'); } catch (e) {}
 setAccent(savedAcc || 'ember');
-sw.addEventListener('click', e => { const b = e.target.closest('button[data-accent]'); if (b) setAccent(b.dataset.accent); });
+
+/* Theme Switcher */
+function setTheme(t) {
+  const theme = (t === 'light') ? 'light' : 'dark';
+  document.documentElement.dataset.theme = theme;
+  try { localStorage.setItem('audira-glow-theme', theme); } catch (e) {}
+  const btn = document.getElementById('themeToggle');
+  if (btn) {
+    const lbl = btn.querySelector('.theme-toggle-label');
+    if (lbl) lbl.textContent = theme.toUpperCase();
+  }
+}
+let savedTheme = 'dark';
+try { savedTheme = localStorage.getItem('audira-glow-theme') || 'dark'; } catch (e) {}
+setTheme(savedTheme);
+
+const themeBtn = document.getElementById('themeToggle');
+if (themeBtn) {
+  themeBtn.addEventListener('click', () => {
+    const cur = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+    setTheme(cur === 'light' ? 'dark' : 'light');
+  });
+}
 
 /* --- ISO KERNEL --- */
 const ISO = (() => {

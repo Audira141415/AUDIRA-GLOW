@@ -4,35 +4,44 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AUDIRA GLOW STUDIO · Live Interactive</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@400;500;600;700;800&display=swap">
 <style>
-  :root {
+  :root, :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg:#0c0d0e; --panel:#141516; --edge:#222426;
-    --line:#3d4144; --detail:#2b2e30; --body:#17181a; --deck:#1b1d1f;
-    --ink:#868b8f; --ink-hi:#e6e8e9; --live:#f4f5f5;
-    --glass:#0f1011; --glass-on:#1a1410; --recess:#0e0f10;
-    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
-    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --bg:#090a0b; --bg-card:#111214; --panel:#141517; --edge:#222528;
+    --line:#383c40; --detail:#242729; --body:#151618; --deck:#1a1c1e;
+    --ink:#888e93; --ink-hi:#f0f2f4; --live:#ffffff;
+    --glass:#0f1012; --glass-on:#1c1712; --recess:#0d0e0f;
+    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.12);
+    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+    --sans:"Outfit",system-ui,-apple-system,sans-serif;
   }
-  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
-    color-scheme: light;
-    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
-    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
-    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
-    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
-    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
-  } }
   :root[data-theme="light"] {
     color-scheme: light;
-    --bg:#e9eaea; --panel:#f6f6f5; --edge:#d6d8d8;
-    --line:#8e9397; --detail:#c3c6c8; --body:#ececeb; --deck:#f3f3f2;
-    --ink:#6a6f73; --ink-hi:#16181a; --live:#0c0d0e;
-    --glass:#dcdede; --glass-on:#f3e6da; --recess:#e2e4e4;
-    --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.10);
+    --bg:#f4f5f7; --bg-card:#ffffff; --panel:#ffffff; --edge:#d8dde3;
+    --line:#b0b8c2; --detail:#c8d0d8; --body:#e6ebf0; --deck:#f2f5f8;
+    --ink:#555d67; --ink-hi:#0e1217; --live:#000000;
+    --glass:#e7ecf2; --glass-on:#ffe7cc; --recess:#d8dde4;
+    --accent:#ff9a2e; --accent-hi:#d97706; --accent-dim:rgba(255,154,46,.14);
+    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+    --sans:"Outfit",system-ui,-apple-system,sans-serif;
   }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--mono); font-size:13px; padding:20px 16px 32px; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink); font-family:var(--mono); font-size:13px; padding:20px 16px 32px;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--accent-dim), transparent 70%),
+      linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 48px 48px, 48px 48px;
+    transition:background-color .3s, color .3s;
+  }
+  :root[data-theme="light"] body {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--accent-dim), transparent 70%),
+      linear-gradient(to bottom, rgba(0,0,0,0.035) 1px, transparent 1px),
+      linear-gradient(to right, rgba(0,0,0,0.035) 1px, transparent 1px);
+  }
   .wrap { max-width:1180px; margin-inline:auto; display:grid; gap:14px; }
   .top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 18px; text-transform:uppercase; letter-spacing:.14em; padding:0 4px; }
   .top .hi { color:var(--ink-hi); }
@@ -132,17 +141,43 @@
   }
 </style>
 <style>
-  :root { --dh-w: 1280px; }
-  body { padding-top: 74px !important; }
-  .dh { position:fixed; z-index:20; top:0; left:0; right:0; padding:12px 16px 10px; font:12px/1.45 "DM Mono", monospace; background:linear-gradient(var(--bg) 60%, rgba(12,13,14,0)); }
-  .dh-in { max-width:var(--dh-w, 1280px); margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:10px 18px; }
-  .dh-brand { flex:none; display:flex; align-items:center; gap:8px; color:var(--ink-hi); text-decoration:none; font-weight:500; font-size:12px; letter-spacing:.14em; text-transform:uppercase; }
-  .dh-brand .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
-  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:3px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:var(--panel); }
-  .dh-seg a { flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; padding:5px 13px; border-radius:999px; color:var(--ink); text-decoration:none; font-size:11px; letter-spacing:.06em; transition:all .2s; }
+  :root { --dh-w: 1320px; }
+  body { padding-top: 72px !important; }
+  .dh { position:fixed; z-index:40; top:0; left:0; right:0; padding:12px 24px; font:12px/1.45 var(--mono, "DM Mono", monospace); background:linear-gradient(var(--bg) 65%, transparent); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); transition:background .3s; }
+  .dh-in { max-width:var(--dh-w, 1320px); margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .dh-brand { flex:none; display:flex; align-items:center; gap:10px; color:var(--ink-hi); text-decoration:none; font-weight:600; font-size:13px; letter-spacing:.14em; text-transform:uppercase; }
+  .dh-brand .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
+  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:4px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); transition:background .3s, border-color .3s; }
+  :root[data-theme="light"] .dh-seg { background:rgba(255,255,255,0.9); }
+  .dh-seg a { flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; padding:6px 14px; border-radius:999px; color:var(--ink); text-decoration:none; font-size:11px; letter-spacing:.06em; transition:all .2s; }
   .dh-seg a:hover { color:var(--ink-hi); }
   .dh-seg a.active { color:var(--ink-hi); background:var(--bg); box-shadow:0 0 0 1px var(--accent) inset; }
   .dh-seg .n { opacity:.6; font-size:10px; }
+
+  /* SWATCHES & THEME CONTROLS */
+  .dh-actions { display:flex; align-items:center; gap:8px; flex:none; }
+  .swatches { display:flex; align-items:center; gap:4px; padding:3px 6px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); transition:background .3s, border-color .3s; }
+  :root[data-theme="light"] .swatches { background:rgba(255,255,255,0.9); }
+  .swatches button { width:22px; height:22px; border-radius:50%; border:1px solid transparent; background:none; cursor:pointer; display:grid; place-items:center; padding:0; }
+  .swatches button i { width:10px; height:10px; border-radius:50%; background:var(--sw); border:1px solid var(--line); transition:all .2s; }
+  .swatches button:hover i { transform:scale(1.2); }
+  .swatches button[aria-checked="true"] { border-color:var(--line); }
+  .swatches button[aria-checked="true"] i { box-shadow:0 0 10px 1px var(--sw); transform:scale(1.15); }
+
+  /* THEME TOGGLE BUTTON */
+  .theme-toggle {
+    display:flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px;
+    border:1px solid var(--edge); background:rgba(20,21,23,0.85); color:var(--ink);
+    font:500 11px/1 var(--mono, "DM Mono", monospace); letter-spacing:.08em; cursor:pointer; transition:all .2s;
+    user-select:none;
+  }
+  :root[data-theme="light"] .theme-toggle { background:rgba(255,255,255,0.9); }
+  .theme-toggle:hover { color:var(--ink-hi); border-color:var(--line); }
+  .theme-toggle-icon { display:flex; align-items:center; justify-content:center; }
+  :root[data-theme="dark"] .theme-toggle .sun-icon { display:none; }
+  :root[data-theme="dark"] .theme-toggle .moon-icon { display:block; color:var(--accent); }
+  :root[data-theme="light"] .theme-toggle .moon-icon { display:none; }
+  :root[data-theme="light"] .theme-toggle .sun-icon { display:block; color:var(--accent); }
 </style>
 </head>
 <body>
@@ -150,7 +185,17 @@
 <header class="dh">
   <div class="dh-in">
     <a class="dh-brand" href="index.html"><span class="dot"></span><span>AUDIRA GLOW</span></a>
-    <nav class="dh-seg" aria-label="Collections"><a href="audira-studio.html" class=" active">AUDIRA STUDIO <span class="n">5</span></a><a href="datacenter.html" class="">DATA CENTER <span class="n">12</span></a><a href="cyberlab.html" class="">CYBER LAB <span class="n">5</span></a><a href="objects.html" class="">OBJECTS <span class="n">10</span></a><a href="cities.html" class="">CITIES <span class="n">10</span></a><a href="lumen.html" class="">LUMEN <span class="n">12</span></a><a href="computer-demo.html" class="">DESK COMPUTER <span class="n">1</span></a><a href="assets/gallery-3d.html" class="">3D DEMO <span class="n">12</span></a></nav>
+    <nav class="dh-seg" aria-label="Collections"><a href="index.html" class="">OVERVIEW <span class="n">38+</span></a><a href="datacenter.html" class="">DATA CENTER <span class="n">12</span></a><a href="cyberlab.html" class="">CYBER LAB <span class="n">5</span></a><a href="audira-studio.html" class=" active">AUDIRA STUDIO <span class="n">5</span></a><a href="objects.html" class="">OBJECTS <span class="n">10</span></a><a href="cities.html" class="">CITIES <span class="n">10</span></a><a href="lumen.html" class="">LUMEN <span class="n">12</span></a><a href="computer-demo.html" class="">DESK COMPUTER <span class="n">1</span></a><a href="assets/gallery-3d.html" class="">3D DEMO <span class="n">12</span></a></nav>
+    <div class="dh-actions">
+      <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle Light/Dark Theme" title="Toggle Light / Dark Mode">
+        <span class="theme-toggle-icon">
+          <svg class="sun-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </span>
+        <span class="theme-toggle-label">DARK</span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -180,8 +225,8 @@
   <footer class="made-with"><a href="https://iso-glow.vercel.app" target="_blank" rel="noopener">Made with ISO-GLOW ↗</a></footer>
 </div>
 <script>
-  // Gallery settings: palette 'ember' | 'city' | your own [[name, darkAccent, darkHi, lightAccent, lightHi], ...]
-  window.GALLERY = { palette: 'city', autoDemo: true, storageKey: 'iso-glow-accent' };
+  // Gallery settings: palette 'audira' | your own [[name, darkAccent, darkHi, lightAccent, lightHi], ...]
+  window.GALLERY = { palette: 'audira', autoDemo: true, storageKey: 'audira-glow-accent' };
   const FIGS = [];
 </script>
 <!-- FIGURES: one script per figure, each calling FIGS.push({...}). Order here = Fig 1, 2, 3 ... -->
@@ -2262,30 +2307,46 @@ const AUDIO = (() => {
   // ---------- glow colour choice ----------
   const PALETTES = {
     // [name, dark accent, dark hi, light accent, light hi]
-    ember: [['Ember','#ff7a1a','#ffb070','#ff7a1a','#ffb070'], ['Cyan','#22d3ee','#9beefa','#22d3ee','#9beefa'], ['Lime','#a3e635','#d6f79f','#a3e635','#d6f79f'],
-            ['Violet','#a78bfa','#d6caff','#a78bfa','#d6caff'], ['Rose','#fb7185','#fdb8c2','#fb7185','#fdb8c2'], ['Ice','#dfe9ef','#ffffff','#1f2937','#3b4656']],
-    city:  [['Sodium','#ff9a2e','#ffc77a','#ff9a2e','#ffc77a'], ['Tungsten','#ffd166','#ffe7a8','#ffd166','#ffe7a8'], ['Neon','#ff4fa3','#ff9fcb','#ff4fa3','#ff9fcb'],
-            ['Signal','#3ee8a0','#a3f5cf','#3ee8a0','#a3f5cf'], ['Dusk','#6f9dff','#b5ccff','#6f9dff','#b5ccff'], ['Moon','#dfe7f5','#ffffff','#273246','#3d4a61']],
+    audira: [
+      ['Ember', '#ff9a2e', '#ffc77a', '#d97706', '#92400e'],
+      ['Ice',   '#40c4ff', '#80d8ff', '#0284c7', '#0369a1'],
+      ['Mint',  '#00e676', '#69f0ae', '#059669', '#047857'],
+      ['Gold',  '#ffd54f', '#fff59d', '#d97706', '#b45309'],
+      ['Neon',  '#ff4fa3', '#ff9fcb', '#db2777', '#be185d'],
+      ['Dusk',  '#7c4dff', '#b388ff', '#7c3aed', '#6d28d9']
+    ]
   };
-  const ACCENTS = Array.isArray(CFG.palette) ? CFG.palette : (PALETTES[CFG.palette] || PALETTES.ember);
-  const vars = (a, hi, dark) => `--accent:${a}; --accent-hi:${hi}; --accent-dim:color-mix(in srgb, ${a} 10%, transparent);` +
-    ` --glass-on:color-mix(in srgb, ${a} ${dark ? 9 : 12}%, ${dark ? '#101112' : '#eef0f0'});`;
+  const ACCENTS = PALETTES.audira;
+  const vars = (a, hi, dark) => `--accent:${a}; --accent-hi:${hi}; --accent-dim:color-mix(in srgb, ${a} ${dark ? 12 : 14}%, transparent);` +
+    ` --glass-on:color-mix(in srgb, ${a} ${dark ? 12 : 14}%, ${dark ? '#1c1712' : '#fff2e0'});`;
   const accentCss = ACCENTS.map(([n, da, dh, la, lh]) => { const k = n.toLowerCase();
-    return `:root[data-accent="${k}"] { ${vars(da, dh, true)} }
-@media (prefers-color-scheme: light) { :root[data-accent="${k}"]:not([data-theme="dark"]) { ${vars(la, lh, false)} } }
+    return `:root[data-accent="${k}"], :root[data-accent="${k}"][data-theme="dark"] { ${vars(da, dh, true)} }
 :root[data-accent="${k}"][data-theme="light"] { ${vars(la, lh, false)} }`; }).join('\n');
   const accentStyle = document.createElement('style'); accentStyle.textContent = accentCss; document.head.appendChild(accentStyle);
-  const sw = $('swatches');
-  sw.innerHTML = ACCENTS.map(([n, da]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${da}"><i></i></button>`).join('');
+  
+  function renderAllSwatches() {
+    document.querySelectorAll('.swatches').forEach(sw => {
+      sw.innerHTML = ACCENTS.map(([n, da]) => `<button role="radio" data-accent="${n.toLowerCase()}" aria-label="${n}" title="${n}" style="--sw:${da}"><i></i></button>`).join('');
+    });
+  }
+  renderAllSwatches();
+
   function setAccent(k) {
     if (!ACCENTS.some(a => a[0].toLowerCase() === k)) k = ACCENTS[0][0].toLowerCase();
     document.documentElement.dataset.accent = k;
-    sw.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
-    try { localStorage.setItem((CFG.storageKey || 'iso-glow-accent'), k); } catch (e) {}
+    document.querySelectorAll('.swatches button').forEach(b => b.setAttribute('aria-checked', b.dataset.accent === k ? 'true' : 'false'));
+    try { localStorage.setItem((CFG.storageKey || 'audira-glow-accent'), k); } catch (e) {}
   }
-  let saved = null; try { saved = localStorage.getItem((CFG.storageKey || 'iso-glow-accent')); } catch (e) {}
+  let saved = null; try { saved = localStorage.getItem((CFG.storageKey || 'audira-glow-accent')); } catch (e) {}
   setAccent(saved || ACCENTS[0][0].toLowerCase());
-  sw.addEventListener('click', e => { const b = e.target.closest('button[data-accent]'); if (b) { setAccent(b.dataset.accent); const s = $('stage'); if (s) s.focus({ preventScroll: true }); } });
+  
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button[data-accent]');
+    if (b) {
+      setAccent(b.dataset.accent);
+      const s = $('stage'); if (s) s.focus({ preventScroll: true });
+    }
+  });
 
   // per-figure css
   FIGS.forEach(f => { if (f.css) { const st = document.createElement('style'); st.textContent = f.css; document.head.appendChild(st); } });
@@ -2319,21 +2380,21 @@ const AUDIO = (() => {
 })();
 
 </script>
-<style>/* light theme: the same accent as the dark theme, but no ambient glow (halos, bloom, light pools, soft blur) */
-  :root[data-theme="light"] .halo, :root[data-theme="light"] #lamp-pool, :root[data-theme="light"] #lamp-bookpool, :root[data-theme="light"] #lamp-cone { display:none !important; }
+<style>/* light theme: subtle ambient glow, clean shadows and outlines */
+  :root[data-theme="light"] .halo { opacity: 0.15 !important; }
+  :root[data-theme="light"] #lamp-pool, :root[data-theme="light"] #lamp-bookpool, :root[data-theme="light"] #lamp-cone { opacity: 0.25 !important; }
   :root[data-theme="light"] .top .dot { box-shadow:none; }
   :root[data-theme="light"] .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) .halo, :root:not([data-theme="dark"]) #lamp-pool, :root:not([data-theme="dark"]) #lamp-bookpool, :root:not([data-theme="dark"]) #lamp-cone { display:none !important; }
-    :root:not([data-theme="dark"]) .top .dot { box-shadow:none; }
-    :root:not([data-theme="dark"]) .swatches button[aria-checked="true"] i { box-shadow:0 0 0 2px var(--panel), 0 0 0 3px var(--sw); }
-  }
 </style>
 <script>/* light theme: the glow filters pass the drawing through unblurred, bloom draws nothing */
 (function () {
-  var root = document.documentElement, mq = matchMedia('(prefers-color-scheme: light)'), orig = {};
+  var root = document.documentElement, orig = {};
+  var savedTheme = 'dark';
+  try { savedTheme = localStorage.getItem('audira-glow-theme') || 'dark'; } catch(e) {}
+  root.dataset.theme = savedTheme;
+
   function apply() {
-    var t = root.dataset.theme, light = t === 'light' || (t !== 'dark' && mq.matches);
+    var t = root.dataset.theme, light = t === 'light';
     ['glow', 'soft', 'bloom'].forEach(function (id) {
       var f = document.getElementById(id); if (!f) return;
       if (!(id in orig)) orig[id] = f.innerHTML;
@@ -2341,9 +2402,44 @@ const AUDIO = (() => {
     });
   }
   new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
-  if (mq.addEventListener) mq.addEventListener('change', apply);
   apply();
 })();
 </script>
+
+<script id="theme-ctrl">
+(function() {
+  function setTheme(t) {
+    var theme = (t === 'light') ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem('audira-glow-theme', theme); } catch(e) {}
+    var btn = document.getElementById('themeToggle');
+    if (btn) {
+      var lbl = btn.querySelector('.theme-toggle-label');
+      if (lbl) lbl.textContent = theme.toUpperCase();
+    }
+  }
+  var saved = 'dark';
+  try { saved = localStorage.getItem('audira-glow-theme') || 'dark'; } catch(e) {}
+  setTheme(saved);
+  
+  function initBtn() {
+    var btn = document.getElementById('themeToggle');
+    if (btn) {
+      var lbl = btn.querySelector('.theme-toggle-label');
+      if (lbl) lbl.textContent = (document.documentElement.dataset.theme || 'dark').toUpperCase();
+      btn.onclick = function() {
+        var cur = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+        setTheme(cur === 'light' ? 'dark' : 'light');
+      };
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBtn);
+  } else {
+    initBtn();
+  }
+})();
+</script>
+
 </body>
 </html>
