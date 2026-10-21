@@ -65,7 +65,6 @@ FIGS.push({
       <circle class="face recess" cx="30" cy="30" r="24"/>
       <circle class="led hot" id="dc-fan-led-1" filter="url(#soft)" cx="30" cy="30" r="3"/>
       <g id="dc-fan-rotor-1">
-        <animateTransform attributeName="transform" type="rotate" from="0 30 30" to="360 30 30" dur="0.45s" repeatCount="indefinite"/>
         ${Array.from({ length: 6 }, (_, i) => {
           const rad = (i * 60 * Math.PI) / 180;
           return `<line class="dc-fan-blade" x1="30" y1="30" x2="${(30 + 20 * Math.cos(rad)).toFixed(1)}" y2="${(30 + 20 * Math.sin(rad)).toFixed(1)}"/>`;
@@ -78,7 +77,6 @@ FIGS.push({
       <circle class="face recess" cx="30" cy="30" r="24"/>
       <circle class="led hot" id="dc-fan-led-2" filter="url(#soft)" cx="30" cy="30" r="3"/>
       <g id="dc-fan-rotor-2">
-        <animateTransform attributeName="transform" type="rotate" from="0 30 30" to="360 30 30" dur="0.65s" repeatCount="indefinite"/>
         ${Array.from({ length: 6 }, (_, i) => {
           const rad = (i * 60 * Math.PI) / 180;
           return `<line class="dc-fan-blade" x1="30" y1="30" x2="${(30 + 20 * Math.cos(rad)).toFixed(1)}" y2="${(30 + 20 * Math.sin(rad)).toFixed(1)}"/>`;

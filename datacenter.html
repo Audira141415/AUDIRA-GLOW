@@ -8,10 +8,10 @@
 <style>
   :root, :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg:#090a0b; --bg-card:#111214; --panel:#141517; --edge:#222528;
-    --line:#383c40; --detail:#242729; --body:#151618; --deck:#1a1c1e;
-    --ink:#888e93; --ink-hi:#f0f2f4; --live:#ffffff;
-    --glass:#0f1012; --glass-on:#1c1712; --recess:#0d0e0f;
+    --bg:#090a0b; --bg-card:#111214; --panel:#131518; --edge:#22262a;
+    --line:#444b54; --detail:#2e343c; --body:#1a1d21; --deck:#23272d;
+    --ink:#8d959d; --ink-hi:#f0f3f6; --live:#ffffff;
+    --glass:#0f1114; --glass-on:#1f1912; --recess:#0b0c0e;
     --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.12);
     --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
     --sans:"Outfit",system-ui,-apple-system,sans-serif;
@@ -298,7 +298,6 @@ FIGS.push({
       <circle class="face recess" cx="30" cy="30" r="24"/>
       <circle class="led hot" id="dc-fan-led-1" filter="url(#soft)" cx="30" cy="30" r="3"/>
       <g id="dc-fan-rotor-1">
-        <animateTransform attributeName="transform" type="rotate" from="0 30 30" to="360 30 30" dur="0.45s" repeatCount="indefinite"/>
         ${Array.from({ length: 6 }, (_, i) => {
           const rad = (i * 60 * Math.PI) / 180;
           return `<line class="dc-fan-blade" x1="30" y1="30" x2="${(30 + 20 * Math.cos(rad)).toFixed(1)}" y2="${(30 + 20 * Math.sin(rad)).toFixed(1)}"/>`;
@@ -311,7 +310,6 @@ FIGS.push({
       <circle class="face recess" cx="30" cy="30" r="24"/>
       <circle class="led hot" id="dc-fan-led-2" filter="url(#soft)" cx="30" cy="30" r="3"/>
       <g id="dc-fan-rotor-2">
-        <animateTransform attributeName="transform" type="rotate" from="0 30 30" to="360 30 30" dur="0.65s" repeatCount="indefinite"/>
         ${Array.from({ length: 6 }, (_, i) => {
           const rad = (i * 60 * Math.PI) / 180;
           return `<line class="dc-fan-blade" x1="30" y1="30" x2="${(30 + 20 * Math.cos(rad)).toFixed(1)}" y2="${(30 + 20 * Math.sin(rad)).toFixed(1)}"/>`;

@@ -8,10 +8,10 @@
 <style>
   :root, :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg:#090a0b; --bg-card:#111214; --panel:#141517; --edge:#222528;
-    --line:#383c40; --detail:#242729; --body:#151618; --deck:#1a1c1e;
-    --ink:#888e93; --ink-hi:#f0f2f4; --live:#ffffff;
-    --glass:#0f1012; --glass-on:#1c1712; --recess:#0d0e0f;
+    --bg:#090a0b; --bg-card:#111214; --panel:#131518; --edge:#22262a;
+    --line:#444b54; --detail:#2e343c; --body:#1a1d21; --deck:#23272d;
+    --ink:#8d959d; --ink-hi:#f0f3f6; --live:#ffffff;
+    --glass:#0f1114; --glass-on:#1f1912; --recess:#0b0c0e;
     --accent:#ff9a2e; --accent-hi:#ffc77a; --accent-dim:rgba(255,154,46,.12);
     --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
     --sans:"Outfit",system-ui,-apple-system,sans-serif;
@@ -139,13 +139,23 @@
     aspect-ratio:16/10;
     max-height:580px;
     border-radius:16px;
-    background:radial-gradient(ellipse 60% 50% at 50% 55%, var(--accent-dim), transparent 75%), var(--panel);
+    background:radial-gradient(ellipse 65% 55% at 50% 52%, var(--accent-dim), transparent 75%), #0c0e12;
     border:1px solid var(--edge);
     display:flex;
     align-items:center;
     justify-content:center;
     position:relative;
     overflow:hidden;
+    transition:background .4s;
+  }
+  #stageHolder.glow {
+    background:radial-gradient(ellipse 65% 55% at 50% 52%, var(--accent-dim), transparent 68%), #0c0e12;
+  }
+  :root[data-theme="light"] #stageHolder {
+    background:radial-gradient(ellipse 65% 55% at 50% 52%, var(--accent-dim), transparent 75%), #ffffff;
+  }
+  :root[data-theme="light"] #stageHolder.glow {
+    background:radial-gradient(ellipse 65% 55% at 50% 52%, var(--accent-dim), transparent 68%), #ffffff;
   }
   #stage { width:100%; height:100%; display:block; touch-action:manipulation; user-select:none; }
   #stage:focus { outline:none; }
@@ -229,6 +239,40 @@
     .hero { padding:32px 0 20px; gap:24px; }
     .hero-stage-card { padding:14px; }
     .collections-grid { grid-template-columns:1fr; }
+  /* ---------- SHARED FIGURE VOCABULARY & ISOMETRIC MESH ---------- */
+  #stage text { font-family:var(--mono); user-select:none; }
+  .face { fill:var(--body); stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linejoin:round; }
+  .face.top { fill:var(--deck); }
+  .face.recess { fill:var(--recess); }
+  .detail { fill:none; stroke:var(--detail); stroke-width:1; vector-effect:non-scaling-stroke; }
+  .label { fill:var(--ink); font-family:var(--mono); }
+  .glass { fill:var(--glass); transition:fill .3s, stroke .3s; }
+  .glass.hot { fill:var(--glass-on); stroke:var(--accent); }
+  .halo { fill:var(--accent); opacity:0; transition:opacity .4s; }
+  .halo.hot { opacity:.22; }
+  .scr { fill:var(--accent-hi); font-family:var(--mono); }
+  .scr-accent { fill:var(--accent); }
+  .led { fill:var(--detail); transition:fill .2s; }
+  .led.hot { fill:var(--accent); }
+  .wire { fill:none; stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; stroke-linecap:round; stroke-linejoin:round; transition:stroke .4s; }
+  .wire.hot { stroke:var(--accent); }
+  .wire-under { fill:none; stroke:var(--panel); stroke-width:3.5; stroke-linecap:round; stroke-linejoin:round; }
+  .pulse { fill:none; stroke:var(--accent-hi); stroke-width:2.2; stroke-linecap:round; vector-effect:non-scaling-stroke;
+           stroke-dasharray:70 1200; stroke-dashoffset:70; opacity:0; }
+  .pulse.go { animation:flow .55s linear; }
+  @keyframes flow { 0% { stroke-dashoffset:70; opacity:1; } 90% { opacity:1; } 100% { stroke-dashoffset:-1000; opacity:0; } }
+  .press { cursor:pointer; transition:transform 60ms ease-out; }
+  .press.down { transform:translateY(3px); }
+  .press .face { transition:fill .6s ease-out, stroke .6s ease-out; }
+  .press.lit .face, .press.latched .face { fill:var(--accent); stroke:var(--accent-hi); transition:none; }
+  .press.lit .face.top, .press.latched .face.top { fill:var(--accent-hi); }
+  .press.lit { filter:url(#glow); }
+  .press.latched { filter:url(#soft); }
+  .press:hover .face.top { stroke:var(--ink); }
+  .blink { animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  @media (prefers-reduced-motion:reduce) {
+    .press, .glass, .halo, .press .face, .wire { transition:none; } .blink { animation:none; } .pulse.go { animation:none; }
   }
 </style>
 </head>
@@ -673,9 +717,17 @@ const FIGS = [];
     audio: AUDIO,
     after: (ms, fn) => { const t = setTimeout(fn, ms); timers.push(t); return t; },
     every: (ms, fn) => { const t = setInterval(fn, ms); timers.push(t); return t; },
+    loop: fn => {
+      let alive = true;
+      const f = ts => { if (!alive) return; fn(ts); requestAnimationFrame(f); };
+      requestAnimationFrame(f);
+      const stop = () => { alive = false; };
+      timers.push({ clear: stop });
+      return stop;
+    },
     flash: (el, ms = 160) => { if (!el) return; el.classList.add('down', 'lit'); setTimeout(() => el.classList.remove('down'), 110); setTimeout(() => el.classList.remove('lit'), ms); },
     replay: (el, cls = 'go') => { if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); },
-    power: () => {}
+    power: on => { if (holder) holder.classList.toggle('glow', !!on); }
   };
 
   // Inject per-figure CSS
@@ -689,7 +741,11 @@ const FIGS = [];
 
   function mountHeroModel(idx) {
     if (activeHandle && activeHandle.unmount) activeHandle.unmount();
-    timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = [];
+    timers.forEach(t => {
+      if (t && typeof t.clear === 'function') t.clear();
+      else { clearTimeout(t); clearInterval(t); }
+    });
+    timers = [];
     currentModelIdx = idx;
 
     const fig = FIGS[idx];
