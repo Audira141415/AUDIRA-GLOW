@@ -87,40 +87,45 @@ echo [3/3] Pushing to GitHub (origin main)...
 git branch -M main
 git push -u origin main
 
-if !errorlevel! equ 0 (
+if not errorlevel 1 (
     color 0a
     echo.
     echo ================================================================
-    echo    SUCCESS! All changes have been pushed to GitHub!
+    echo    SUCCESS: All changes have been pushed to GitHub
+    echo    Repository: %REPO_URL%
+    echo ================================================================
+    goto :push_done
+)
+
+color 0e
+echo.
+echo [WARNING] Standard push encountered a conflict or network issue.
+echo Options:
+echo  [1] Pull and Rebase from remote, then push
+echo  [2] Force push to overwrite remote (Caution)
+echo  [3] Cancel
+set /p PUSH_OPT="Select option [1/2/3]: "
+if "%PUSH_OPT%"=="1" (
+    git pull --rebase origin main
+    git push -u origin main
+) else if "%PUSH_OPT%"=="2" (
+    git push -u origin main --force
+) else (
+    echo [INFO] Push cancelled by user.
+)
+
+if not errorlevel 1 (
+    color 0a
+    echo.
+    echo ================================================================
+    echo    SUCCESS: All changes have been pushed to GitHub
     echo    Repository: %REPO_URL%
     echo ================================================================
 ) else (
     echo.
-    color 0e
-    echo [WARNING] Standard push failed. Trying to resolve...
-    echo Options:
-    echo  [1] Pull and Rebase from remote, then push
-    echo  [2] Force push to overwrite remote (Caution)
-    echo  [3] Cancel
-    set /p PUSH_OPT="Select option [1/2/3]: "
-    if "!PUSH_OPT!"=="1" (
-        git pull --rebase origin main
-        git push -u origin main
-    ) else if "!PUSH_OPT!"=="2" (
-        git push -u origin main --force
-    ) else (
-        echo [INFO] Push cancelled by user.
-    )
-    if !errorlevel! equ 0 (
-        color 0a
-        echo ================================================================
-        echo    SUCCESS! All changes have been pushed to GitHub!
-        echo    Repository: %REPO_URL%
-        echo ================================================================
-    ) else (
-        echo [WARNING] Please review the git output above for authentication or network issues.
-    )
+    echo [WARNING] Please review the git output above for authentication or network issues.
 )
 
+:push_done
 echo.
 pause
