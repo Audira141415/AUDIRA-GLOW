@@ -215,6 +215,19 @@
   .col-footer .arr { color:var(--accent); transition:transform .2s; }
   .col-card:hover .col-footer .arr { transform:translateX(5px); }
 
+  /* FILTER BAR & CATEGORY SEGMENTATION */
+  .filter-bar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:24px 0 32px; font-family:var(--mono); font-size:11px; }
+  .filter-btn {
+    all:unset; cursor:pointer; padding:8px 18px; border-radius:999px;
+    border:1px solid var(--edge); background:rgba(20,21,23,0.7); color:var(--ink);
+    letter-spacing:.08em; text-transform:uppercase; transition:all .2s; user-select:none;
+  }
+  :root[data-theme="light"] .filter-btn { background:rgba(255,255,255,0.9); }
+  .filter-btn:hover { border-color:var(--line); color:var(--ink-hi); }
+  .filter-btn.active { border-color:var(--accent); color:var(--ink-hi); background:var(--bg); box-shadow:0 0 0 1px var(--accent) inset, 0 0 16px -4px var(--accent-dim); }
+  .filter-btn .n { opacity:.6; font-size:10px; margin-left:4px; }
+  .col-card.filtered-out { display:none !important; }
+
   /* PILLARS / ARCHITECTURE SECTION */
   .pillars-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:80px; }
   .pillar-card { background:rgba(20,21,23,0.6); border:1px solid var(--edge); border-radius:16px; padding:26px; display:grid; gap:10px; }
@@ -277,8 +290,110 @@
     .press, .glass, .halo, .press .face, .wire { transition:none; } .blink { animation:none; } .pulse.go { animation:none; }
   }
 </style>
+<link rel="stylesheet" href="assets/audira/audira-nav.css">
 </head>
 <body>
+
+<header class="dh">
+  <div class="dh-in">
+    <!-- Brand Logo -->
+    <a class="dh-brand" href="index.html" title="AUDIRA GLOW · Interactive Systems Engine">
+      <span class="dot"></span>
+      <span>AUDIRA GLOW</span>
+    </a>
+
+    <!-- Primary Nav Items with Dropdowns -->
+    <nav class="dh-nav" aria-label="Master Collections">
+      <div class="dh-item">
+        <a href="index.html" class="dh-link active">Home</a>
+      </div>
+
+      <!-- 3D & Mecha Dropdown -->
+      <div class="dh-item">
+        <a href="playable.html" class="dh-link">
+          <span>🎮 3D &amp; Mecha</span>
+          <span class="badge">4</span>
+        </a>
+        <div class="dh-menu">
+          <a href="gundam.html" class="dh-menu-link"><span>🤖 Gundam Striker 3D</span><span class="badge">WASD</span></a>
+          <a href="playable.html" class="dh-menu-link"><span>🐱 CatBot IK Rig</span><span class="badge">3D</span></a>
+          <a href="colorfigures.html" class="dh-menu-link"><span>🕹️ Colorfigures Gallery</span><span class="badge">26</span></a>
+          <a href="shipwright.html" class="dh-menu-link"><span>⛵ Shipwright 3D Studio</span><span class="badge">GLB</span></a>
+        </div>
+      </div>
+
+      <!-- Direct Colorfigures -->
+      <div class="dh-item">
+        <a href="colorfigures.html" class="dh-link">
+          <span>🕹️ Colorfigures</span>
+          <span class="badge">26</span>
+        </a>
+      </div>
+
+      <!-- Direct Shipwright -->
+      <div class="dh-item">
+        <a href="shipwright.html" class="dh-link">
+          <span>⛵ Shipwright</span>
+          <span class="badge">GLB</span>
+        </a>
+      </div>
+
+      <!-- Enterprise Infrastructure Dropdown -->
+      <div class="dh-item">
+        <a href="datacenter.html" class="dh-link">
+          <span>🏢 Enterprise</span>
+          <span class="badge">NOC</span>
+        </a>
+        <div class="dh-menu">
+          <a href="datacenter.html" class="dh-menu-link"><span>🖥️ Data Center Tier IV</span><span class="badge">12</span></a>
+          <a href="cyberlab.html" class="dh-menu-link"><span>⚛️ Cyber Lab Sci-Fi</span><span class="badge">5</span></a>
+          <a href="audira-studio.html" class="dh-menu-link"><span>📻 Valve Synth Studio</span><span class="badge">5</span></a>
+        </div>
+      </div>
+
+      <!-- Galleries Dropdown -->
+      <div class="dh-item">
+        <a href="cities.html" class="dh-link">
+          <span>🏙️ Galleries</span>
+          <span class="badge">33</span>
+        </a>
+        <div class="dh-menu">
+          <a href="cities.html" class="dh-menu-link"><span>🏙️ Cyber Cities</span><span class="badge">10</span></a>
+          <a href="objects.html" class="dh-menu-link"><span>📠 Classic Objects</span><span class="badge">10</span></a>
+          <a href="lumen.html" class="dh-menu-link"><span>💎 Lumen Lightforms</span><span class="badge">12</span></a>
+          <a href="computer-demo.html" class="dh-menu-link"><span>🖥️ Desk Computer 3D</span><span class="badge">1</span></a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Dedicated Search Button (Ctrl+K) -->
+    <button class="dh-search-btn" id="openSearchBtn" type="button" aria-label="Search all 75+ Models (Ctrl+K)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <span>Search 75+ Models...</span>
+      <kbd>Ctrl K</kbd>
+    </button>
+
+    <!-- Actions: Swatches & Theme Toggle -->
+    <div class="dh-actions">
+      <div class="dh-swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+      <button class="dh-theme-toggle" id="themeToggle" type="button" aria-label="Toggle Light/Dark Theme" title="Toggle Light / Dark Mode">
+        <span class="dh-theme-toggle-icon">
+          <svg class="sun-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </span>
+        <span class="theme-toggle-label">DARK</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+
+
+
+
+
 
 <!-- SVG Glow Filters -->
 <svg class="fx" aria-hidden="true">
@@ -290,32 +405,7 @@
 </svg>
 
 <!-- Fixed Header Navigation -->
-<header class="dh">
-  <div class="dh-in">
-    <a class="dh-brand" href="index.html"><span class="dot"></span><span>AUDIRA GLOW</span></a>
-    <nav class="dh-seg" aria-label="Collections">
-      <a href="index.html" class="active">OVERVIEW <span class="n">38+</span></a>
-      <a href="datacenter.html">DATA CENTER <span class="n">12</span></a>
-      <a href="cyberlab.html">CYBER LAB <span class="n">5</span></a>
-      <a href="audira-studio.html">AUDIRA STUDIO <span class="n">5</span></a>
-      <a href="objects.html">OBJECTS <span class="n">10</span></a>
-      <a href="cities.html">CITIES <span class="n">10</span></a>
-      <a href="lumen.html">LUMEN <span class="n">12</span></a>
-      <a href="computer-demo.html">DESK COMPUTER <span class="n">1</span></a>
-      <a href="assets/gallery-3d.html">3D DEMO <span class="n">12</span></a>
-    </nav>
-    <div class="dh-actions">
-      <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
-      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle Light/Dark Theme" title="Toggle Light / Dark Mode">
-        <span class="theme-toggle-icon">
-          <svg class="sun-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-          <svg class="moon-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        </span>
-        <span class="theme-toggle-label">DARK</span>
-      </button>
-    </div>
-  </div>
-</header>
+
 
 <main class="container">
   <!-- HERO SECTION -->
@@ -330,13 +420,14 @@
     </h1>
 
     <p class="hero-desc">
-      A bespoke digital universe of <strong>38+ interactive 2.5D isometric figures</strong>. Explore mission-critical Tier IV data centers, cryogenic quantum computers, warm audiophile vacuum-tube consoles, and architectural megacities — rendered with native Web Audio synthesis and fluid animation loops.
+      A bespoke digital universe of <strong>75+ interactive 3D and 2.5D isometric figures</strong> across 10 curated suites. Explore real-time drivable 3D mecha (Gundam Striker &amp; CatBot), 26 hand-inked playable everyday machines, parametric 18th-century warships with 1-click GLB export, Tier IV hyperscale data centers, and cryogenic quantum laboratories.
     </p>
 
     <div class="hero-actions">
-      <a href="datacenter.html" class="btn-primary">Explore Data Center · 12 Modules ↗</a>
-      <a href="cyberlab.html" class="btn-secondary">Cyber Lab · 5 Frontier Tech ↗</a>
-      <a href="audira-studio.html" class="btn-secondary">Audira Studio · 5 Audiophile Units ↗</a>
+      <a href="playable.html" class="btn-primary" style="background:#00e5ff; color:#000000; box-shadow:0 4px 20px -2px #00e5ff;">🎮 Playable 3D · Gundam &amp; Robots ↗</a>
+      <a href="colorfigures.html" class="btn-secondary" style="border-color:var(--accent); color:var(--accent);">🕹️ Colorfigures · 26 Mechanics ↗</a>
+      <a href="shipwright.html" class="btn-secondary" style="border-color:#b08d4a; color:#b08d4a;">⛵ Shipwright 3D · GLB Builder ↗</a>
+      <a href="datacenter.html" class="btn-secondary">🏢 Data Center · 12 Facilities ↗</a>
     </div>
 
     <!-- LIVE HERO SHOWCASE STAGE -->
@@ -369,12 +460,12 @@
   <!-- STATS BANNER -->
   <section class="stats-banner">
     <div class="stat-item">
-      <div class="stat-num">38<span>+</span></div>
-      <div class="stat-lbl">Interactive Vector Models</div>
+      <div class="stat-num">75<span>+</span></div>
+      <div class="stat-lbl">Interactive Models</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">6<span></span></div>
-      <div class="stat-lbl">Complete Collections</div>
+      <div class="stat-num">10<span></span></div>
+      <div class="stat-lbl">Curated Suites</div>
     </div>
     <div class="stat-item">
       <div class="stat-num">0<span>%</span></div>
@@ -391,18 +482,86 @@
   </section>
 
   <!-- MASTER COLLECTIONS SHOWCASE -->
-  <section>
+  <section id="collections">
     <div class="sec-heading">
       <span class="sec-tag">CURATED SYSTEM GALLERIES</span>
-      <h2 class="sec-title">Explore All 6 Master Collections</h2>
-      <p class="sec-desc">Each collection is engineered with precision geometry, dedicated Web Audio sound synthesis, keyboard hotkeys, and continuous real-time physics.</p>
+      <h2 class="sec-title">Explore All 10 Master Collections</h2>
+      <p class="sec-desc">Categorized into 3 specialized engineering domains: 3D Playable WebGL Studios, Mission-Critical Enterprise Infrastructure, and Architectural Isometric Artworks.</p>
+    </div>
+
+    <!-- CATEGORY FILTER BAR -->
+    <div class="filter-bar" role="tablist" aria-label="Filter Collections">
+      <button class="filter-btn active" data-filter="all">All Suites <span class="n">(10)</span></button>
+      <button class="filter-btn" data-filter="3d">🎮 3D WebGL &amp; Mecha <span class="n">(3)</span></button>
+      <button class="filter-btn" data-filter="systems">🏢 Enterprise &amp; Sci-Fi <span class="n">(3)</span></button>
+      <button class="filter-btn" data-filter="art">🏙️ Isometric Artworks <span class="n">(4)</span></button>
     </div>
 
     <div class="collections-grid">
-      <!-- 1. DATA CENTER -->
-      <a href="datacenter.html" class="col-card">
+      <!-- 1. PLAYABLE 3D (3D) -->
+      <div class="col-card" data-category="3d" style="border-color:#00e5ff; background:radial-gradient(ellipse at 80% 20%, rgba(0,229,255,0.12), transparent 70%), var(--bg-card);">
         <div>
-          <span class="col-badge">COLLECTION 01 · TIER IV CERTIFIED</span>
+          <span class="col-badge" style="color:#00e5ff;">STUDIO 01 · 3D CHARACTER RIGS</span>
+          <h3 class="col-title">Playable 3D · Character Playground</h3>
+          <p class="col-desc">Drivable 3D characters in the browser with third-person game controls (WASD relative to camera, Shift run, Space jump). Includes <strong>AUDIRA-01 Gundam Striker</strong> mecha with combat moves (Beam Rifle, Saber Slash, Vernier Dash) and <strong>CatBot</strong> with 2-joint IK procedural gait.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">WASD Game Controls</span>
+            <span class="col-tag-item">Gundam Striker Mecha</span>
+            <span class="col-tag-item">Two-Joint IK Solver</span>
+            <span class="col-tag-item">Spring Physics</span>
+            <span class="col-tag-item">5 Combat Moves</span>
+          </div>
+        </div>
+        <div class="col-footer" style="gap:8px; flex-wrap:wrap;">
+          <a href="gundam.html" style="color:#00e5ff; text-decoration:none; font-weight:600;">🤖 Gundam Striker ↗</a>
+          <a href="playable.html" style="color:var(--ink-hi); text-decoration:none;">Open Playground →</a>
+        </div>
+      </div>
+
+      <!-- 2. COLORFIGURES (3D) -->
+      <a href="colorfigures.html" class="col-card" data-category="3d" style="border-color:var(--accent); background:radial-gradient(ellipse at 80% 20%, var(--accent-dim), transparent 70%), var(--bg-card);">
+        <div>
+          <span class="col-badge">STUDIO 02 · 26 PLAYABLE FIGURES</span>
+          <h3 class="col-title">Colorfigures Hand-Inked Gallery</h3>
+          <p class="col-desc">26 whimsical isometric everyday machines: playable Arcade Cabinet &amp; Claw Machine, Espresso Machine, Vending Machine, Vinyl Record Player, Music Box, Photo Booth, Toaster, and Microwave with real 3D orbit, cutaway see-through, and paper wobble physics.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">26 Figures</span>
+            <span class="col-tag-item">Playable Arcade</span>
+            <span class="col-tag-item">Claw Machine</span>
+            <span class="col-tag-item">Cutaway See-Through</span>
+            <span class="col-tag-item">3D Orbit</span>
+          </div>
+        </div>
+        <div class="col-footer">
+          <span style="color:var(--accent);">Launch Colorfigures (26 Figures)</span>
+          <span class="arr">→</span>
+        </div>
+      </a>
+
+      <!-- 3. SHIPWRIGHT 3D (3D) -->
+      <a href="shipwright.html" class="col-card" data-category="3d" style="border-color:#b08d4a; background:radial-gradient(ellipse at 80% 20%, rgba(176,141,74,0.15), transparent 70%), var(--bg-card);">
+        <div>
+          <span class="col-badge" style="color:#b08d4a;">STUDIO 03 · PARAMETRIC 3D NAVAL</span>
+          <h3 class="col-title">The Shipwright · 3D Vessel Builder</h3>
+          <p class="col-desc">Real-time parametric 3D ship of the line simulator (after Le Bucentaure &amp; HMS Victory). Procedural hull curves, tumblehome, 80 broadside guns, 3 masts, standing &amp; running rigging, billowing sails with wind noise, and instant one-click <strong>Export to .GLB / .GLTF</strong>.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">Parametric 3D</span>
+            <span class="col-tag-item">GLTF/GLB Exporter</span>
+            <span class="col-tag-item">Wind Physics</span>
+            <span class="col-tag-item">SSAO Shaders</span>
+            <span class="col-tag-item">80 Guns Broadside</span>
+          </div>
+        </div>
+        <div class="col-footer">
+          <span style="color:#b08d4a;">Launch Shipwright 3D Simulator</span>
+          <span class="arr" style="color:#b08d4a;">→</span>
+        </div>
+      </a>
+
+      <!-- 4. DATA CENTER (systems) -->
+      <a href="datacenter.html" class="col-card" data-category="systems">
+        <div>
+          <span class="col-badge">SYSTEM 01 · TIER IV CERTIFIED</span>
           <h3 class="col-title">Data Center Infrastructure</h3>
           <p class="col-desc">Complete mission-critical facilities: 42U AI GPU Rack, Liquid Chiller CDU, Modular UPS, PTZ CCTV, DCIM NOC Video Wall, Spine-Leaf Network, 2.5 MVA Generator, CRAC Air Handler, Clean Agent Fire Suppression, Smart PDU, Robotic Tape Library, and Cold Aisle Pod.</p>
           <div class="col-tags">
@@ -410,6 +569,7 @@
             <span class="col-tag-item">NOC Telemetry</span>
             <span class="col-tag-item">DDoS Drill</span>
             <span class="col-tag-item">Blackout ATS</span>
+            <span class="col-tag-item">Closed-Loop AI</span>
           </div>
         </div>
         <div class="col-footer">
@@ -418,17 +578,18 @@
         </div>
       </a>
 
-      <!-- 2. CYBER LAB -->
-      <a href="cyberlab.html" class="col-card">
+      <!-- 5. CYBER LAB (systems) -->
+      <a href="cyberlab.html" class="col-card" data-category="systems">
         <div>
-          <span class="col-badge">COLLECTION 02 · FRONTIER SCI-FI</span>
+          <span class="col-badge">SYSTEM 02 · FRONTIER SCI-FI</span>
           <h3 class="col-title">Cyber Lab Technologies</h3>
-          <p class="col-desc">Next-generation experimental technologies: 127-qubit quantum cryo-chandelier (15 mK), magnetic confinement Tokamak fusion reactor (Q>10), aerodynamic VTOL hovercar, deep-space orbital recon satellite, and dual-loop liquid-cooled super PC.</p>
+          <p class="col-desc">Next-generation experimental technologies: 127-qubit quantum cryo-chandelier (15 mK), magnetic confinement Tokamak fusion reactor (Q&gt;10), aerodynamic VTOL hovercar, deep-space orbital recon satellite, and dual-loop liquid-cooled super PC.</p>
           <div class="col-tags">
             <span class="col-tag-item">5 Models</span>
             <span class="col-tag-item">Quantum Bloch</span>
             <span class="col-tag-item">Fusion Ignition</span>
             <span class="col-tag-item">VTOL Physics</span>
+            <span class="col-tag-item">Orbit Sweep</span>
           </div>
         </div>
         <div class="col-footer">
@@ -437,17 +598,18 @@
         </div>
       </a>
 
-      <!-- 3. AUDIRA STUDIO -->
-      <a href="audira-studio.html" class="col-card">
+      <!-- 6. AUDIRA STUDIO (systems) -->
+      <a href="audira-studio.html" class="col-card" data-category="systems">
         <div>
-          <span class="col-badge">COLLECTION 03 · AUDIOPHILE HARDWARE</span>
-          <h3 class="col-title">Audira Valve & Synth Studio</h3>
+          <span class="col-badge">SYSTEM 03 · AUDIOPHILE HARDWARE</span>
+          <h3 class="col-title">Audira Valve &amp; Synth Studio</h3>
           <p class="col-desc">Legendary analog studio instruments: modular patchable synthesizer, handheld retro gaming console, dual-triode valve tube DAC, cyberdeck tape station, and vintage world-band vacuum-tube radio receiver with real Web Audio station tuning.</p>
           <div class="col-tags">
             <span class="col-tag-item">5 Instruments</span>
             <span class="col-tag-item">EM84 Magic Eye</span>
             <span class="col-tag-item">Morse Code</span>
             <span class="col-tag-item">Tube Harmonics</span>
+            <span class="col-tag-item">Radio Tuning</span>
           </div>
         </div>
         <div class="col-footer">
@@ -456,16 +618,17 @@
         </div>
       </a>
 
-      <!-- 4. CITIES -->
-      <a href="cities.html" class="col-card">
+      <!-- 7. CITIES (art) -->
+      <a href="cities.html" class="col-card" data-category="art">
         <div>
-          <span class="col-badge">COLLECTION 04 · URBAN ARCOLOGY</span>
+          <span class="col-badge">GALLERY 01 · URBAN ARCOLOGY</span>
           <h3 class="col-title">Architectural Cyber Cities</h3>
           <p class="col-desc">Dense futuristic urban megastructures: high-density neon skyscraper clusters, hyperloop transit interchanges, elevated skybridge transit rings, and cybernetic metropolis blocks.</p>
           <div class="col-tags">
             <span class="col-tag-item">10 Cityscapes</span>
             <span class="col-tag-item">Transit Grids</span>
             <span class="col-tag-item">Neon Monoliths</span>
+            <span class="col-tag-item">Skybridge Loops</span>
           </div>
         </div>
         <div class="col-footer">
@@ -474,16 +637,17 @@
         </div>
       </a>
 
-      <!-- 5. OBJECTS -->
-      <a href="objects.html" class="col-card">
+      <!-- 8. OBJECTS (art) -->
+      <a href="objects.html" class="col-card" data-category="art">
         <div>
-          <span class="col-badge">COLLECTION 05 · RETRO COMPUTING</span>
-          <h3 class="col-title">Classic Objects & Artifacts</h3>
+          <span class="col-badge">GALLERY 02 · RETRO COMPUTING</span>
+          <h3 class="col-title">Classic Objects &amp; Artifacts</h3>
           <p class="col-desc">Iconic mechanical and digital artifacts: vintage desktop workstations, microwave communication relays, open-reel tape decks, and precision industrial instruments.</p>
           <div class="col-tags">
             <span class="col-tag-item">10 Artifacts</span>
             <span class="col-tag-item">Mechanical Decks</span>
             <span class="col-tag-item">Workstations</span>
+            <span class="col-tag-item">Precision Sensors</span>
           </div>
         </div>
         <div class="col-footer">
@@ -492,20 +656,39 @@
         </div>
       </a>
 
-      <!-- 6. LUMEN LIGHT SCULPTURES -->
-      <a href="lumen.html" class="col-card">
+      <!-- 9. LUMEN LIGHT SCULPTURES (art) -->
+      <a href="lumen.html" class="col-card" data-category="art">
         <div>
-          <span class="col-badge">COLLECTION 06 · SOLID GEOMETRY</span>
+          <span class="col-badge">GALLERY 03 · SOLID GEOMETRY</span>
           <h3 class="col-title">Lumen Geometric Lightforms</h3>
           <p class="col-desc">Minimalist mathematical light sculptures: hypercubes, rhombic dodecahedrons, volumetric refractive crystal prisms, and monolithic radiant polyhedra.</p>
           <div class="col-tags">
             <span class="col-tag-item">12 Sculptures</span>
             <span class="col-tag-item">Pure Geometry</span>
             <span class="col-tag-item">Refraction</span>
+            <span class="col-tag-item">Volumetric Glow</span>
           </div>
         </div>
         <div class="col-footer">
           <span>Launch Lumen (12 Figures)</span>
+          <span class="arr">→</span>
+        </div>
+      </a>
+
+      <!-- 10. COMPUTER DEMO & 3D CANVAS (art) -->
+      <a href="computer-demo.html" class="col-card" data-category="art">
+        <div>
+          <span class="col-badge">GALLERY 04 · STANDALONE 3D</span>
+          <h3 class="col-title">Desk Computer &amp; 3D Canvas</h3>
+          <p class="col-desc">Fully interactive retro desktop computer workstation and WebGL Three.js 3D canvas viewer with orbit rotation, metallic specular reflection, and component inspection.</p>
+          <div class="col-tags">
+            <span class="col-tag-item">Standalone PC</span>
+            <span class="col-tag-item">3D WebGL Canvas</span>
+            <span class="col-tag-item">Orbit Controls</span>
+          </div>
+        </div>
+        <div class="col-footer">
+          <span>Launch Computer Demo</span>
           <span class="arr">→</span>
         </div>
       </a>
@@ -549,20 +732,23 @@
   <div class="container foot-in">
     <a class="foot-brand" href="index.html">
       <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent);"></span>
-      <span>AUDIRA GLOW · BESPOKE ISOMETRIC ENGINE</span>
+      <span>AUDIRA GLOW · BESPOKE 3D &amp; ISOMETRIC SYSTEMS</span>
     </a>
     <div class="foot-links">
+      <a href="playable.html">Playable 3D</a>
+      <a href="gundam.html">Gundam Mecha</a>
+      <a href="colorfigures.html">Colorfigures</a>
+      <a href="shipwright.html">Shipwright 3D</a>
       <a href="datacenter.html">Data Center</a>
       <a href="cyberlab.html">Cyber Lab</a>
       <a href="audira-studio.html">Audira Studio</a>
       <a href="cities.html">Cities</a>
       <a href="objects.html">Objects</a>
       <a href="lumen.html">Lumen</a>
-      <a href="assets/gallery-3d.html">3D WebGL</a>
     </div>
     <div class="foot-status">
       <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#00e676; box-shadow:0 0 8px #00e676;"></span>
-      <span>All 38 Models Operational · 60 FPS</span>
+      <span>All 75+ Models Operational · 60 FPS Engine · Tier IV</span>
     </div>
   </div>
 </footer>
@@ -778,6 +964,58 @@ const FIGS = [];
 
   if (FIGS.length > 0) {
     mountHeroModel(0);
+  }
+
+  // Filter Buttons logic for Master Collections Showcase
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.filter;
+      document.querySelectorAll('.col-card').forEach(card => {
+        card.classList.toggle('filtered-out', cat !== 'all' && card.dataset.category !== cat);
+      });
+    });
+  });
+})();
+</script>
+
+<script src="assets/audira/audira-nav.js"></script>
+
+
+
+
+<script id="theme-ctrl">
+(function() {
+  function setTheme(t) {
+    var theme = (t === 'light') ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem('audira-glow-theme', theme); } catch(e) {}
+    var btns = document.querySelectorAll('#themeToggle, .dh-theme-toggle');
+    btns.forEach(function(btn) {
+      var lbl = btn.querySelector('.theme-toggle-label');
+      if (lbl) lbl.textContent = theme.toUpperCase();
+    });
+  }
+  var saved = 'dark';
+  try { saved = localStorage.getItem('audira-glow-theme') || 'dark'; } catch(e) {}
+  setTheme(saved);
+  
+  function initBtn() {
+    var btns = document.querySelectorAll('#themeToggle, .dh-theme-toggle');
+    btns.forEach(function(btn) {
+      var lbl = btn.querySelector('.theme-toggle-label');
+      if (lbl) lbl.textContent = (document.documentElement.dataset.theme || 'dark').toUpperCase();
+      btn.onclick = function() {
+        var cur = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+        setTheme(cur === 'light' ? 'dark' : 'light');
+      };
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBtn);
+  } else {
+    initBtn();
   }
 })();
 </script>

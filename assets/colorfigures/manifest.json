@@ -1,0 +1,184 @@
+[
+  {
+    "index": 1,
+    "id": "washer",
+    "name": "Washing machine",
+    "file": "assets/colorfigures/washer.html",
+    "size": 127803
+  },
+  {
+    "index": 2,
+    "id": "espresso",
+    "name": "Espresso machine",
+    "file": "assets/colorfigures/espresso.html",
+    "size": 119418
+  },
+  {
+    "index": 3,
+    "id": "vending",
+    "name": "Vending machine",
+    "file": "assets/colorfigures/vending.html",
+    "size": 100317
+  },
+  {
+    "index": 4,
+    "id": "toaster",
+    "name": "Toaster",
+    "file": "assets/colorfigures/toaster.html",
+    "size": 92045
+  },
+  {
+    "index": 5,
+    "id": "microwave",
+    "name": "Microwave",
+    "file": "assets/colorfigures/microwave.html",
+    "size": 112211
+  },
+  {
+    "index": 6,
+    "id": "sharpener",
+    "name": "Pencil sharpener",
+    "file": "assets/colorfigures/sharpener.html",
+    "size": 88733
+  },
+  {
+    "index": 7,
+    "id": "windup",
+    "name": "Wind-up toy",
+    "file": "assets/colorfigures/windup.html",
+    "size": 90924
+  },
+  {
+    "index": 8,
+    "id": "crossing",
+    "name": "Traffic light",
+    "file": "assets/colorfigures/crossing.html",
+    "size": 87600
+  },
+  {
+    "index": 9,
+    "id": "smokealarm",
+    "name": "Smoke alarm",
+    "file": "assets/colorfigures/smokealarm.html",
+    "size": 105070
+  },
+  {
+    "index": 10,
+    "id": "fridge",
+    "name": "Fridge",
+    "file": "assets/colorfigures/fridge.html",
+    "size": 120931
+  },
+  {
+    "index": 11,
+    "id": "cistern",
+    "name": "Toilet flush",
+    "file": "assets/colorfigures/cistern.html",
+    "size": 97635
+  },
+  {
+    "index": 12,
+    "id": "gashapon",
+    "name": "Capsule toy machine",
+    "file": "assets/colorfigures/gashapon.html",
+    "size": 119553
+  },
+  {
+    "index": 13,
+    "id": "foodtruck",
+    "name": "Food truck",
+    "file": "assets/colorfigures/foodtruck.html",
+    "size": 125062
+  },
+  {
+    "index": 14,
+    "id": "pourover",
+    "name": "Pour-over coffee set",
+    "file": "assets/colorfigures/pourover.html",
+    "size": 122241
+  },
+  {
+    "index": 15,
+    "id": "lamp",
+    "name": "Desk lamp",
+    "file": "assets/colorfigures/lamp.html",
+    "size": 93935
+  },
+  {
+    "index": 16,
+    "id": "ekettle",
+    "name": "Electric kettle",
+    "file": "assets/colorfigures/ekettle.html",
+    "size": 103652
+  },
+  {
+    "index": 17,
+    "id": "fan",
+    "name": "Desk fan",
+    "file": "assets/colorfigures/fan.html",
+    "size": 94891
+  },
+  {
+    "index": 18,
+    "id": "claw",
+    "name": "Claw machine",
+    "file": "assets/colorfigures/claw.html",
+    "size": 135183
+  },
+  {
+    "index": 19,
+    "id": "vacuum",
+    "name": "Vacuum cleaner",
+    "file": "assets/colorfigures/vacuum.html",
+    "size": 121664
+  },
+  {
+    "index": 20,
+    "id": "blender",
+    "name": "Blender",
+    "file": "assets/colorfigures/blender.html",
+    "size": 133053
+  },
+  {
+    "index": 21,
+    "id": "booth",
+    "name": "Toilet booth",
+    "file": "assets/colorfigures/booth.html",
+    "size": 88817
+  },
+  {
+    "index": 22,
+    "id": "gumball",
+    "name": "Gumball machine",
+    "file": "assets/colorfigures/gumball.html",
+    "size": 96526
+  },
+  {
+    "index": 23,
+    "id": "recordplayer",
+    "name": "Record player",
+    "file": "assets/colorfigures/recordplayer.html",
+    "size": 107396
+  },
+  {
+    "index": 24,
+    "id": "musicbox",
+    "name": "Music box",
+    "file": "assets/colorfigures/musicbox.html",
+    "size": 96243
+  },
+  {
+    "index": 25,
+    "id": "photobooth",
+    "name": "Photo booth",
+    "file": "assets/colorfigures/photobooth.html",
+    "size": 100934
+  },
+  {
+    "index": 26,
+    "id": "arcade",
+    "name": "Arcade cabinet",
+    "file": "assets/colorfigures/arcade.html",
+    "size": 121994
+  }
+]

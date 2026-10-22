@@ -43,7 +43,13 @@ if %ERRORLEVEL% equ 0 (
     echo [OK] Server AUDIRA GLOW BERHASIL DIJALANKAN!
     echo.
     echo   - URL Utama    : http://localhost:3000/
+    echo   - Colorfigures : http://localhost:3000/colorfigures.html
+    echo   - Playable 3D  : http://localhost:3000/playable.html
+    echo   - Gundam Mecha : http://localhost:3000/gundam.html
+    echo   - Shipwright 3D: http://localhost:3000/shipwright.html
     echo   - Audira Studio: http://localhost:3000/audira-studio.html
+    echo   - Data Center  : http://localhost:3000/datacenter.html
+    echo   - Cyber Lab    : http://localhost:3000/cyberlab.html
     echo   - Classic Demo : http://localhost:3000/objects.html
     echo.
     echo [*] Membuka browser ke http://localhost:3000/ ...

@@ -1,0 +1,1047 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Toilet booth</title>
+<style>.mcap{display:none!important}@media (max-width:560px){.stat .v{font-size:20px!important}.stats{align-items:flex-end}}@media (min-width:561px){.vset{top:4px!important}#stats{top:var(--vset-h,44px)!important}}</style><style>@media (max-width:560px){body > header{display:none}}</style><script>window.FIG_A = () => innerWidth <= 560 ? 1.1 : .75;</script><script>window.LBL_U = () => { if (innerWidth > 560) return 0; const s = document.getElementById("fig"); return s && s.clientWidth && s.viewBox.baseVal.width ? s.viewBox.baseVal.width / s.clientWidth : 0; };</script></head>
+<body>
+<script>/* ============================================================
+   Colorfigures core: projection, shapes, shading, ink, page shell.
+   A figure page loads this file, then calls mountFigure({...}).
+   See BRIEF.md for the drawing contract and conventions.
+   ============================================================ */
+
+/* ---------- palettes ---------- */
+const PALS = {
+  mustard: { l:'#f4b829', m:'#d49c1f', d:'#4e4a18' },
+  tomato:  { l:'#ef6a4c', m:'#cf5038', d:'#4a2219' },
+  mint:    { l:'#93d3b0', m:'#71b693', d:'#1f4034' },
+  cobalt:  { l:'#76a0e2', m:'#5a82c6', d:'#1c2948' },
+  blush:   { l:'#f3a6bb', m:'#d8869c', d:'#4b2430' },
+};
+const METAL   = { l:'#eef0f0', m:'#c6ccce', d:'#8f989b' };
+const CLEAR   = { l:'#e4f2f4', m:'#c4dfe4', d:'#97b9c0' };
+const CERAMIC = { l:'#fbfaf3', m:'#e3e0d2', d:'#bdb8a6' };
+const DARK    = { l:'#55504a', m:'#3d3935', d:'#272421' };
+const INK = '#231e16';
+const SHADOW = '#41538f';
+
+/* ---------- projection (x = depth toward viewer-right, y = toward viewer-left, z = up) ---------- */
+const C = Math.cos(Math.PI/6), S = Math.sin(Math.PI/6);
+let OX = 0, OY = 0;
+/* Free orthographic camera (internal names start with CAM_ / cam so they never clash with a figure's own names). YAW turns the viewer around the vertical axis (45° = the classic front-left view),
+   PITCH is how far it looks down (35.26° = true isometric). At the defaults P() is exactly the old isometric
+   projection, so every figure drawn for it still lines up. Drag the figure to orbit; double-click to reset.
+   rotV(n) maps a world direction into the default view's frame, so vis / tone / any "sum of rotV > 0" test keep
+   working at every angle: the viewer is always (1,1,1) and the light stays put relative to the viewer. */
+let VIEW = 0, RC = [0, 0], RCZ = 0;
+const VIEW_NAMES = ['front', 'left side', 'back', 'right side'];
+const TURNS = [0, 2];
+const YAW0 = 45, PITCH0 = Math.atan(1/Math.SQRT2) * 180/Math.PI, CAM_K = Math.sqrt(1.5);
+let YAW = YAW0, PITCH = PITCH0, CAM_R, CAM_U, CAM_V, CAM_D;                       // right, up, toward viewer, screen-down
+const camBasis = (yaw, pitch) => { const t = yaw*Math.PI/180, p = pitch*Math.PI/180, ct = Math.cos(t), st = Math.sin(t), cp = Math.cos(p), sp2 = Math.sin(p);
+  return { R:[st,-ct,0], U:[-sp2*ct,-sp2*st,cp], V:[cp*ct,cp*st,sp2] }; };
+const CAM_B0 = camBasis(YAW0, PITCH0);
+// CAM_LIM: how far (deg) the camera may turn either side of the front view; null = all the way round (set per figure)
+let CAM_LIM = null;
+function setCam(yaw, pitch){ YAW = CAM_LIM == null ? yaw : Math.max(YAW0 - CAM_LIM, Math.min(YAW0 + CAM_LIM, yaw));
+  PITCH = CAM_LIM == null ? Math.max(6, Math.min(78, pitch)) : Math.max(15, Math.min(62, pitch)); const b = camBasis(YAW, PITCH); CAM_R = b.R; CAM_U = b.U; CAM_V = b.V; CAM_D = CAM_U.map(v => -v); }
+setCam(YAW0, PITCH0);
+const camDot = (a,b) => a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const rotV = n => { const r = camDot(n,CAM_R), u = camDot(n,CAM_U), v = camDot(n,CAM_V); return [0,1,2].map(i => CAM_B0.R[i]*r + CAM_B0.U[i]*u + CAM_B0.V[i]*v); };
+// the light's ground direction turns with the viewer's yaw only (shadows always fall toward the lower left of the screen)
+const yawTurn = ([x,y]) => { const t = (YAW - YAW0)*Math.PI/180, c = Math.cos(t), s = Math.sin(t); return [x*c - y*s, x*s + y*c]; };
+const rotXY = (x,y) => [x, y];                                                // kept for old callers
+const P0 = (x,y,z) => [(x-y)*C + OX, (x+y)*S - z + OY];                       // raw iso
+const P  = (x,y,z) => { const q = [x-RC[0], y-RC[1], z-RCZ];
+  return [CAM_K*camDot(q,CAM_R) + (RC[0]-RC[1])*C + OX, CAM_K*camDot(q,CAM_D) + (RC[0]+RC[1])*S - RCZ + OY]; };
+const Dv = (x,y,z) => [CAM_K*camDot([x,y,z],CAM_R), CAM_K*camDot([x,y,z],CAM_D)];
+// distance toward the viewer: draw parts with smaller depth first
+const depthOf = p => camDot(p, CAM_V);
+// sort [{at:[x,y,z], svg}] back-to-front for the current camera. A part may also give box:[[x0,y0,z0],[x1,y1,z1]]:
+// when two boxes are separated along x, y or z, the one on the viewer's side goes last (a centre point alone gets long
+// or wrapping parts wrong: a pole beside a row of keys, a spout reaching past a cup).
+const boxMid = b => [0,1,2].map(k => (b[0][k] + b[1][k]) / 2);
+const sepOrder = (p, q) => { if (!p.box || !q.box) return 0;
+  for (let k = 0; k < 3; k++){ if (p.box[1][k] <= q.box[0][k] + 1e-6) return CAM_V[k] >= 0 ? -1 : 1; if (q.box[1][k] <= p.box[0][k] + 1e-6) return CAM_V[k] >= 0 ? 1 : -1; }
+  return 0; };
+const byDepth = parts => parts.filter(Boolean).sort((p,q) => sepOrder(p,q) || (depthOf(p.at || boxMid(p.box)) - depthOf(q.at || boxMid(q.box)))).map(p => p.svg).join('');
+// the half of a vertical ring that faces the viewer / is turned away, as [from, to] angles in degrees (0 = +x, 90 = +y)
+const nearHalf = () => [YAW - 90, YAW + 90], farHalf = () => [YAW + 90, YAW + 270];
+// an open container (cup, bin, cone, drum) between two rings: far inner wall, then its contents, then the near outer wall
+const openShell = (A, B, colour, contents = '') => loft(A, B, colour, true) + contents + loft(A, B, colour);
+const f  = v => v.toFixed(1);
+const pd = (pts, close=true) => 'M' + pts.map(p => { const q = P(p[0],p[1],p[2]); return f(q[0])+' '+f(q[1]); }).join('L') + (close ? 'Z' : '');
+const sp = pts => 'M' + pts.map(q => f(q[0])+' '+f(q[1])).join('L') + 'Z';
+
+/* ---------- 2D shapes in a plane's (u,v) coords (v up), mapped to 3D by a plane ---------- */
+const arcUV  = (cu,cv,r,a0,a1,n=7) => { const o=[]; for (let i=0;i<=n;i++){ const a=(a0+(a1-a0)*i/n)*Math.PI/180; o.push([cu+r*Math.cos(a), cv+r*Math.sin(a)]); } return o; };
+const rrUV   = (u0,v0,u1,v1,r,n=7) => r <= 0 ? rectUV(u0,v0,u1,v1) : [...arcUV(u1-r,v0+r,r,-90,0,n), ...arcUV(u1-r,v1-r,r,0,90,n), ...arcUV(u0+r,v1-r,r,90,180,n), ...arcUV(u0+r,v0+r,r,180,270,n)];
+const rectUV = (u0,v0,u1,v1) => [[u0,v0],[u1,v0],[u1,v1],[u0,v1]];
+const ellUV  = (cu,cv,ru,rv,n=24) => Array.from({length:n}, (_,i) => { const a=i/n*2*Math.PI; return [cu+ru*Math.cos(a), cv+rv*Math.sin(a)]; });
+const PX = x => ([u,v]) => [x,u,v];      // front-facing plane x = const   (u = y, v = z)
+const PY = y => ([u,v]) => [u,y,v];      // side plane y = const           (u = x, v = z)
+const PZ = z => ([u,v]) => [u,v,z];      // horizontal plane z = const     (u = x, v = y)
+const on = (plane, uv) => uv.map(plane);
+
+/* ---------- vectors + shading ---------- */
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+const norm=a=>{ const l=Math.hypot(...a)||1; return a.map(v=>v/l); };
+const avg=ps=>ps.reduce((s,p)=>[s[0]+p[0]/ps.length,s[1]+p[1]/ps.length,s[2]+p[2]/ps.length],[0,0,0]);
+const vis = n => { const r = rotV(n); return r[0]+r[1]+r[2] > 1e-6; };   // viewer looks from (+1,+1,+1) after the turn
+const facing = vis;                                                       // readable alias: is this face toward the viewer?
+const SHADOW_K = 0.85, AZ_MIN = 20, AZ_MAX = 160;
+let L = [0,0,1], SH = [0,0];
+function setLight(deg){ const a=deg*Math.PI/180; SH=[SHADOW_K*Math.cos(a), SHADOW_K*Math.sin(a)]; L=norm([-SH[0],-SH[1],1]); }
+const LIN = norm([.6,.2,1]);                       // fixed light for interiors / small props
+// Three flat tones, but blended across a narrow band at each step, so a face that turns past a threshold while the
+// figure rotates fades between tones instead of snapping (at rest almost every face still sits on a pure tone).
+const SOFT = .18;
+const step3 = (d, hi, lo, m) => { const ss = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a)/(b - a))); return k*k*(3 - 2*k); };
+  const a = ss(hi - SOFT, hi + SOFT, d), b = ss(lo - SOFT, lo + SOFT, d);
+  return a >= 1 ? m.l : b <= 0 ? m.d : a > 0 ? mix(m.m, m.l, a) : b < 1 ? mix(m.d, m.m, b) : m.m; };
+const tone  = (n,m) => step3(dot(rotV(n),L),   -.15, -.45, m);   // exterior, follows the sun
+const toneI = (n,m) => step3(dot(rotV(n),LIN),  .6,   .05, m);   // interior / props
+const mix = (a,b,t) => '#' + [1,3,5].map(i => Math.round(parseInt(a.substr(i,2),16)*(1-t) + parseInt(b.substr(i,2),16)*t).toString(16).padStart(2,'0')).join('');
+const matOf = hex => ({ l:hex, m:mix(hex,'#000000',.16), d:mix(hex,'#000000',.42) });
+const ease = t => t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+
+/* ---------- drawing primitives (all return SVG strings) ---------- */
+const ink   = (d,w=1.4) => `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`;
+const fill  = (d,c,extra='') => `<path d="${d}" fill="${c}" ${extra}/>`;
+const face  = (d,c) => `<path d="${d}" fill="${c}" stroke="${c}" stroke-width=".7" stroke-linejoin="round"/>`;
+const shape = (pts,c,w=1.2) => fill(pd(pts),c) + (w ? ink(pd(pts),w) : '');
+const line  = (pts,w=1.2) => ink(pd(pts,false),w);
+// Loft between two rings of equal length (closed). colour(n) picks each strip's fill; flip = seen from inside.
+function loft(A, B, colour, flip=false){
+  const n=A.length, cen=avg(A.concat(B)); let s='';
+  for (let i=0;i<n;i++){
+    const a0=A[i], a1=A[(i+1)%n], b1=B[(i+1)%n], b0=B[i];
+    let nr = norm(cross(sub(a1,a0), sub(b0,a0)));
+    if (!isFinite(nr[0])) continue;
+    if (dot(nr, sub(avg([a0,a1,b1,b0]), cen)) < 0) nr = nr.map(v=>-v);
+    if (flip) nr = nr.map(v=>-v);
+    if (vis(nr)) s += face(pd([a0,a1,b1,b0]), colour(nr));
+  }
+  return s;
+}
+function hull(pts){
+  pts = pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]); const lo=[], up=[];
+  for (const p of pts){ while(lo.length>=2 && cr(lo[lo.length-2],lo[lo.length-1],p)<=0) lo.pop(); lo.push(p); }
+  for (const p of pts.reverse()){ while(up.length>=2 && cr(up[up.length-2],up[up.length-1],p)<=0) up.pop(); up.push(p); }
+  lo.pop(); up.pop(); return lo.concat(up);
+}
+const hullInk = (pts3,w=1.4) => ink(sp(hull(pts3.map(p=>P(...p)))), w);
+// Axis-aligned box: three visible faces, shaded, each outlined. shade = tone (sunlit) or toneI (interior).
+function box(x0,y0,z0,x1,y1,z1,m,shade=toneI,w=1){
+  // all six faces, drawn only when they face the viewer (sides first, then top) — correct in every VIEW
+  const F = [
+    [[0,1,0],  [[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]]],
+    [[1,0,0],  [[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]]],
+    [[0,-1,0], [[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1]]],
+    [[-1,0,0], [[x0,y0,z0],[x0,y1,z0],[x0,y1,z1],[x0,y0,z1]]],
+    [[0,0,1],  [[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]] ];
+  return F.filter(([n]) => vis(n)).map(([n,q]) => shape(q, shade(n,m), w)).join('');
+}
+// Rounded-profile extrusion: profile (u=y, v=z) swept along x from x0 to x1. Body of most machines.
+function extrude(profileUV, x0, x1, m, shade=tone){ return loft(on(PX(x0),profileUV), on(PX(x1),profileUV), n=>shade(n,m)); }
+// Vertical cylinder (axis z) centred (x,y), radius r from z0 to z1, with top cap.
+function cyl(x,y,z0,z1,r,m,shade=toneI,w=1.2,n=24){
+  const A=on(PZ(z0),ellUV(x,y,r,r,n)), B=on(PZ(z1),ellUV(x,y,r,r,n));
+  return loft(A,B,nr=>shade(nr,m)) + fill(pd(B),shade([0,0,1],m)) + hullInk([...A,...B],w) + ink(pd(B),w*.8);
+}
+// Cylinder lying along x (e.g. a knob or dial sticking out of a front face): centred (y,z), from x0 to x1.
+function cylX(x0,x1,y,z,r,m,shade=toneI,w=1.1,n=20){
+  const A=on(PX(x0),ellUV(y,z,r,r,n)), B=on(PX(x1),ellUV(y,z,r,r,n));
+  // cap on whichever end faces the viewer (the +x end in VIEW 0)
+  const capB = vis([1,0,0]), cap = capB ? B : A, cn = capB ? [1,0,0] : [-1,0,0];
+  return loft(A,B,nr=>shade(nr,m)) + (vis(cn) ? fill(pd(cap),shade(cn,m)) : '') + hullInk([...A,...B],w) + (vis(cn) ? ink(pd(cap),w*.8) : '');
+}
+// Cylinder between any two 3D points a and b (a lamp arm, a rod, a pipe at an angle, a handle bar), radius r.
+// The end facing the viewer gets a cap. For a tapered part (a cone, a lamp shade) pass r1 for the radius at b.
+function rod(a, b, r, m, shade=toneI, w=1, r1=r, n=16){
+  const d = norm(sub(b, a)), u = norm(cross(d, Math.abs(d[2]) < .9 ? [0,0,1] : [1,0,0])), v = cross(d, u);
+  const ring = (p, rr) => Array.from({length:n}, (_,i) => { const t = i/n*2*Math.PI, c = Math.cos(t)*rr, s2 = Math.sin(t)*rr;
+    return [p[0] + u[0]*c + v[0]*s2, p[1] + u[1]*c + v[1]*s2, p[2] + u[2]*c + v[2]*s2]; });
+  const A = ring(a, r), B = ring(b, r1), capB = vis(d), cap = capB ? B : A, cn = capB ? d : d.map(x => -x);
+  return loft(A, B, nr => shade(nr, m)) + (Math.max(r, r1) > 0 ? fill(pd(cap), shade(cn, m)) + ink(pd(cap), w*.8) : '') + hullInk([...A, ...B], w);
+}
+// Text lying flat on a front plane x = const, centred at (y,z) baseline; reads left-to-right on screen.
+// text sits on a face: if its reading direction comes out mirrored (or edge-on), that face is turned away, so the text is hidden
+const txM = (o, U, V) => (U[0]*V[1] - U[1]*V[0]) <= .02 * Math.hypot(...U) * Math.hypot(...V) ? `matrix(0 0 0 0 ${f(o[0])} ${f(o[1])})` : `matrix(${U[0].toFixed(4)} ${U[1].toFixed(4)} ${V[0].toFixed(4)} ${V[1].toFixed(4)} ${f(o[0])} ${f(o[1])})`;
+const tx = (x,y,z,str,size,col=INK,weight=700) => { const o=P(x,y,z);
+  return `<text transform="${txM(o, Dv(0,-1,0), Dv(0,0,-1))}" font-size="${size}" fill="${col}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-weight="${weight}" letter-spacing=".04em">${str}</text>`; };
+// Text on a side plane y = const, centred at (x,z).
+const txY = (x,y,z,str,size,col=INK,weight=700) => { const o=P(x,y,z);
+  return `<text transform="${txM(o, Dv(1,0,0), Dv(0,0,-1))}" font-size="${size}" fill="${col}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-weight="${weight}" letter-spacing=".04em">${str}</text>`; };
+// Cast shadow of a set of 3D points (any outline of the object), pushed along the light onto z = 0.
+// the light stays put relative to the viewer, so the shadow is cast in turned coordinates
+const castShadow = pts3 => { const [sx, sy] = yawTurn(SH); return fill(sp(hull(pts3.map(([x,y,z]) => P(x+z*sx, y+z*sy, 0)))), SHADOW); };   // the light stays with the viewer
+// Group helpers: clickable target, clip to an opening.
+const act  = (name, inner, data='') => `<g data-act="${name}" ${data}>${inner}</g>`;
+let _clipN = 0;
+const clipTo = (pts3, inner) => { const id = 'k' + (++_clipN); return `<clipPath id="${id}"><path d="${pd(pts3)}"/></clipPath><g clip-path="url(#${id})">${inner}</g>`; };
+
+/* ---------- constant on-screen line weight ----------
+   Stroke widths are written in model units, and each figure is zoomed to fill the frame, so a small
+   object would get fat lines. INK_K rescales every stroke-width (and the wobble/grain filter) so all
+   figures match the reference zoom of the booth / vending machine (viewBox ≈ 585 units wide). */
+const INK_REF_VB = 585;
+let INK_K = 1;
+const inkScale = svg => INK_K === 1 ? svg : svg.replace(/stroke-width="([\d.]+)"/g, (_, w) => `stroke-width="${(+w * INK_K).toFixed(2)}"`);
+
+/* ---------- page shell ---------- */
+const CORE_CSS = `
+  :root{--paper:#f2efe7;--ink:#231e16;--muted:#857d6e;--rule:#ddd6c8}
+  *{box-sizing:border-box} html,body{margin:0;height:100%}
+  body{background-color:var(--paper);
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .39  0 0 0 0 .33  .16 0 0 0 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+    overflow-x:hidden;color:var(--ink);font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;display:flex;flex-direction:column;align-items:center;padding:24px 16px 32px}
+  header{width:100%;max-width:760px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+  header h1{font-size:13px;font-weight:600;margin:0;letter-spacing:.02em} header span{color:var(--muted)}
+  #fig{width:100%;max-width:760px;height:auto;display:block;margin:4px 0 8px;user-select:none;overflow:visible}
+  #fig{cursor:grab;touch-action:pan-y} #fig.drag{cursor:grabbing} #fig [data-act]{cursor:pointer}
+  #readout, .idea{display:none}   /* status line + big idea are off: the buttons and motion tell the story */
+  .idea{width:100%;max-width:760px;margin:-6px 0 16px;font-size:12.5px;line-height:1.5;text-align:center;color:var(--ink)}
+  .idea strong{letter-spacing:.12em;text-transform:uppercase;font-size:11px;margin-right:8px}
+  #readout{position:relative;min-height:1.4em;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;text-align:center;text-shadow:0 0 3px var(--paper),0 0 6px var(--paper),0 0 10px var(--paper)}
+  .stage{position:relative;width:100%;max-width:760px}
+  .actions{position:absolute;top:4px;left:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px;z-index:2;max-width:220px}
+  .actions .cap{color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 2px}
+  .turn{position:absolute;right:0;bottom:2%;display:flex;align-items:center;gap:8px;z-index:2;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .turn span{min-width:7.5em;text-align:center}
+  .tb{font:inherit;font-size:17px;line-height:1;color:var(--ink);background:transparent;border:1.5px solid var(--ink);border-radius:999px;width:34px;height:34px;cursor:pointer;display:grid;place-items:center;padding:0}
+  .tb:hover{background:#0000000d}
+  #fig{transition:transform .14s ease-in}
+  #fig.flip{transform:scaleX(.04)}
+  #fig.dragging{cursor:grabbing}
+  .stats{position:absolute;top:4px;right:0;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:2;text-align:right}
+  .stat .k{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .stat .v{font-size:34px;font-weight:800;line-height:1.05;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .stat.small .v{font-size:20px}
+  .stat .v.bump{animation:bump .35s ease-out}
+  @keyframes bump{0%{transform:scale(1.18)}100%{transform:none}}
+  .stepwrap{position:relative;display:flex;align-items:center;gap:8px}
+  .act{font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:999px;padding:5px 14px;cursor:pointer;white-space:nowrap}
+  .act:hover{background:color-mix(in srgb,var(--paper) 92%,var(--ink))}
+  .act .car{margin-left:6px;font-size:10px}
+  .act:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+  .chips{display:none;flex-wrap:wrap;gap:6px;background:var(--paper);border:2px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--ink);
+    padding:8px;width:max-content;max-width:min(300px,62vw);position:absolute;left:calc(100% + 10px);top:-4px;z-index:3}
+  .stepwrap.open .chips{display:flex}
+  .chip{white-space:nowrap;font:inherit;font-size:11.5px;font-weight:700;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;padding:4px 8px;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
+  .chip:hover{background:var(--accent,#f4b829);transform:translate(-1px,-1px)}
+  .chip:disabled{opacity:.35;cursor:default;transform:none;background:var(--paper)}
+  
+  @media (max-width:560px){body{padding:14px 12px 24px}header span,.actions .cap{display:none}.actions{flex-direction:row;flex-wrap:wrap;gap:6px}.act{font-size:12px;padding:4px 11px}.turn{position:static;justify-content:flex-end;margin-top:4px}.stats{position:static;flex-direction:row;justify-content:flex-end;gap:18px;margin-bottom:4px}.actions{position:static;max-width:none;margin:6px 0 4px}.chips{left:0;top:calc(100% + 8px)}}
+  .controls{width:100%;max-width:760px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 28px;border-top:1px solid var(--rule);padding-top:16px}
+  .ctl{display:flex;flex-direction:column;gap:6px}
+  .ctl label{color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  input[type=range]{width:100%;accent-color:var(--ink)}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  button{font:inherit;color:var(--ink);background:transparent;border:1.5px solid var(--ink);border-radius:999px;padding:5px 14px;cursor:pointer}
+  button:hover{background:#0000000d}
+  button[aria-pressed=true]:not(.sw){background:var(--ink);color:var(--paper)}
+  .sw{width:26px;height:26px;padding:0;border-radius:50%} .sw[aria-pressed=true]{outline:2px solid var(--ink);outline-offset:2px}`;
+
+const filterFor = k => `<filter id="hand" x="-3%" y="-3%" width="106%" height="106%" color-interpolation-filters="sRGB">
+  <feTurbulence type="fractalNoise" baseFrequency="${(0.045/k).toFixed(4)}" numOctaves="2" seed="4" result="warp"/>
+  <feDisplacementMap id="wob" in="SourceGraphic" in2="warp" scale="${(2.4*k).toFixed(2)}" xChannelSelector="R" yChannelSelector="G" result="wob"/>
+  <feTurbulence type="fractalNoise" baseFrequency="${(0.9/k).toFixed(4)}" numOctaves="3" seed="11" result="n1"/>
+  <feColorMatrix in="n1" type="matrix" values=".3 0 0 0 .84  .3 0 0 0 .84  .3 0 0 0 .84  0 0 0 0 1" result="grain"/>
+  <feTurbulence type="fractalNoise" baseFrequency="${(0.012/k).toFixed(4)}" numOctaves="2" seed="7" result="n2"/>
+  <feColorMatrix in="n2" type="matrix" values=".3 0 0 0 .85  .3 0 0 0 .85  .3 0 0 0 .85  0 0 0 0 1" result="blot"/>
+  <feBlend in="wob" in2="grain" mode="multiply" result="g1"/><feBlend in="g1" in2="blot" mode="multiply" result="g2"/>
+  <feComposite in="g2" in2="wob" operator="in"/></filter>`;
+
+/* mountFigure({
+     fig:'03', title:'Photo booth', hint:'click the curtain…',
+     size:[W,D,H],                 // bounding box, used to frame the view (shadow range included)
+     palette:'mustard',            // default PALS key
+     state:{...},                  // figure state, merged into st (st.pal, st.az are built in)
+     scene: (st, m) => svgString,  // m = current palette {l,m,d}
+     readout: st => 'text',        // status line under the figure
+     buttons: [{label, onClick(st, ui)}      // listed in the order the user should do them; shown numbered
+               | {label, choices: st => [{label, onClick(st,ui), disabled?}]}],   // opens a picker
+     stats: st => [{label, value, small?}],   // optional: big numbers top-right (credit, change, score)
+     views: true,                  // optional: the figure supports turning (VIEW 0..3); adds ⟲ ⟳, drag and Q/E
+     center: [x,y],                // optional: turning axis (default: middle of size)
+     next: st => index,            // optional: which step is current (-1 while busy)
+     acts: { name(st, el, ui){} },  // clicks on act(name, …) groups; el has dataset
+     params(st, q){}               // optional: read URLSearchParams for screenshot states
+   })  -> ui = { st, render, animate(stepFn), flash(text,ms) }
+   animate(step): calls step(dt seconds) every frame and re-renders until step returns false. */
+/* The hand-drawn filter's noise never changes, but browsers recompute every feTurbulence each time the drawing changes
+   (on phones SVG filters run on the CPU, so this is most of the cost of a frame). bakeNoise renders each noise layer once
+   into an image and swaps it in: coarse layers as one small image over the whole view (they are smooth, so scaling up
+   is invisible), fine grain as a seamless tile. If anything fails (an old browser), the live filter simply stays. */
+function bakeNoise(svg){
+  const fl = document.getElementById('hand'); if (!fl || typeof Image === 'undefined') return;
+  const NS = 'http://www.w3.org/2000/svg', vb = svg.viewBox.baseVal;
+  const x0 = vb.x - vb.width*.35, y0 = vb.y - vb.height*.35, w0 = vb.width*1.7, h0 = vb.height*1.7;
+  for (const t of [...fl.querySelectorAll('feTurbulence')]){
+    const fq = parseFloat(t.getAttribute('baseFrequency')), oct = +(t.getAttribute('numOctaves') || 1);
+    if (!(fq > 0)) continue;
+    const fine = fq * Math.max(w0, h0) > 80;
+    if (fine) continue;   // fine grain stays live: a repeated tile leaves faint seams on some GPUs
+    const rx = fine ? 0 : x0, ry = fine ? 0 : y0, rw = fine ? 48 / fq : w0, rh = fine ? 48 / fq : h0;
+    const ppu = fq * (fine ? 7 : 5) * Math.pow(2, Math.max(0, oct - 1) * .5), PW = Math.ceil(rw * ppu), PH = Math.ceil(rh * ppu);
+    if (PW * PH > 1200 * 1200) continue;
+    const tb = t.cloneNode(); tb.removeAttribute('result'); if (fine) tb.setAttribute('stitchTiles', 'stitch');
+    const src = `<svg xmlns="${NS}" width="${PW}" height="${PH}" viewBox="${rx} ${ry} ${rw} ${rh}"><filter id="n" filterUnits="userSpaceOnUse" x="${rx}" y="${ry}" width="${rw}" height="${rh}" color-interpolation-filters="sRGB">${tb.outerHTML}</filter><rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" filter="url(#n)"/></svg>`;
+    const img = new Image();
+    img.onload = () => { try {
+      const c = document.createElement('canvas'); c.width = PW; c.height = PH; const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+      // store the noise's colour values fully opaque: the filter reads its colour channels, and an image with
+      // see-through pixels would be read premultiplied (darker) by some browsers
+      const px = g.getImageData(0, 0, PW, PH); for (let i = 3; i < px.data.length; i += 4) px.data[i] = 255; g.putImageData(px, 0, 0);
+      const url = c.toDataURL('image/png'), res = t.getAttribute('result');
+      const im = document.createElementNS(NS, 'feImage');
+      // a tile must sit inside the filter's region (the drawing's box) or it gets clipped: anchor it at the drawing's
+      // centre, snapped to whole tiles so the grain keeps the same phase as the live noise would
+      let ox = rx, oy = ry;
+      if (fine){ const bb = svg.getElementById ? document.getElementById('art').getBBox() : { x: 0, y: 0, width: 0, height: 0 };
+        ox = Math.floor((bb.x + bb.width/2) / rw) * rw; oy = Math.floor((bb.y + bb.height/2) / rh) * rh; }
+      for (const [k, v] of [['x', ox], ['y', oy], ['width', rw], ['height', rh], ['preserveAspectRatio', 'none']]) im.setAttribute(k, v);
+      im.setAttribute('href', url); im.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', url);
+      if (!t.isConnected) return;
+      if (fine){ im.setAttribute('result', res + '_tile'); const tl = document.createElementNS(NS, 'feTile'); tl.setAttribute('in', res + '_tile'); tl.setAttribute('result', res); t.replaceWith(im, tl); }
+      else { im.setAttribute('result', res); t.replaceWith(im); }
+    } catch (e) {} };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(src);
+  }
+}
+function mountFigure(cfg){
+  cfg = Object.assign({}, cfg, { views:false });   // one fixed view on the demo: no turn-around control (same UI as every other figure)
+  document.title = cfg.title;
+  const style = document.createElement('style'); style.textContent = CORE_CSS; document.head.appendChild(style);
+  document.body.innerHTML = `
+    <header><h1>Fig. ${cfg.fig} — ${cfg.title}</h1></header>
+    <div class="stage">
+      ${cfg.buttons && cfg.buttons.length ? `<div class="actions" id="btns"></div>` : ''}
+      ${cfg.stats ? '<div class="stats" id="stats"></div>' : ''}
+      ${cfg.views ? '<div class="turn"><button class="tb" id="tl" title="Turn around (Q)">⟲</button><span id="vname">front</span><button class="tb" id="tr" title="Turn around (E)">⟳</button></div>' : ''}
+      <svg id="fig" role="img" aria-label="${cfg.title}"><defs id="fdefs"></defs><g id="art" filter="url(#hand)"></g></svg>
+    </div>
+    <div id="readout"></div>
+    ${cfg.idea ? `<p class="idea"><strong>The big idea</strong>${cfg.idea}</p>` : ''}
+    <div class="controls">
+      <div class="ctl"><label for="wb">Hand-drawn wobble</label><input id="wb" type="range" min="0" max="7" step="0.1" value="2.4"></div>
+      <div class="ctl"><label>Colour</label><div class="row" id="pals"></div></div>
+      <div class="ctl"><label>View</label><div class="row"><button id="vreset">Front view</button><button id="vspin" aria-pressed="false">Turntable</button></div></div>
+    </div>`;
+  const st = cfg.state || {};            // kept as the same object, so a figure may hold on to it
+  if (!st.pal) st.pal = cfg.palette || 'mustard';
+  if (st.az == null) st.az = 105;
+  const q = new URLSearchParams(location.search);
+  // a figure turns all the way round only once it has been checked from every side (turn:'full'); otherwise it turns
+  // +-60 deg around the front, where it was drawn. ?free=1 unlocks it for testing.
+  CAM_LIM = cfg.turn === 'full' || q.get('free') === '1' ? null : 60;
+  if (PALS[q.get('pal')]) st.pal = q.get('pal');
+  if (q.has('az')) st.az = Math.min(AZ_MAX, Math.max(AZ_MIN, +q.get('az')));
+  if (cfg.params) cfg.params(st, q);
+  const view0 = cfg.views && q.has('view') ? (+q.get('view') === 2 ? 2 : 0) : 0;
+
+  // frame on the object itself: centred, filling ~60% of the width / ~78% of the height of a 4:3 view.
+  // The cast shadow is allowed to spill outside the frame (svg overflow is visible).
+  const [W,D,H] = cfg.size, pts = [];
+  OX = OY = 0; RC = cfg.center || [W/2, D/2]; RCZ = H/2; setCam(YAW0, PITCH0);
+  const turns = cfg.views ? TURNS : [0];
+  for (const v of turns){ VIEW = v; for (const x of [0,W]) for (const y of [0,D]) for (const z of [0,H]) pts.push(P(x,y,z)); }
+  VIEW = 0;
+  const xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]);
+  const bw = Math.max(...xs)-Math.min(...xs), bh = Math.max(...ys)-Math.min(...ys);
+  // on a phone (FIG_A, from the gallery) the frame grows taller than 4:3, as far as the object needs, so tall machines fill it;
+  // the spare height goes mostly below; the object stays centred (its shadow may run off the edge, by the owner's call)
+  const PA = window.FIG_A ? FIG_A() : .75, A = PA === .75 ? .75 : Math.min(PA, Math.max(.75, bh/.78/(bw/.6)*1.08)), vbW = Math.max(bw/.6, bh/.78/A), vbH = vbW*A;
+  OX = (vbW-bw)/2 + 0 - Math.min(...xs); OY = (PA === .75 ? vbH*.05 : (vbH - bh)*.3) - Math.min(...ys);   // sit a little high: shadows fall downward
+  const svg = document.getElementById('fig');
+  svg.setAttribute('viewBox', `0 0 ${f(vbW)} ${f(vbH)}`);
+  INK_K = vbW / INK_REF_VB;
+  document.getElementById('fdefs').innerHTML = filterFor(INK_K);
+  bakeNoise(svg);
+
+  const art = document.getElementById('art'), readout = document.getElementById('readout');
+  const ui = { st };
+  ui.render = () => { _clipN = 0; document.documentElement.style.setProperty('--accent', PALS[st.pal].l); art.innerHTML = inkScale(cfg.scene(st, PALS[st.pal])); if (!ui._flash) readout.textContent = cfg.readout ? cfg.readout(st) : ''; if (ui.drawStats) ui.drawStats(); };
+  // big numbers in the top-right corner (credit, change, score…); a value that changes gets a little bump
+  const statsEl = document.getElementById('stats'), prevStats = {};
+  ui.drawStats = () => { if (!statsEl) return;
+    const list = cfg.stats(st).filter(Boolean), html = list.map(x => `<div class="stat${x.small ? ' small' : ''}"><div class="k">${x.label}</div><div class="v" data-k="${x.label}">${x.value}</div></div>`).join('');
+    if (statsEl._html !== html){ statsEl._html = html; statsEl.innerHTML = html;
+      statsEl.querySelectorAll('.v').forEach(v => { if (prevStats[v.dataset.k] != null && prevStats[v.dataset.k] !== v.textContent) v.classList.add('bump'); prevStats[v.dataset.k] = v.textContent; }); } };
+  let flashT = 0;
+  // a short notice over the figure ("insert a coin first"); the status line itself stays hidden
+  ui.flash = (text, ms=1600) => { ui._flash = true; readout.textContent = text;
+    let t = document.getElementById('toast');
+    if (!t){ t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; t.setAttribute('role', 'status'); document.querySelector('.stage').appendChild(t); }
+    t.textContent = text; t.classList.add('show');
+    clearTimeout(flashT); flashT = setTimeout(() => { ui._flash = false; t.classList.remove('show'); ui.render(); }, ms); };
+  // One frame driver for every running animation: each frame runs all the steps, then draws once (two animations at
+  // the same time no longer draw twice). It follows the screen's frames, with a timer fallback for when frames don't
+  // come (headless shots, a hidden tab). ui.invalidate() asks for one redraw on the next frame (used while dragging).
+  const steps = new Set(); let driving = false, lastT = 0, fbT = 0;
+  const frame = () => { if (!driving) return; driving = false; clearTimeout(fbT);
+    const now = performance.now(), dt = Math.max(0, Math.min(.05, (now - lastT) / 1000)); lastT = now;
+    for (const s of [...steps]) if (s(dt) === false) steps.delete(s);
+    ui.render(); if (steps.size) drive(); };
+  const drive = () => { if (driving) return; driving = true; requestAnimationFrame(frame); fbT = setTimeout(frame, 60); };
+  ui.animate = step => { if (!steps.size && !driving) lastT = performance.now(); steps.add(step); drive(); };
+  ui.invalidate = () => drive();
+
+  // clickable parts react on press, not on click: while something animates the scene is redrawn every frame, so the
+  // element under the pointer is replaced between press and release and a 'click' would never fire
+  svg.addEventListener('pointerdown', e => { if (e.button) return; const a = e.target.closest('[data-act]'); if (!a || !cfg.acts || !cfg.acts[a.dataset.act]) return;
+    e.preventDefault(); cfg.acts[a.dataset.act](st, a, ui); ui.render(); });
+  // orbit: drag anywhere that is not a clickable part (the machine turns the way the finger moves); arrow keys nudge; double-click eases back to the front view
+  let drag = null, spin = false, camAnim = 0;
+  const camTo = (y, p, ms=700) => { const y0 = YAW, p0 = PITCH, dy = ((y - y0 + 540) % 360) - 180, id = ++camAnim; let t = 0;
+    ui.animate(dt => { if (id !== camAnim) return false; t += dt*1000; const k = Math.min(1, t / ms), e = ease(k); setCam(y0 + dy*e, p0 + (p - p0)*e); return k < 1; }); };
+  ui.camTo = camTo;
+  svg.addEventListener('pointerdown', e => { if (e.button || e.target.closest('[data-act]')) return;
+    camAnim++; drag = { x:e.clientX, y:e.clientY, yaw:YAW, pitch:PITCH }; svg.classList.add("drag"); try { svg.setPointerCapture(e.pointerId); } catch {} });
+  svg.addEventListener('pointermove', e => { if (!drag) return; const k = 300 / svg.getBoundingClientRect().width;
+    setCam(drag.yaw + (e.clientX - drag.x)*.55*k, drag.pitch + (e.clientY - drag.y)*.35*k); ui.invalidate(); });
+  const endDrag = () => { drag = null; svg.classList.remove('drag'); };
+  svg.addEventListener('pointerup', endDrag); svg.addEventListener('pointercancel', endDrag);
+  svg.addEventListener('dblclick', e => { if (!e.target.closest('[data-act]')) camTo(YAW0, PITCH0); });
+  addEventListener('keydown', e => { const k = { ArrowLeft:[-15,0], ArrowRight:[15,0], ArrowUp:[0,8], ArrowDown:[0,-8] }[e.key];
+    if (!k || window.GAME_KEYS || /input|textarea/i.test(e.target.tagName)) return; e.preventDefault(); camTo(YAW + k[0], PITCH + k[1], 260); });   // a game figure keeps the arrows for play
+  document.getElementById('vreset').onclick = () => { spin = false; vsp.setAttribute('aria-pressed', false); camTo(YAW0, PITCH0); };
+  const vsp = document.getElementById('vspin');
+  vsp.onclick = () => { spin = !spin; vsp.setAttribute('aria-pressed', spin); camAnim++;
+    let dir = 1;   // with a turning limit, the turntable swings back and forth inside it
+    if (spin) ui.animate(dt => { if (!spin) return false; if (!drag){ let y = YAW + dir*dt*18;
+      if (CAM_LIM != null && Math.abs(y - YAW0) >= CAM_LIM - .5){ dir = -dir; y = YAW + dir*dt*18; } setCam(y, PITCH); } return true; }); };
+  if (q.has('yaw') || q.has('pitch')) setCam(+(q.get('yaw') ?? YAW0), +(q.get('pitch') ?? PITCH0));
+  const btns = document.getElementById('btns');
+  const stepEls = [];
+  if (btns) cfg.buttons.forEach((b, i) => {
+    const wrap = document.createElement('div'); wrap.className = 'stepwrap';
+    const el = document.createElement('button'); el.className = 'act';
+    el.innerHTML = `${b.label}${b.choices ? '<span class="car">▾</span>' : ''}`;
+    wrap.appendChild(el); btns.appendChild(wrap); stepEls.push(el);
+    if (!b.choices){ el.onclick = () => { closeChips(); b.onClick(st, ui); ui.render(); }; return; }
+    const chips = document.createElement('div'); chips.className = 'chips'; wrap.appendChild(chips);
+    el.onclick = e => { e.stopPropagation(); const open = !wrap.classList.contains('open'); closeChips();
+      if (!open) return;
+      chips.innerHTML = '';
+      for (const c of b.choices(st)){ const ch = document.createElement('button'); ch.className = 'chip'; ch.textContent = c.label; ch.disabled = !!c.disabled;
+        ch.onclick = ev => { ev.stopPropagation(); closeChips(); c.onClick(st, ui); ui.render(); }; chips.appendChild(ch); }
+      wrap.classList.add('open'); };
+  });
+  function closeChips(){ document.querySelectorAll('.stepwrap.open').forEach(w => w.classList.remove('open')); }
+  document.addEventListener('click', closeChips);
+
+  ui.view = () => VIEW;
+  if (cfg.views){
+    const name = document.getElementById('vname');
+    let busy = false;
+    const setView = v => { VIEW = ((v % 4) + 4) % 4; name.textContent = VIEW_NAMES[VIEW]; ui.render(); };
+    ui.turn = d => { if (busy) return; busy = true; svg.classList.add('flip');
+      setTimeout(() => { const i = TURNS.indexOf(VIEW); setView(TURNS[(i + (d > 0 ? 1 : TURNS.length - 1)) % TURNS.length]); svg.classList.remove('flip'); setTimeout(() => busy = false, 150); }, 140); };
+    document.getElementById('tl').onclick = () => ui.turn(-1);
+    document.getElementById('tr').onclick = () => ui.turn(1);
+    addEventListener('keydown', e => { if (e.target.closest && e.target.closest('input,textarea')) return;
+      if (e.key === 'q' || e.key === 'Q') ui.turn(-1); if (e.key === 'e' || e.key === 'E') ui.turn(1); });
+    // drag sideways on the figure to turn it; a real drag swallows the click that follows
+    let x0 = null, dragged = false;
+    svg.addEventListener('pointerdown', e => { x0 = e.clientX; dragged = false; });
+    addEventListener('pointermove', e => { if (x0 == null) return; const dx = e.clientX - x0;
+      if (Math.abs(dx) > 70){ dragged = true; svg.classList.add('dragging'); ui.turn(dx > 0 ? -1 : 1); x0 = e.clientX; } });
+    addEventListener('pointerup', () => { x0 = null; svg.classList.remove('dragging'); });
+    svg.addEventListener('click', e => { if (dragged){ e.stopPropagation(); e.preventDefault(); dragged = false; } }, true);
+    VIEW = view0; name.textContent = VIEW_NAMES[VIEW];
+  }
+  document.getElementById('wb').oninput = e => document.getElementById('wob').setAttribute('scale', (e.target.value * INK_K).toFixed(2));
+  const pals = document.getElementById('pals');
+  for (const [k,p] of Object.entries(PALS)){
+    const b = document.createElement('button'); b.className='sw'; b.title=k; b.style.background=p.l; b.setAttribute('aria-pressed', k===st.pal);
+    b.onclick = () => { st.pal=k; [...pals.children].forEach(c=>c.setAttribute('aria-pressed', c===b)); ui.render(); };
+    pals.appendChild(b);
+  }
+  setLight(st.az); ui.render();
+  return ui;
+}
+</script>
+<script>
+const TILE = { back:'#efe7cc', floor:'#f5efdb', side:'#e0d7b8', grout:'#aba283' };
+
+/* ---------- geometry: booth dims (x = depth, y = length, z = height) ---------- */
+const W = 115, D = 200, H = 215, R = 28, T = 7;   // shell
+const FW = W - 6, WT = 3;                            // recessed front wall plane, wall thickness
+const DA = 114, DT = 170;                            // doorway: y from DA to D-T, top at DT
+const DW = 80, DOOR_SHUT = 112, DOOR_OPEN = 34;      // door width + slide positions
+const TY = 72;                                       // toilet centre (y)
+
+
+// vertical solid from two horizontal rings: sides + top cap + ink
+function solid(A, B, m, shade){
+  return loft(A, B, n=>shade(n,m)) + fill(pd(B), shade([0,0,1],m)) + hullInk(A.concat(B),1.5) + ink(pd(B),1.1);
+}
+
+// text on the back plane (x = const, seen from -x) and on the right side (y = const, seen from -y): reads left-to-right
+const txB  = (x,y,z,str,size,col=INK,weight=700) => `<text transform="${txM(P(x,y,z), Dv(0,1,0), Dv(0,0,-1))}" font-size="${size}" fill="${col}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-weight="${weight}" letter-spacing=".04em">${str}</text>`;
+const txNY = (x,y,z,str,size,col=INK,weight=700) => `<text transform="${txM(P(x,y,z), Dv(-1,0,0), Dv(0,0,-1))}" font-size="${size}" fill="${col}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-weight="${weight}" letter-spacing=".04em">${str}</text>`;
+// a pipe lying along x (from x0 to x1) centred (y,z); caps only where they face the viewer
+function pipeX(x0,x1,y,z,r,mat,w=1.1){
+  const A=on(PX(x0),ellUV(y,z,r,r,16)), B=on(PX(x1),ellUV(y,z,r,r,16));
+  let s = loft(A,B,n=>toneI(n,mat));
+  for (const [ring,nx] of [[A,Math.sign(x0-x1)],[B,Math.sign(x1-x0)]]) if (facing([nx,0,0])) s += fill(pd(ring),toneI([nx,0,0],mat)) + ink(pd(ring),w*.8);
+  return s + hullInk([...A,...B],w);
+}
+
+// a cylinder between two points (the tap's spout and lever)
+function rodB(a, b, r, m, shade=toneI, w=1, r1=r, n=16){
+  const d = norm(sub(b, a)), u = norm(cross(d, Math.abs(d[2]) < .9 ? [0,0,1] : [1,0,0])), v = cross(d, u);
+  const ring = (p, rr) => Array.from({length:n}, (_,i) => { const t = i/n*2*Math.PI, c = Math.cos(t)*rr, s2 = Math.sin(t)*rr;
+    return [p[0] + u[0]*c + v[0]*s2, p[1] + u[1]*c + v[1]*s2, p[2] + u[2]*c + v[2]*s2]; });
+  const A = ring(a, r), B = ring(b, r1), capB = vis(d), cap = capB ? B : A, cn = capB ? d : d.map(x => -x);
+  return loft(A, B, nr => shade(nr, m)) + (Math.max(r, r1) > 0 ? fill(pd(cap), shade(cn, m)) + ink(pd(cap), w*.8) : '') + hullInk([...A, ...B], w);
+}
+
+/* ---------- state ---------- */
+const st = { pal:'mustard', door:0, doorTarget:0, flush:0, tap:0 };
+
+/* ---------- scene ---------- */
+const OUT = rrUV(0,0,D,H,R), IN = rrUV(T,T,D-T,H-T,R-T);
+
+function scene(){
+  const m = PALS[st.pal];
+  const dy = DOOR_OPEN + (DOOR_SHUT-DOOR_OPEN)*ease(st.door);
+  const shut = st.door === 1;
+  const lamp = shut ? '#e2483d' : '#43c25c';
+  let s = '';
+
+  // 1. cast shadow: every outer point pushed along the light onto the floor
+  s += castShadow([...on(PX(0),OUT), ...on(PX(W),OUT)]);
+  const front = facing([1,0,0]), back = facing([-1,0,0]), left = facing([0,1,0]), right = facing([0,-1,0]);
+  if (front) s += frontScene(m, dy, lamp);
+
+  // 7. outer shell + side details
+  s += loft(on(PX(0),OUT), on(PX(W),OUT), n=>tone(n,m));
+  if (left){                                    // left (+y) side: window slot
+    const Y = PY(D+.2);
+    s += fill(pd(on(Y,rrUV(26,158,88,181,7))), '#d8d2bd') + ink(pd(on(Y,rrUV(26,158,88,181,7))),1.4);
+    s += fill(pd(on(Y,rrUV(30,162,84,177,4.5))), '#f4f5ef') + ink(pd(on(Y,rrUV(30,162,84,177,4.5))),1);
+  }
+  if (right) s += rightSide(m, lamp, shut);
+  if (back) s += backScene(m);
+
+  // 8. silhouette + front / back panel edge
+  if (front) s += ink(pd(on(PX(W),OUT)),2.2);
+  s += hullInk([...on(PX(0),OUT), ...on(PX(W),OUT)], 2.8);
+  return s;
+}
+
+/* ---------- the open front: interior through the doorway, recessed wall, panel, sliding door, rim ---------- */
+function frontScene(m, dy, lamp){
+  let s = '';
+  // clip regions
+  const doorway = [[DA,T],[DA,DT],[D-T,DT], ...arcUV(D-R,R,R-T,0,-90)];
+  s += `<clipPath id="cDoor"><path d="${pd(on(PX(FW),doorway))}"/></clipPath>`;
+  s += `<clipPath id="cBack"><path d="${pd(on(PX(T),IN))}"/></clipPath>`;
+
+  // 2. interior, seen through the doorway
+  let it = '';
+  it += fill(pd(on(PX(T),IN)), TILE.back);
+  let tl = '';
+  for (let u=T; u<=D-T; u+=12) tl += pd([[T,u,T],[T,u,H-T]], false);
+  for (let v=T; v<=H-T; v+=12) tl += pd([[T,T,v],[T,D-T,v]], false);
+  it += `<g clip-path="url(#cBack)"><path d="${tl}" fill="none" stroke="${TILE.grout}" stroke-width=".6"/></g>`;
+  it += loft(on(PX(T),IN), on(PX(FW-WT),IN), n => n[2]>.7 ? TILE.floor : TILE.side, true);
+  let fl = '';
+  for (let x=T; x<=FW-WT; x+=12) fl += pd([[x,R,T],[x,D-R,T]], false);
+  for (let y=T+12*2; y<=D-R; y+=12) fl += pd([[T,y,T],[FW-WT,y,T]], false);
+  it += `<path d="${fl}" fill="none" stroke="${TILE.grout}" stroke-width=".6"/>`;
+  if (facing([0,-1,0])){                        // turned so the far (+y) inner wall shows through the doorway: tile it too
+    let sw = '';
+    for (let x=T+10; x<=FW-WT; x+=12) sw += pd([[x,D-T,R],[x,D-T,H-R]], false);
+    for (let z=R; z<=H-R; z+=12) sw += pd([[T,D-T,z],[FW-WT,D-T,z]], false);
+    it += `<path d="${sw}" fill="none" stroke="${TILE.grout}" stroke-width=".6"/>`;
+  }
+  it += ink(pd(on(PX(T),IN)), 1.1);
+  // grab rail
+  let wl = '';
+  const rail = pd([[T,TY-30,60],[T+5,TY-30,60],[T+5,TY-18,60],[T,TY-18,60]], false);   // short grab rail between the toilet and the basin
+
+  // toilet: lid against the wall, pedestal, bowl, seat + water
+  const lid = on(PX(T+2), ellUV(TY,68,13,22));
+  wl += fill(pd(lid), toneI([1,0,0],CERAMIC)) + ink(pd(lid),1.3);
+  it += wl;                                     // rail + lid sit on the back wall: always farthest
+  const ring = (cx,rx,ry,z) => on(PZ(z), ellUV(cx,TY,rx,ry));
+  let wc = solid(ring(T+16,9,7,T), ring(T+18,11,8,24), CERAMIC, toneI);
+  wc += solid(ring(T+19,14,10,24), ring(T+22,21,14,44), CERAMIC, toneI);
+  const hole = ring(T+24,13,8.5,44.2), swirl = ring(T+24,8,5,44.3);
+  wc += fill(pd(hole), st.flush>0 ? '#8fbcc9' : '#a9c9d1') + ink(pd(hole),1);
+  if (st.flush>0) wc += `<path d="${pd(swirl)}" fill="none" stroke="#fff" stroke-width="1.4" stroke-dasharray="7 5" stroke-dashoffset="${f((1-st.flush)*90)}" opacity="${f(Math.sin(st.flush*Math.PI)*.95)}"/>`;
+  const parts = [{ at:[T+22,TY,24], svg:`<g data-act="flush">${wc}</g>` }];
+  // vanity cabinet against the far wall, near the door
+  const cx0=66, cx1=104, cy0=168, cy1=D-T, cz=78;
+  let cb = '';
+  if (facing([0,-1,0])) cb += face(pd([[cx0,cy0,T],[cx1,cy0,T],[cx1,cy0,cz],[cx0,cy0,cz]]), toneI([0,-1,0],m)) + ink(pd([[cx0,cy0,T],[cx0,cy0,cz]],false),1.1);
+  cb += face(pd([[cx1,cy0,T],[cx1,cy1,T],[cx1,cy1,cz],[cx1,cy0,cz]]), toneI([1,0,0],m));
+  cb += face(pd([[cx0,cy0,cz],[cx1,cy0,cz],[cx1,cy1,cz],[cx0,cy1,cz]]), toneI([0,0,1],m));
+  cb += ink(pd([[cx1,cy0,T],[cx1,cy0,cz],[cx0,cy0,cz]],false),1.3) + ink(pd([[cx1,cy0,cz],[cx1,cy1,cz]],false),1.1);
+  cb += ink(pd([[cx1,(cy0+cy1)/2,T+5],[cx1,(cy0+cy1)/2,cz-6]],false),1);
+  // small hand basin on the back wall beside the toilet (the part of the back wall seen through the doorway), with the
+  // tap coming out of the wall above it
+  const by = 36, bz = 56, bx0 = T;
+  const cut = pts => pts.map(p => [Math.max(bx0, p[0]), p[1], p[2]]);   // flat where it meets the wall
+  const bRim = cut(on(PZ(bz), ellUV(bx0 + 10, by, 13, 12, 28))), bBot = cut(on(PZ(bz - 9), ellUV(bx0 + 6, by, 7, 7, 24)));
+  let wb = loft(bBot, bRim, n => toneI(n, CERAMIC)) + fill(pd(bRim), CERAMIC.l) + hullInk([...bBot, ...bRim], 1.3) + ink(pd(bRim), 1.1);
+  const bowlIn = cut(on(PZ(bz + .1), ellUV(bx0 + 11, by, 9.5, 9, 24)));
+  wb += fill(pd(bowlIn), st.tap > 0 ? '#9cc7d4' : CERAMIC.d) + ink(pd(bowlIn), .7);
+  let tp = '';
+  const sp = [bx0 + 12, by, bz + 10];
+  tp += fill(pd(on(PX(T + .2), ellUV(by, bz + 13, 3.6, 3.6, 16))), METAL.m) + ink(pd(on(PX(T + .2), ellUV(by, bz + 13, 3.6, 3.6, 16))), .9);   // wall plate
+  tp += rodB([T, by, bz + 13], [bx0 + 12, by, bz + 13], 1.5, METAL, toneI, 1) + rodB([bx0 + 12, by, bz + 13], sp, 1.4, METAL, toneI, 1);
+  const la = st.tap > 0 ? .6 : 0;   // the lever on top lifts while the water runs
+  tp += rodB([T + 5, by, bz + 14.4], [T + 5 + 6*Math.cos(la), by, bz + 14.4 + 6*Math.sin(la) + 2], .8, METAL, toneI, .9);
+  if (st.tap > 0){
+    const on2 = Math.min(1, st.tap*6, (1 - st.tap)*6 + .2), d = pd([sp, [sp[0], sp[1], bz - 1]], false);
+    tp += `<path d="${d}" fill="none" stroke="#7cc4ef" stroke-width="${f(2.6*on2)}" stroke-linecap="round" opacity=".9"/>`
+        + `<path d="${d}" fill="none" stroke="#ffffff" stroke-width=".55" stroke-dasharray="2 3" stroke-dashoffset="${f(-st.tap*60)}" opacity=".85"/>`;
+  }
+  parts.push({ at:[T + 6, by, bz], svg:`<g data-act="tap">${wb}${tp}</g>` });
+  parts.push({ at:[(cx0+cx1)/2,(cy0+cy1)/2,cz/2], svg:cb });
+  it += byDepth(parts);
+  s += `<g clip-path="url(#cDoor)">${it}</g>`;
+
+  // 3. doorway jamb, recess lip, recessed front wall
+  if (facing([0,1,0])) s += face(pd([[FW-WT,DA,T],[FW,DA,T],[FW,DA,DT],[FW-WT,DA,DT]]), tone([0,1,0],m));
+  s += loft(on(PX(FW),IN), on(PX(W),IN), n=>tone(n,m), true);
+  const wall = [[DA,T],[DA,DT],[D-T,DT], ...arcUV(D-R,H-R,R-T,0,90), ...arcUV(R,H-R,R-T,90,180), ...arcUV(R,R,R-T,180,270)];
+  s += fill(pd(on(PX(FW),wall)), tone([1,0,0],m));
+  s += ink(pd(on(PX(FW),IN)),1.1) + ink(pd([[FW,DA,T],[FW,DA,DT],[FW,D-T,DT]],false),1.6);
+
+  // 4. capsule recess + call panel
+  const X = PX(FW+.3);
+  s += fill(pd(on(X,rrUV(13,20,31,100,9))), m.d) + fill(pd(on(X,rrUV(13,20,28,95,8))), m.m) + ink(pd(on(X,rrUV(13,20,31,100,9))),1.3);
+  s += fill(pd(on(X,rrUV(13,112,31,178,6))), '#cde9e6') + ink(pd(on(X,rrUV(13,112,31,178,6))),1.4);
+  for (const v of [163,146]){
+    s += fill(pd(on(X,ellUV(22,v,5.5,5.5))), '#fff') + ink(pd(on(X,ellUV(22,v,5.5,5.5))),1);
+    s += ink(pd(on(X,ellUV(22,v+2.6,1.1,1.1))),1) + ink(pd(on(X,[[22,v+1.2],[22,v-3]]),false),1) + ink(pd(on(X,[[20,v],[24,v]]),false),.9);
+  }
+  s += `<g data-act="door">${fill(pd(on(X,ellUV(22,126,5,5))), lamp)}${fill(pd(on(X,ellUV(23.5,127.5,1.6,1.6))),'#fff','opacity=".7"')}${ink(pd(on(X,ellUV(22,126,5,5))),1.3)}</g>`;
+
+  // 5. sliding door (front face has the booth's rounded bottom corner)
+  const dz = 174, x0 = FW+.5, x1 = FW+4;
+  const dshape = [[dy,T],[dy,dz],[dy+DW,dz], ...arcUV(dy+DW-(R-T),R,R-T,0,-90)];
+  let dr = '';
+  dr += face(pd([[x0,dy,dz],[x0,dy+DW,dz],[x1,dy+DW,dz],[x1,dy,dz]]), tone([0,0,1],m));
+  if (facing([0,1,0])){                        // the visible end of the door slab: +y end (rounded foot) or the straight -y end
+    dr += face(pd([[x0,dy+DW,R],[x0,dy+DW,dz],[x1,dy+DW,dz],[x1,dy+DW,R]]), tone([0,1,0],m));
+    dr += ink(pd([[x0,dy+DW,dz],[x0,dy+DW,R]],false),1) + ink(pd([[x0,dy,dz],[x0,dy+DW,dz],[x1,dy+DW,dz]],false),1);
+  } else {
+    dr += face(pd([[x0,dy,T],[x0,dy,dz],[x1,dy,dz],[x1,dy,T]]), tone([0,-1,0],m));
+    dr += ink(pd([[x0,dy,dz],[x0,dy,T]],false),1) + ink(pd([[x0,dy+DW,dz],[x0,dy,dz],[x1,dy,dz]],false),1);
+  }
+  dr += fill(pd(on(PX(x1),dshape)), tone([1,0,0],m)) + ink(pd(on(PX(x1),dshape)),1.8);
+  const Xd = PX(x1+.2);
+  dr += fill(pd(on(Xd,rrUV(dy+10,149,dy+70,161,3))), '#a9bdc0') + ink(pd(on(Xd,rrUV(dy+10,149,dy+70,161,3))),1.2);
+  dr += `<path d="${pd(on(Xd,[[dy+18,151.5],[dy+62,158.5]]),false)}" stroke="#e8f0f0" stroke-width="1.6" stroke-linecap="round" fill="none"/>`;
+  dr += fill(pd(on(Xd,rrUV(dy+6,84,dy+15,106,1.5))), m.m) + ink(pd(on(Xd,rrUV(dy+6,84,dy+15,106,1.5))),1.1);
+  dr += fill(pd(on(Xd,rrUV(dy+8,96,dy+13,102,1))), lamp) + ink(pd(on(Xd,rrUV(dy+8,96,dy+13,102,1))),.8);
+  s += `<g data-act="door">${dr}</g>`;
+
+  // 6. front rim
+  s += `<path d="${pd(on(PX(W),OUT))}${pd(on(PX(W),IN))}" fill="${tone([1,0,0],m)}" fill-rule="evenodd"/>`;
+  s += ink(pd(on(PX(W),IN)),1.8);
+
+  return s;
+}
+
+
+/* ---------- right (-y) side: second window slot, occupancy sign, low air intake ---------- */
+function rightSide(m, lamp, shut){
+  const Y = PY(-.2); let s = '';
+  s += fill(pd(on(Y,rrUV(26,158,88,181,7))), '#d8d2bd') + ink(pd(on(Y,rrUV(26,158,88,181,7))),1.4);
+  s += fill(pd(on(Y,rrUV(30,162,84,177,4.5))), '#f4f5ef') + ink(pd(on(Y,rrUV(30,162,84,177,4.5))),1);
+  // occupancy sign near the front edge (front = x W is on the left when this side faces you)
+  s += fill(pd(on(Y,rrUV(66,118,108,136,3))), '#1d2a26') + ink(pd(on(Y,rrUV(66,118,108,136,3))),1.3);
+  s += fill(pd(on(Y,ellUV(101,127,3.2,3.2))), lamp) + ink(pd(on(Y,ellUV(101,127,3.2,3.2))),.9);
+  s += txNY(82,-.3,124.6, shut ? 'IN USE' : 'VACANT', 6, shut ? '#ff8a7e' : '#8af0ae', 800);
+  // low air intake with louvres
+  s += fill(pd(on(Y,rrUV(30,34,86,50,5))), m.d) + ink(pd(on(Y,rrUV(30,34,86,50,5))),1.3);
+  let lv = ''; for (const z of [39,45]) lv += pd(on(Y,[[34,z],[82,z]]),false);
+  s += `<path d="${lv}" fill="none" stroke="${m.m}" stroke-width="2" stroke-linecap="round"/>` + ink(lv,.6);
+  return s;
+}
+
+/* ---------- back (-x): panel, vent grille, WC sign, service hatch, rating plate, drain pipe ---------- */
+function backScene(m){
+  const B = PX(-.3), bt = tone([-1,0,0],m); let s = '';
+  s += shape(on(PX(0),OUT), bt, 0) + ink(pd(on(PX(0),OUT)),2.2);
+  // vent grille near the top
+  s += fill(pd(on(B,rrUV(112,176,174,197,5))), m.d) + ink(pd(on(B,rrUV(112,176,174,197,5))),1.3);
+  let gr = ''; for (let z=180; z<=193; z+=4.3) gr += pd(on(B,[[116,z],[170,z]]),false);
+  s += `<path d="${gr}" fill="none" stroke="${m.m}" stroke-width="2.2" stroke-linecap="round"/>`;
+  // WC sign: letters + two pictograms
+  s += fill(pd(on(B,rrUV(28,148,96,177,4))), '#f4f5ef') + ink(pd(on(B,rrUV(28,148,96,177,4))),1.3);
+  s += txB(-.4,46,156.5,'WC',15,INK,800);
+  s += ink(pd(on(B,[[73,152],[73,173]]),false),.8);
+  s += fill(pd(on(B,ellUV(80,169.5,2.3,2.3))), INK) + fill(pd(on(B,rrUV(77.6,152,82.4,166,1.2))), INK);
+  s += fill(pd(on(B,ellUV(89,169.5,2.3,2.3))), INK) + fill(pd(on(B,[[84.5,157],[93.5,157],[89,166.5]])), INK);
+  s += ink(pd(on(B,[[87.5,157],[87.5,152]]),false),1.1) + ink(pd(on(B,[[90.5,157],[90.5,152]]),false),1.1);
+  // accessibility plate
+  s += fill(pd(on(B,rrUV(28,124,46,142,2.5))), '#3d6fb6') + ink(pd(on(B,rrUV(28,124,46,142,2.5))),1.1);
+  s += fill(pd(on(B,ellUV(37.5,138.6,1.5,1.5))), '#fff');
+  s += `<path d="${pd(on(B,ellUV(36,131,4.3,4.3,18)))}${pd(on(B,[[37,136],[36.6,131.5],[40.5,131.5],[42,127.5]]),false)}${pd(on(B,[[36.8,134],[40,134]]),false)}" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  // rating plate
+  s += fill(pd(on(B,rrUV(54,124,96,142,1.5))), METAL.l) + ink(pd(on(B,rrUV(54,124,96,142,1.5))),1);
+  s += txB(-.4,75,135.5,'WC-200 · 09',4.6,INK,700);
+  s += ink(pd(on(B,[[58,131],[92,131]]),false),.6) + ink(pd(on(B,[[58,128],[84,128]]),false),.6);
+  // service hatch with four screws and a latch
+  s += fill(pd(on(B,rrUV(110,46,172,140,6))), bt) + ink(pd(on(B,rrUV(110,46,172,140,6))),1.5) + ink(pd(on(B,rrUV(113,49,169,137,4))),.6);
+  for (const [u,v] of [[115,54],[167,54],[115,132],[167,132]])
+    s += fill(pd(on(B,ellUV(u,v,1.9,1.9,12))), METAL.l) + ink(pd(on(B,ellUV(u,v,1.9,1.9,12))),.8) + ink(pd(on(B,[[u-1.1,v-.6],[u+1.1,v+.6]]),false),.6);
+  s += fill(pd(on(B,rrUV(160,84,166,102,1.5))), m.d) + ink(pd(on(B,rrUV(160,84,166,102,1.5))),1) + fill(pd(on(B,ellUV(163,95,1.1,1.1,10))), METAL.l);
+  s += txB(-.4,141,124,'SERVICE',6.5,bt===m.d?m.m:m.d,800);
+  // water / drain pipe: wall flange, elbow stub, down-pipe with clamps into a floor collar
+  const py = 20, px = -7, pr = 3.2;
+  s += fill(pd(on(B,ellUV(py,96,6,6,16))), METAL.m) + ink(pd(on(B,ellUV(py,96,6,6,16))),1);
+  s += pipeX(0, px, py, 96, pr, METAL);
+  s += fill(pd(on(PZ(.2),ellUV(px,py,7,7,18))), METAL.d) + ink(pd(on(PZ(.2),ellUV(px,py,7,7,18))),1);
+  s += cyl(px,py,0,99.2,pr,METAL,toneI,1.1,16);
+  for (const z of [30,62]) s += cyl(px,py,z,z+3,pr+.9,METAL,toneI,.9,16);
+  return s;
+}
+
+/* ---------- see-through + labels kit ---------- */
+function xrCallouts(items, B){
+  const pts = []; for (const x of [B[0], B[1]]) for (const y of [B[2], B[3]]) for (const z of [B[4], B[5]]) pts.push(P(x, y, z));
+  const xmin = Math.min(...pts.map(p => p[0])), xmax = Math.max(...pts.map(p => p[0])), cx = (xmin + xmax)/2;
+  // on a phone (LBL_U = drawing units per screen px) each label is a numbered badge and the names go in a legend under the figure
+  const k = INK_K, u = window.LBL_U ? LBL_U() : 0, fs = u ? 10*u : 8.6*k, hgt = u ? 17*u : fs*1.8, gap = hgt + (u ? 3*u : 3*k);
+  const L = [], R = [];
+  const svgEl = document.getElementById('fig'), vb = svgEl.viewBox.baseVal, btn = document.getElementById('btns');
+  const wMax = u ? hgt*1.3 + 12*k : Math.max(...items.map(it => it.text.length))*fs*.62 + fs*1.5 + 12*k;
+  const roomL = xmin - vb.x >= wMax, roomR = vb.x + vb.width - xmax >= wMax;
+  for (const it of items){ const [X, Y] = P(...it.at); ((X < cx && roomL) || !roomR ? L : R).push({ ...it, X, Y }); }
+  let s = '';
+  let top = { [-1]: fs, [1]: fs + 30*k };
+  if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(svgEl.getScreenCTM().inverse());
+    if (q.y > 0) top[-1] = q.y + hgt; }
+  for (const [col, side] of [[L, -1], [R, 1]]){
+    col.sort((a, b) => a.Y - b.Y);
+    let y = -1e9; for (const c of col){ c.py = Math.max(c.Y, y + gap, top[side]); y = c.py; }
+    const shift = col.length ? Math.max(0, col.reduce((a, c) => a + c.py - c.Y, 0) / col.length) : 0;
+    const room = col.length ? col[0].py - top[side] : 0; for (const c of col) c.py -= Math.min(shift, room);
+    for (const c of col){
+      c.n = ((window.__ln || (window.__ln = {}))[c.text] || (__ln[c.text] = Object.keys(__ln).length + 1)); const w = u ? hgt*(c.n > 9 ? 1.3 : 1) : c.text.length*fs*.62 + fs*1.5;
+      let px = side < 0 ? xmin - 10*k - w/2 : xmax + 10*k + w/2; px = Math.max(vb.x + w/2 + 2*k, Math.min(vb.x + vb.width - w/2 - 2*k, px));
+      const ex = px - side*w/2;
+      s += `<g class="tag${c.on ? ' on' : ''}" data-n="${c.n}" data-t="${c.text}"><path d="M${f(c.X)} ${f(c.Y)}L${f(ex + side*-4*k)} ${f(c.py)}L${f(ex)} ${f(c.py)}" fill="none" stroke="${INK}" stroke-width="1"/>`
+        + `<circle cx="${f(c.X)}" cy="${f(c.Y)}" r="${f(1.4*k)}" fill="${INK}"/>`
+        + `<rect x="${f(px - w/2)}" y="${f(c.py - hgt/2)}" width="${f(w)}" height="${f(hgt)}" rx="${f(hgt/2)}" fill="${c.on ? 'var(--accent,#f4b829)' : '#fff4d6'}" stroke="${INK}" stroke-width="1.2"/>`
+        + `<text x="${f(px)}" y="${f(c.py + fs*.36)}" font-size="${f(fs)}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-weight="800" letter-spacing=".04em" fill="${INK}">${u ? c.n : c.text}</text></g>`;
+    }
+  }
+  return s;
+}
+function xrGhost(body, mech, k, OUTp, x0, x1, m){
+  const fF = facing([1,0,0]), fB = facing([-1,0,0]);
+  const far = `<g opacity="${f(.5*k)}">` + loft(on(PX(x0), OUTp), on(PX(x1), OUTp), n => mix(toneI(n.map(v => -v), m), '#f2efe7', .55), true)
+    + (fF ? fill(pd(on(PX(x0), OUTp)), mix(m.d, '#f2efe7', .5)) : '') + (fB ? fill(pd(on(PX(x1), OUTp)), mix(m.d, '#f2efe7', .5)) : '') + `</g>`;
+  return far + mech + `<g opacity="${f(1 - .8*k)}">${body}</g>` + `<g opacity="${f(.6*k)}">` + hullInk([...on(PX(x0), OUTp), ...on(PX(x1), OUTp)], 2.8) + `</g>`;
+}
+function xrMount(getUI, caption){
+  const ui = getUI(), q = new URLSearchParams(location.search), html = document.documentElement;
+  if (q.get('labels') !== '1') html.classList.add('nolabels');
+  if (ui.st.xr == null){ ui.st.xr = 0; ui.st.xrT = 0; }
+  if (q.get('xr') === '1') ui.st.xr = ui.st.xrT = 1;
+  const old = document.getElementById('lblctl'); if (old) old.style.display = 'none';
+  const vset = document.createElement('div'); vset.className = 'vset';
+  vset.innerHTML = '<div class="vrow"><button class="act" id="xrb" aria-pressed="false">See-through</button><button class="act" id="lblb" aria-pressed="false">Labels</button></div>';
+  document.querySelector('.stage').appendChild(vset);
+  // pages with a stats panel in the top right: the switches go just under it
+  const place = () => { const sp = document.getElementById('stats'); vset.style.top = sp ? (sp.offsetTop + sp.offsetHeight + 10) + 'px' : ''; };
+  place(); new ResizeObserver(place).observe(document.getElementById('stats') || vset);
+  const xrb = document.getElementById('xrb'), lblb = document.getElementById('lblb');
+  const sync = () => { xrb.setAttribute('aria-pressed', !!getUI().st.xrT); lblb.setAttribute('aria-pressed', !html.classList.contains('nolabels')); };
+  xrb.onclick = () => { const u = getUI(), st = u.st; st.xr = st.xr || 0; st.xrT = st.xrT ? 0 : 1; sync();
+    u.animate(dt => { const g = Math.sign(st.xrT - st.xr); st.xr = Math.min(1, Math.max(0, st.xr + g*dt/.7)); return st.xr !== st.xrT; }); };
+  lblb.onclick = () => { html.classList.toggle('nolabels'); sync(); };
+  sync();
+  const cap = document.createElement('p'); cap.className = 'mcap'; document.querySelector('.stage').after(cap);
+  const css = document.createElement('style');
+  css.textContent = '.vset{position:absolute;top:4px;right:0;z-index:2}.vrow{display:flex;gap:6px}.vset .act[aria-pressed=true]{background:var(--ink);color:var(--paper)}'
+    + 'html.nolabels #fig .tag{display:none}.mcap{width:100%;max-width:760px;min-height:3em;margin:0 0 14px;font-size:12.5px;line-height:1.5;text-align:center;transition:opacity .3s}'
+    + '@media (max-width:560px){.vset{position:static;margin:4px 0}}';
+  document.head.appendChild(css);
+  const r0 = ui.render; ui.render = () => { r0(); const st = getUI().st; cap.style.opacity = st.xr > .5 ? 1 : 0; cap.textContent = caption(st); };
+  ui.render();
+}
+
+/* ---------- see-through: how a real modular public toilet works ----------
+   Its walls, floor and roof are hollow panels (T thick); everything runs inside them, the controller sits in the vanity.
+   WATER   supply riser into the back wall . stop valve . filter . tee . instant water heater . tap solenoid valve . tap line
+           to the wall plate . concealed flush valve (flushometer) with its solenoid . flush pipe down to the bowl's rim inlet
+   DRAINS  bowl outlet through the floor . basin waste into the wall and down . floor drain and its pipe . main drain under
+           the floor . sewer outlet with its collar
+   DOOR    track in the front wall's header . hanger carriage with two rollers . bracket down to the door . gearmotor and its
+           pulley . idler pulley . toothed belt and the clamp that ties it to the carriage . electric lock in the jamb and
+           its bolt . safety beam across the doorway (emitter, receiver)
+   POWER   mains gland at the back . controller and power supply in the vanity . loom up the corner and through the ceiling to
+           the light, the motion sensor, the exhaust fan behind the back grille, the door motor, the call panel, the lock,
+           the flush and tap valves */
+const BCOP = { l:'#f0b07a', m:'#d08a52', d:'#9a5a2c' }, BGM = { l:'#7c8389', m:'#5c6369', d:'#3b4146' }, BPVC = { l:'#e9ecee', m:'#c9cfd2', d:'#9aa2a6' };
+const PX_ = 4.6, CX_ = 1.8;                                    // pipes and cables in the back wall's cavity, never crossing
+const bBoxOf = pts => [[0,1,2].map(i => Math.min(...pts.map(p => p[i])) - 1.2), [0,1,2].map(i => Math.max(...pts.map(p => p[i])) + 1.2)];
+const bBend = (pts, r = 4) => { if (pts.length < 3) return pts; const out = [pts[0]];
+  for (let i = 1; i < pts.length - 1; i++){ const [a, b, c] = [pts[i-1], pts[i], pts[i+1]];
+    const la = Math.hypot(...a.map((v, k) => v - b[k])), lc = Math.hypot(...c.map((v, k) => v - b[k])), d = Math.min(r, la/2.2, lc/2.2);
+    const p = a.map((v, k) => b[k] + (v - b[k])*d/la), q = c.map((v, k) => b[k] + (v - b[k])*d/lc);
+    for (let j = 0; j <= 5; j++){ const t = j/5; out.push([0,1,2].map(k => (1-t)*(1-t)*p[k] + 2*(1-t)*t*b[k] + t*t*q[k])); } }
+  out.push(pts[pts.length - 1]); return out; };
+// a pipe or cable as short depth-sortable pieces; flow dashes while it runs; terminal dots on cable ends
+const bLine = (pts, col, w, opt = {}) => { const q = bBend(pts, opt.r || 4), out = [], L = 16;
+  for (let i = 0; i < q.length - 1; ){
+    let j = i + 1, len = 0; while (j < q.length - 1 && len < L){ len += Math.hypot(...q[j].map((v, k) => v - q[j-1][k])); j++; }
+    if (len < L) while (j < q.length - 1) j++;
+    const seg = q.slice(i, j + 1), d = pd(seg, false);
+    let svg = `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${f(2*w + 1.1)}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${f(2*w)}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    if (opt.flow) svg += `<path d="${d}" fill="none" stroke="${opt.flow}" stroke-width="${f(Math.max(.6, w*.7))}" stroke-dasharray="2 2.4" stroke-dashoffset="${f(-(performance.now()/1000)*30)}" stroke-linecap="round"/>`;
+    for (const e of [i === 0 && opt.ends ? q[0] : null, j === q.length - 1 && opt.ends ? q[j] : null]) if (e){ const [X, Y] = P(...e); svg += `<circle cx="${f(X)}" cy="${f(Y)}" r="1.3" fill="${INK}"/>`; }
+    out.push({ box: bBoxOf(seg), svg }); i = j; }
+  return out; };
+function boothMech(){
+  const parts = [], put = (b, svg) => parts.push({ box: b, svg });
+  const bx = (x0, y0, z0, x1, y1, z1, m, w = .8) => put([[x0, y0, z0], [x1, y1, z1]], box(x0, y0, z0, x1, y1, z1, m, toneI, w));
+  const flushing = st.flush > 0, tapping = st.tap > 0, moving = st.door !== st.doorTarget, shut = st.door === 1;
+  const dy = DOOR_OPEN + (DOOR_SHUT - DOOR_OPEN)*ease(st.door), t = performance.now()/1000;
+  const H_ = '#3a3632', ON = '#ffb347', WATER = '#4f9fdc', live = c => c ? matOf('#ff9a3a') : BGM;
+  // ---- water: riser in through the back wall, stop valve, filter, tee
+  parts.push(...bLine([[0, 20, 96], [PX_, 20, 96], [PX_, 36, 96]], BCOP.m, 1, { flow: flushing || tapping ? WATER : 0 }));
+  put([[PX_ - 1.6, 24, 94.4], [PX_ + 1.6, 28, 100]], rod([PX_, 24, 96], [PX_, 28, 96], 1.6, matOf('#d7af4a'), toneI, .6) + rod([PX_, 26, 97.4], [PX_, 26, 100], .5, METAL, toneI, .4) + rod([PX_ - 1.2, 26, 100], [PX_ + 1.2, 26, 100], .6, matOf('#e2483d'), toneI, .4));
+  put([[PX_ - 2, 30, 94], [PX_ + 2, 34, 98]], rod([PX_, 30, 96], [PX_, 34, 96], 2, BPVC, toneI, .6));
+  put([[PX_ - 1.6, 34.4, 94.4], [PX_ + 1.6, 37.6, 97.6]], cyl(PX_, 36, 94.4, 97.6, 1.6, BCOP, toneI, .5, 12));
+  // tap branch: through the instant heater, the tap solenoid valve, out to the wall plate
+  parts.push(...bLine([[PX_, 36, 96], [PX_, 44, 96], [PX_, 44, 94]], BCOP.m, .8, { flow: tapping ? WATER : 0 }));
+  bx(PX_ - 1.8, 41, 76, PX_ + 1.8, 55, 94, tapping ? matOf('#ff9a3a') : matOf('#e8e4da'), .8);
+  parts.push(...bLine([[PX_, 52, 76], [PX_, 52, 72], [PX_, 41, 72]], BCOP.m, .8, { flow: tapping ? '#ff8a5a' : 0 }));
+  bx(PX_ - 1.8, 37, 70, PX_ + 1.8, 41, 74, live(tapping), .6);
+  parts.push(...bLine([[PX_, 37, 72], [PX_, 36, 69], [T, 36, 69]], BCOP.m, .8, { flow: tapping ? '#ff8a5a' : 0 }));
+  // flush branch: concealed flush valve with its solenoid, flush pipe down to the bowl's rim inlet
+  parts.push(...bLine([[PX_, 36, 96], [PX_, 70, 96], [PX_, 70, 98]], BCOP.m, 1, { flow: flushing ? WATER : 0 }));
+  put([[PX_ - 2.4, TY - 2.4, 88], [PX_ + 2.4, TY + 2.4, 104]], cyl(PX_, TY, 88, 104, 2.4, METAL, toneI, .8, 16) + cyl(PX_, TY, 104, 106, 1.6, METAL, toneI, .6, 12));
+  bx(PX_ - 1.8, TY - 2, 106, PX_ + 1.8, TY + 2, 112, live(flushing), .6);
+  parts.push(...bLine([[PX_, TY, 88], [PX_, TY, 48], [T + 2, TY, 42]], BCOP.m, 1.2, { flow: flushing ? WATER : 0 }));
+  // ---- drains under the floor: bowl outlet, basin waste, floor drain, main, sewer outlet
+  const DZ = 3.5;
+  parts.push(...bLine([[T + 16, TY, T], [T + 16, TY, DZ], [40, TY, DZ], [40, 100, DZ]], BPVC.m, 2.4, { flow: flushing ? '#7aa9b8' : 0 }));
+  parts.push(...bLine([[T + 6, 36, 47], [PX_, 36, 44], [PX_, 36, DZ], [T + 16, 50, DZ], [T + 16, TY - 3, DZ]], BPVC.m, 1.3, { flow: tapping ? '#7aa9b8' : 0 }));
+  put([[56, 136, T - .4], [64, 144, T + .1]], shape(on(PZ(T + .08), ellUV(60, 140, 4, 4, 18)), METAL.l, .7) + [-2, 0, 2].map(o => line([[58 + o*.0, 140 + o, T + .1], [62, 140 + o, T + .1]], .4)).join(''));
+  parts.push(...bLine([[60, 140, T], [60, 140, DZ], [40, 140, DZ], [40, 104, DZ]], BPVC.m, 1.6));
+  put([[35, 95, -3], [45, 105, DZ + 2.4]], cyl(40, 100, -3, DZ + 1, 3.2, BPVC, toneI, .8, 16) + cyl(40, 100, -1.5, 0, 4.4, BGM, toneI, .6, 16));
+  // ---- door: track and carriage in the front wall's header, bracket to the door, motor, pulleys, belt, clamp
+  const HX = 107.5, TZ = 192;
+  bx(HX - 1, 24, TZ - 1, HX + 1, 197, TZ + 1, METAL, .6);
+  bx(HX - 1.4, dy + 6, TZ - 6, HX + 1.4, dy + 74, TZ - 1, BGM, .7);
+  for (const yy of [dy + 14, dy + 66]) put([[HX - 1.6, yy - 2.2, TZ - 1.2], [HX + 1.6, yy + 2.2, TZ + 3.2]], cylX(HX - 1.6, HX + 1.6, yy, TZ + 1, 2.2, matOf('#3a3632'), toneI, .5, 14));
+  put([[HX, dy + 38, 174], [113, dy + 42, TZ - 5]], rod([HX + 1.4, dy + 40, TZ - 5], [111, dy + 40, 174.5], .9, METAL, toneI, .6));
+  const BZ0 = TZ + 5, BZ1 = TZ + 9;
+  bx(HX - 1.5, 14, BZ0 - 3, HX + 1.5, 21, BZ1 + 4, live(moving), .8);
+  for (const yy of [23, 194]) put([[HX - 1, yy - 2.2, BZ0 - .2], [HX + 1, yy + 2.2, BZ1 + .2]], cylX(HX - 1, HX + 1, yy, (BZ0 + BZ1)/2, 2.2, METAL, toneI, .5, 14));
+  let belt = line([[HX, 23, BZ0], [HX, 194, BZ0]], 1.1) + line([[HX, 23, BZ1], [HX, 194, BZ1]], 1.1);
+  if (moving) belt += `<path d="${pd([[HX, 23, BZ1], [HX, 194, BZ1]], false)}" stroke="${ON}" stroke-width=".9" stroke-dasharray="2 3" stroke-dashoffset="${f(-t*40*(st.doorTarget ? 1 : -1))}"/>`;
+  put([[HX - .6, 21, BZ0 - .6], [HX + .6, 196, BZ1 + .6]], belt);
+  bx(HX - 1.2, dy + 38, TZ - 1, HX + 1.2, dy + 42, BZ0 + .3, BGM, .5);
+  // electric lock in the jamb: its bolt is out while the door is shut
+  bx(106, 194, 88, 110, 199, 102, shut ? matOf('#e2483d') : matOf('#43c25c'), .8);
+  if (shut) put([[110, 189, 93.6], [112, 194, 96.4]], rod([111, 194, 95], [111, 190, 95], 1.3, METAL, toneI, .6));
+  // safety beam across the doorway: emitter and receiver in the jambs
+  bx(106.5, DA - .5, 27, 109, DA + 2, 33, BGM, .5); bx(106.5, D - T - 2, 27, 109, D - T + .5, 33, BGM, .5);
+  put([[107.5, DA + 2, 29.5], [108, D - T - 2, 30.5]], `<path d="${pd([[107.8, DA + 2, 30], [107.8, D - T - 2, 30]], false)}" stroke="#e2483d" stroke-width="${moving ? 1.3 : .7}" stroke-dasharray="2 2" opacity="${moving ? 1 : .55}"/>`);
+  // ---- power and control: gland, controller and supply in the vanity, ceiling light, motion sensor, exhaust fan
+  put([[0, 28, 28], [2.5, 32, 32]], cylX(0, 2.5, 30, 30, 1.8, BGM, toneI, .5, 12));
+  put([[70, 172, 20], [100.8, 190, 60]], box(70, 172, 20, 100, 190, 60, BGM, toneI, .9)
+    + (facing([1,0,0]) ? box(100, 175, 44, 100.8, 187, 56, matOf('#2f8a4a'), toneI, .5) + fill(pd(on(PX(100.85), ellUV(181, 30, 1, 1, 10))), Math.sin(t*4) > 0 ? '#7dff9a' : '#2a5a36') : ''));
+  bx(72, 174, 62, 92, 188, 74, METAL, .7);
+  put([[40, 70, H - T - 1.2], [80, 130, H - T]], box(40, 70, H - T - 1.2, 80, 130, H - T, { l:'#fffbe8', m:'#fff1c2', d:'#e8d79a' }, toneI, .6));
+  put([[83, 58, H - T - 3], [87, 62, H - T]], cyl(85, 60, H - T - 2.5, H - T, 2, matOf('#f3efe4'), toneI, .5, 14) + fill(pd(on(PZ(H - T - 2.55), ellUV(85, 60, 1.1, 1.1, 10))), shut ? '#ff9a3a' : '#3a3632'));
+  const fa = shut ? t*10 : 0;
+  let fan = cylX(1.5, 5.5, 143, 186, 9, BPVC, toneI, .8, 24);
+  if (facing([1,0,0])) for (let i = 0; i < 4; i++){ const a = fa + i*Math.PI/2; fan += ink(pd([[5.6, 143, 186], [5.6, 143 + 7.5*Math.cos(a), 186 + 7.5*Math.sin(a)]], false), 1.2); }
+  put([[1.5, 134, 177], [5.5, 152, 195]], fan);
+  // the loom: mains in along the floor to the vanity; up the corner to the ceiling void; branches to every load
+  // the loom is thin and grey so its long runs along the ceiling and floor don't read as the box's edges
+  const CZ = H - T + 3.5, cab = (pts, on, w = .55) => parts.push(...bLine(pts, on ? ON : '#8a847c', w*.6, { ends: true }));
+  cab([[2.5, 30, 30], [CX_, 30, DZ], [CX_, 196, DZ], [85, 196, DZ], [85, 190, 20]], false, .7);
+  cab([[85, 190, 60], [100, 196, 70], [104, 196, CZ], [60, 196, CZ], [60, 130, CZ], [60, 130, H - T]], shut);
+  cab([[60, 196, CZ], [CX_, 196, CZ], [CX_, 143, CZ], [CX_, 143, 195]], shut, .45);
+  cab([[60, 130, CZ], [85, 70, CZ], [85, 60, H - T - .2]], shut, .45);
+  cab([[104, 196, CZ], [HX, 196, CZ], [HX, 18, CZ], [HX, 18, BZ1 + 4]], moving, .5);
+  cab([[HX, 22, CZ], [HX - 1, 22, CZ - 4], [HX - 1, 22, 180]], false, .45);
+  cab([[104, 196, CZ - 1], [108, 196.5, CZ - 6], [108, 196.5, 102]], shut, .45);
+  cab([[CX_, 143, CZ], [CX_, TY, CZ], [CX_, TY, 112], [PX_ - 1.8, TY, 110]], flushing, .45);
+  cab([[CX_, TY, CZ - 1], [CX_, 39, CZ - 1], [CX_, 39, 74], [PX_ - 1.8, 39, 72]], tapping, .45);
+  cab([[CX_, 39, 96], [CX_, 48, 94], [PX_ - 1.8, 48, 90]], tapping, .45);
+  return byDepth(parts);
+}
+const BOOTH_B = [0, W, 0, D, 0, H];
+const boothInside = () => [
+  { at:[PX_, TY, 104], text:'FLUSH VALVE', on: st.flush > 0 },
+  { at:[PX_, 26, 100], text:'STOP VALVE', on: false },
+  { at:[PX_ + 1.8, 48, 94], text:'WATER HEATER', on: st.tap > 0 },
+  { at:[PX_ + 1.8, 39, 74], text:'TAP VALVE', on: st.tap > 0 },
+  { at:[40, 100, -3], text:'DRAIN', on: st.flush > 0 },
+  { at:[107.5, 17, 205], text:'DOOR MOTOR', on: st.door !== st.doorTarget },
+  { at:[108, 194, 102], text:'DOOR LOCK', on: st.door === 1 },
+  { at:[108, 150, 30], text:'SAFETY BEAM', on: st.door !== st.doorTarget },
+  { at:[100, 181, 60], text:'CONTROLLER', on: true },
+  { at:[5.5, 143, 195], text:'EXHAUST FAN', on: st.door === 1 },
+  { at:[85, 60, H - T - 3], text:'MOTION SENSOR', on: st.door === 1 } ];
+const boothSurface = () => facing([1,0,0]) ? [
+  { at:[FW + .3, 22, 178], text:'CALL PANEL', on: false }, { at:[FW + 4, DOOR_OPEN + (DOOR_SHUT - DOOR_OPEN)*ease(st.door) + 40, 174], text:'SLIDING DOOR', on: st.door !== st.doorTarget },
+  { at:[T + 22, TY, 44], text:'TOILET', on: st.flush > 0 }, { at:[T + 10, 36, 56], text:'BASIN', on: st.tap > 0 } ]
+  : facing([-1,0,0]) ? [ { at:[0, 141, 140], text:'SERVICE HATCH', on: false }, { at:[0, 143, 197], text:'VENT', on: false }, { at:[-7, 20, 60], text:'WATER PIPE', on: false } ] : [];
+function boothScene(){
+  const k = ease(st.xr || 0), s = scene();
+  if (k > 0) return `<g opacity="${f(1 - .72*k)}">${s}</g><g opacity="${f(k)}">${boothMech()}</g>` + (k > .6 ? xrCallouts(boothInside(), BOOTH_B) : '');
+  return s + xrCallouts(boothSurface(), BOOTH_B);
+}
+const BOOTH_CAPTION = () => '';
+
+/* ---------- behaviour ---------- */
+let ui;
+let running=false, last=0;
+function loop(now){
+  const dt = Math.min(50, now-last)/1000; last = now; let more = false;
+  if (st.door !== st.doorTarget){ const sg=Math.sign(st.doorTarget-st.door); st.door += sg*dt/0.8; if ((st.doorTarget-st.door)*sg <= 0) st.door = st.doorTarget; more = true; }
+  if (st.flush > 0){ st.flush = Math.max(0, st.flush - dt/1.8); more = true; }
+  if (st.tap > 0){ st.tap = Math.max(0, st.tap - dt/2.5); more = true; }
+  ui.render();
+  if (more) requestAnimationFrame(loop); else running = false;
+}
+const kick = () => { if (!running){ running = true; last = performance.now(); requestAnimationFrame(loop); } };
+const toggleDoor = () => { st.doorTarget = st.doorTarget ? 0 : 1; kick(); };
+const flush = () => { st.flush = 1; kick(); };
+const washHands = () => { if (st.tap > 0) return ui.flash('The tap is running'); st.tap = 1; kick(); };
+
+ui = mountFigure({
+  fig:'21', turn:'full', title:'Toilet booth', hint:'click the door, light or bowl',
+  idea:"Locking the door also flips the sign outside to IN USE, so everyone knows to wait.",
+  size:[W,D,H], palette:'mustard', state:st, views:true,
+  scene: () => boothScene(),
+  readout: st => {
+    const moving = st.door !== st.doorTarget, shut = st.door === 1;
+    return st.tap>0 ? 'Washing hands…' : st.flush>0 ? 'Flushing…' : moving ? (st.doorTarget ? 'Closing…' : 'Opening…') : shut ? '● Occupied · locked' : '● Vacant · door open';
+  },
+  buttonsLabel:'Booth',
+  buttons:[
+    { label:'Close & lock door', onClick: () => st.doorTarget ? ui.flash('Already locked') : (st.flushed = false, toggleDoor()) },
+    { label:'Flush', onClick: () => { flush(); st.flushed = true; } },
+    { label:'Wash hands', onClick: () => washHands() },
+    { label:'Unlock & open door', onClick: () => st.doorTarget ? toggleDoor() : ui.flash('The door is already open') },
+  ],
+  next: st => st.door !== st.doorTarget || st.flush > 0 ? -1 : !st.doorTarget ? 0 : st.flushed ? 2 : 1,
+  acts:{ door: toggleDoor, flush: () => { flush(); st.flushed = true; }, tap: () => washHands() },
+  params:(st,q) => { if (q.get('door') === '1') st.door = st.doorTarget = 1; },
+});
+xrMount(() => ui, BOOTH_CAPTION);
+</script>
+<style>@media (max-width:560px),(pointer:coarse){#art{filter:none!important}.ctl:has(#wb){display:none!important}}</style><style>@media (max-width:560px){html body .kpad{width:100%;box-sizing:border-box;justify-content:space-between;gap:10px;margin:10px 0 0;padding:0;border:0;background:none;box-shadow:none}
+html body .kpad .dp{display:flex;gap:8px}html body .kpad .hub{display:none}
+html body .kpad .k{width:46px;height:42px;font-size:14px;border-radius:9px}
+html body .kpad .go{width:auto;height:42px;padding:0 26px;border-radius:999px;flex-direction:row;font-size:13px;box-shadow:0 3px 0 var(--ink),inset 0 -4px 0 rgba(0,0,0,.18)}
+html body .kpad .go small{display:none}html body .kpad .go.down{transform:translateY(2px);box-shadow:0 1px 0 var(--ink),inset 0 -2px 0 rgba(0,0,0,.18)}}</style>
+<script>requestAnimationFrame(() => { const o = { "◀": 0, "▲": 1, "▼": 2, "▶": 3 }; for (const k of document.querySelectorAll(".kpad .k")) k.style.order = o[k.textContent] ?? 0; });</script><style>@media (max-width:560px){.vset{margin:8px 0 2px!important}}</style><script>requestAnimationFrame(() => { const v = document.querySelector(".vset"), s = document.getElementById("stats"), z = document.querySelector(".zwrap"); if (!v) return; if (z && z.parentNode === v.parentNode){ const kp = document.querySelector(".kpad"); if (kp && innerWidth <= 560){ z.after(kp); kp.after(v); } else z.after(v); } else if (s && s.parentNode) s.parentNode.insertBefore(v, s); });</script><script>(() => { const fit = () => { const fig = document.getElementById("fig"); if (!fig) return;
+  fig.style.maxHeight = ""; if (innerWidth <= 560) return;
+  const extra = document.documentElement.scrollHeight - fig.clientHeight, room = innerHeight - extra - 12;
+  if (room < fig.clientHeight) fig.style.maxHeight = Math.max(320, room) + "px"; };
+  addEventListener("load", () => requestAnimationFrame(fit)); addEventListener("resize", fit); setTimeout(fit, 400); })();</script><style>.zwrap{position:relative}.zwrap.on{overflow:hidden}@media (min-width:561px){.zwrap.on{overflow:visible}html.zoomed,html.zoomed body{overflow:hidden}}.zwrap #fig{transform-origin:0 0}
+.zchip{position:absolute;right:2px;bottom:6px;display:flex;align-items:center;gap:2px;font:600 11px ui-monospace,Menlo,monospace;
+ background:rgba(242,239,231,.88);border:1px solid rgba(35,30,22,.25);border-radius:999px;padding:2px;z-index:3;user-select:none}
+.zchip button{all:unset;cursor:pointer;min-width:22px;height:22px;line-height:22px;text-align:center;border-radius:999px;color:#231e16}
+.zchip button:hover{background:rgba(35,30,22,.08)}.zchip .zp{min-width:44px}</style>
+<script>(() => { const fig = document.getElementById("fig"); if (!fig) return;
+  const wrap = document.createElement("div"); wrap.className = "zwrap"; fig.parentNode.insertBefore(wrap, fig); wrap.appendChild(fig);
+  const chip = document.createElement("div"); chip.className = "zchip";
+  chip.innerHTML = '<button class="zm" aria-label="Zoom out">−</button><button class="zp" aria-label="Reset zoom">100%</button><button class="zi" aria-label="Zoom in">+</button>';
+  wrap.appendChild(chip);
+  let s = 1, tx = 0, ty = 0;
+  const box = () => ({ w: fig.clientWidth, h: fig.clientHeight });
+  const apply = () => { const { w, h } = box(); s = Math.min(5, Math.max(1, s));
+    if (s <= 1.001){ s = 1; tx = ty = 0; } else { tx = Math.min(0, Math.max(w - w*s, tx)); ty = Math.min(0, Math.max(h - h*s, ty)); }
+    fig.style.transform = s === 1 ? "" : `translate(${tx}px,${ty}px) scale(${s})`; wrap.classList.toggle("on", s > 1); document.documentElement.classList.toggle("zoomed", s > 1);   /* desktop: nothing is cut off, the page just does not scroll while zoomed */
+    chip.querySelector(".zp").textContent = Math.round(s*100) + "%"; grain(); };
+  // the paper grain is noise in drawing units: zoomed, it would blow up into blotches, so its frequency rises with the
+  // zoom and it stays the same fine grain on screen (the filter is rebuilt on resize, so this re-applies then too)
+  const grain = () => { const fl = document.getElementById("hand"); if (!fl) return;
+    const ts = [...fl.querySelectorAll("feTurbulence")]; if (!ts.length) return;
+    const g = ts.find(t => t.getAttribute("result") === "n1") || ts.reduce((a, b) => parseFloat(b.getAttribute("baseFrequency")) > parseFloat(a.getAttribute("baseFrequency")) ? b : a);
+    if (!g.dataset.f0) g.dataset.f0 = g.getAttribute("baseFrequency");
+    const v = (parseFloat(g.dataset.f0) * s).toFixed(4); if (g.getAttribute("baseFrequency") !== v) g.setAttribute("baseFrequency", v); };
+  const fd = document.getElementById("fdefs"); if (fd) new MutationObserver(() => grain()).observe(fd, { childList: true, subtree: true });
+  const zoomAt = (k, px, py) => { const s2 = Math.min(5, Math.max(1, s*k)); tx = px - (px - tx)*s2/s; ty = py - (py - ty)*s2/s; s = s2; apply(); };
+  const local = e => { const r = wrap.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  wrap.addEventListener("wheel", e => {
+    if (e.ctrlKey || e.metaKey){ e.preventDefault(); const [x, y] = local(e); zoomAt(Math.exp(-Math.max(-50, Math.min(50, e.deltaY))*.006), x, y);   /* a wheel notch ~1.35x, a pinch stays smooth */ }
+    else if (s > 1){ e.preventDefault(); tx -= e.deltaX; ty -= e.deltaY; apply(); } }, { passive: false });
+  const center = () => { const { w, h } = box(); return [w/2, h/2]; };
+  chip.querySelector(".zi").onclick = () => zoomAt(1.5, ...center());
+  chip.querySelector(".zm").onclick = () => zoomAt(1/1.5, ...center());
+  chip.querySelector(".zp").onclick = () => { s = 1; apply(); };
+  chip.addEventListener("pointerdown", e => e.stopPropagation());
+  // two fingers: pinch to zoom and move to pan; the figure's own one-finger turn waits while they are down
+  const pts = new Map(); let pinch = null;
+  const two = () => { const [a, b] = [...pts.values()]; return { d: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x)/2, y: (a.y + b.y)/2 }; };
+  wrap.addEventListener("pointerdown", e => { if (e.pointerType !== "touch") return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 2){ pinch = two(); e.stopPropagation(); } }, true);
+  wrap.addEventListener("pointermove", e => { if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && pts.size === 2){ e.stopPropagation(); e.preventDefault(); const n = two(), r = wrap.getBoundingClientRect();
+      tx += n.x - pinch.x; ty += n.y - pinch.y; zoomAt(n.d / pinch.d, n.x - r.left, n.y - r.top); pinch = n; } }, true);
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; };
+  wrap.addEventListener("pointerup", up, true); wrap.addEventListener("pointercancel", up, true);
+  addEventListener("resize", apply);
+})();</script><style>.toast{position:absolute!important;left:50%!important;right:auto!important;top:6%!important;bottom:auto!important;z-index:4!important;
+  transform:translate(-50%,8px)!important;opacity:0!important;pointer-events:none!important;display:flex!important;align-items:center;gap:8px;
+  width:max-content;max-width:min(86%,440px);white-space:normal!important;font:600 12.5px/1.35 ui-monospace,Menlo,monospace!important;
+  letter-spacing:.01em!important;text-transform:none!important;color:#231e16!important;background:#fff1bf!important;
+  border:1px solid rgba(35,30,22,.28)!important;border-radius:8px!important;box-shadow:0 8px 22px rgba(35,30,22,.16)!important;
+  padding:7px 13px 7px 9px!important;transition:opacity .18s ease,transform .18s ease!important}
+.toast::before{content:"!";flex:none;width:17px;height:17px;border-radius:50%;background:#231e16;color:#fff1bf;font:800 11px/17px ui-monospace,Menlo,monospace;text-align:center}
+.toast.show{opacity:1!important;transform:translate(-50%,0)!important}</style>
+<script>(() => { const cap = () => { const t = document.getElementById("toast"); if (!t) return; const s = t.textContent;
+  if (s && s[0] !== s[0].toUpperCase()) t.textContent = s[0].toUpperCase() + s.slice(1); };
+  let seen = null; const watch = () => { const t = document.getElementById("toast"); if (!t || t === seen) return; seen = t;
+    const zw = document.querySelector(".zwrap"); if (zw && t.parentNode !== zw) zw.appendChild(t);   // sits on the figure itself
+    new MutationObserver(cap).observe(t, { childList: true, characterData: true, subtree: true }); cap(); };
+  watch(); const st = document.querySelector(".stage"); if (st) new MutationObserver(watch).observe(st, { childList: true }); })();</script><script>(() => { const fix = () => { const art = document.getElementById('art'); if (!art) return;
+    for (const el of art.querySelectorAll('[fill="#41538f" i]')){ let top = null, a = el.parentElement;
+      while (a && a !== art){ const o = a.getAttribute('opacity'); if (o !== null && +o < 1) top = a; a = a.parentElement; }
+      if (top) top.parentNode.insertBefore(el, top); } };
+  const go = () => { const art = document.getElementById('art'); if (!art) return setTimeout(go, 50); fix(); new MutationObserver(fix).observe(art, { childList: true }); };
+  if (document.readyState === 'loading') addEventListener('DOMContentLoaded', go); else go(); })();</script><style>.lgd{display:none}@media (max-width:560px){html:not(.nolabels) .lgd.has{display:grid}}
+.lgd{grid-template-columns:1fr 1fr;gap:2px 8px;margin:4px 0 12px;font:700 10.5px/1.25 ui-monospace,Menlo,monospace;letter-spacing:.03em;color:#231e16}
+.lgd button{all:unset;display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px;border-radius:7px;-webkit-tap-highlight-color:transparent}
+.lgd b{flex:none;min-width:17px;height:17px;padding:0 3px;box-sizing:border-box;border-radius:999px;border:1.2px solid #231e16;background:#fff4d6;text-align:center;font:800 10px/15px ui-monospace,Menlo,monospace}
+.lgd .on b{background:var(--accent,#f4b829)}.lgd .sel{background:rgba(35,30,22,.09)}.lgd .sel b{background:#231e16;color:#fff4d6}</style>
+<script>(() => { const fig = document.getElementById("fig"); if (!fig) return;
+  const lg = document.createElement("div"); lg.className = "lgd"; const at = document.querySelector(".zwrap") || fig; at.parentNode.insertBefore(lg, at.nextSibling);
+  const hs = document.createElement("style"); document.head.appendChild(hs);
+  let sig = "", sel = 0, q = 0, names = "", num = new Map();
+  // the figure's own numbers count every label it has ever drawn; here they are reset to 1, 2, 3... down the left
+  // column then the right, each time the set of labels changes (so they hold still while the figure turns)
+  const renum = () => { if (innerWidth > 560) return; const gs = [...fig.querySelectorAll(".tag[data-t]")];
+    const key = gs.map(g => g.dataset.t).sort().join("|");
+    if (key !== names){ names = key; num = new Map(); const vb = fig.viewBox.baseVal, cx = vb.x + vb.width/2;
+      const at = g => { const r = g.querySelector("rect"); return r ? [+r.getAttribute("x") + r.getAttribute("width")/2, +r.getAttribute("y")] : [0, 0]; };
+      gs.map(g => [g.dataset.t, ...at(g)]).sort((a, b) => ((a[1] > cx) - (b[1] > cx)) || a[2] - b[2]).forEach(([t]) => { if (!num.has(t)) num.set(t, num.size + 1); }); }
+    for (const g of gs){ const n = String(num.get(g.dataset.t)); if (g.dataset.n !== n){ g.dataset.n = n; const t = g.querySelector("text"); if (t) t.textContent = n; } } };
+  const mark = () => { hs.textContent = sel ? `#fig .tag[data-n="${sel}"] rect{fill:#231e16!important}#fig .tag[data-n="${sel}"] text{fill:#fff4d6}#fig .tag[data-n="${sel}"] path{stroke-width:2.4}` : "";
+    for (const x of lg.children) x.classList.toggle("sel", +x.dataset.n === sel); };
+  const upd = () => { q = 0; const m = new Map();
+    if (innerWidth <= 560) for (const g of fig.querySelectorAll(".tag[data-n]")){ const n = +g.dataset.n; if (!m.has(n)) m.set(n, [g.dataset.t, g.classList.contains("on")]); }
+    const a = [...m].sort((x, y) => x[0] - y[0]), s = JSON.stringify(a); if (s === sig) return; sig = s;
+    lg.classList.toggle("has", a.length > 0);
+    lg.innerHTML = a.map(([n, [t, on]]) => `<button data-n="${n}" class="${on ? "on" : ""}"><b>${n}</b><span>${t}</span></button>`).join(""); mark(); };
+  lg.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; sel = sel === +b.dataset.n ? 0 : +b.dataset.n; mark(); });
+  new MutationObserver(() => { renum(); if (!q) q = requestAnimationFrame(upd); }).observe(fig, { childList: true, subtree: true }); renum();
+  addEventListener("resize", () => { if (!q) q = requestAnimationFrame(upd); }); upd(); })();</script></body>
+</html>

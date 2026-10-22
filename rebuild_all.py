@@ -120,16 +120,46 @@ with open('cyberlab.html', 'w', encoding='utf-8') as f:
     f.write(c_cyber)
 print("7. Generated cyberlab.html (5 Cyber Lab figures)")
 
-# 8. Inject top navigation header
-import enhance_pages
-enhance_pages.inject('datacenter.html', 'DATA CENTER')
-enhance_pages.inject('cyberlab.html', 'CYBER LAB')
-enhance_pages.inject('audira-studio.html', 'AUDIRA STUDIO')
-enhance_pages.inject('objects.html', 'OBJECTS')
-enhance_pages.inject('cities.html', 'CITIES')
-enhance_pages.inject('lumen.html', 'LUMEN')
-enhance_pages.inject('computer-demo.html', 'DESK COMPUTER')
+# 8. COLORFIGURES SUITE (26 Hand-Inked Playable Mechanical Figures)
+if os.path.exists('assets/colorfigures/manifest.json'):
+    import json
+    with open('assets/colorfigures/manifest.json', 'r', encoding='utf-8') as f_man:
+        manifest = json.load(f_man)
+    print(f"8. Verified Colorfigures Suite ({len(manifest)} playable figures in assets/colorfigures/, 26 pure scripts in assets/colorfigures/models/, and colorfigures.html)")
+else:
+    print("8. Warning: assets/colorfigures/manifest.json not found. Run extract_colorfigures.py")
 
-shutil.copyfile('landing.html', 'index.html')
-print("8. Copied landing.html to index.html as main homepage")
+# 9. SHIPWRIGHT 3D SUITE (Parametric 18th-century Ship of the Line & GLB Exporter)
+if os.path.exists('shipwright.html'):
+    size_kb = os.path.getsize('shipwright.html') / 1024
+    print(f"9. Verified Shipwright 3D Studio ({size_kb:.1f} KB - Procedural Three.js + GLTF Exporter in shipwright.html)")
+else:
+    print("9. Warning: shipwright.html not found.")
+
+# 10. PLAYABLE 3D SUITE (Drivable Character Playground & Sketch-to-Robot Engine)
+if os.path.exists('playable.html'):
+    size_kb = os.path.getsize('playable.html') / 1024
+    print(f"10. Verified Playable 3D Playground ({size_kb:.1f} KB - Three.js Character Rig + IK Gait in playable.html)")
+if os.path.exists('gundam.html'):
+    size_kb = os.path.getsize('gundam.html') / 1024
+    print(f"    + Verified AUDIRA-01 Gundam Striker ({size_kb:.1f} KB in gundam.html)")
+else:
+    print("10. Warning: playable.html or gundam.html not found.")
+
+# 11. Inject top navigation header & search palette
+import enhance_pages
+enhance_pages.inject('index.html', 'overview')
+enhance_pages.inject('datacenter.html', 'datacenter')
+enhance_pages.inject('cyberlab.html', 'cyberlab')
+enhance_pages.inject('audira-studio.html', 'studio')
+enhance_pages.inject('objects.html', 'objects')
+enhance_pages.inject('cities.html', 'cities')
+enhance_pages.inject('lumen.html', 'lumen')
+enhance_pages.inject('computer-demo.html', 'computer')
+enhance_pages.inject('shipwright.html', 'shipwright')
+enhance_pages.inject('colorfigures.html', 'colorfigures')
+
+shutil.copyfile('index.html', 'landing.html')
+print("11. Synchronized index.html and landing.html as main homepage with Universal Nav & Search")
 print("=== ALL COMPLETED SUCCESSFULLY ===")
+

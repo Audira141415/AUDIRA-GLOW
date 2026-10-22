@@ -1,0 +1,158 @@
+[
+  {
+    "id": "arcade",
+    "title": "Arcade cabinet",
+    "js_file": "assets/colorfigures/models/arcade.js",
+    "size": 69791
+  },
+  {
+    "id": "blender",
+    "title": "Blender",
+    "js_file": "assets/colorfigures/models/blender.js",
+    "size": 76676
+  },
+  {
+    "id": "booth",
+    "title": "Toilet booth",
+    "js_file": "assets/colorfigures/models/booth.js",
+    "size": 36606
+  },
+  {
+    "id": "cistern",
+    "title": "Toilet flush",
+    "js_file": "assets/colorfigures/models/cistern.js",
+    "size": 41280
+  },
+  {
+    "id": "claw",
+    "title": "Claw machine",
+    "js_file": "assets/colorfigures/models/claw.js",
+    "size": 78727
+  },
+  {
+    "id": "crossing",
+    "title": "Traffic light",
+    "js_file": "assets/colorfigures/models/crossing.js",
+    "size": 31217
+  },
+  {
+    "id": "ekettle",
+    "title": "Electric kettle",
+    "js_file": "assets/colorfigures/models/ekettle.js",
+    "size": 47258
+  },
+  {
+    "id": "espresso",
+    "title": "Espresso machine",
+    "js_file": "assets/colorfigures/models/espresso.js",
+    "size": 67212
+  },
+  {
+    "id": "fan",
+    "title": "Desk fan",
+    "js_file": "assets/colorfigures/models/fan.js",
+    "size": 38513
+  },
+  {
+    "id": "foodtruck",
+    "title": "Food truck",
+    "js_file": "assets/colorfigures/models/foodtruck.js",
+    "size": 72854
+  },
+  {
+    "id": "fridge",
+    "title": "Fridge",
+    "js_file": "assets/colorfigures/models/fridge.js",
+    "size": 68757
+  },
+  {
+    "id": "gashapon",
+    "title": "Capsule toy machine",
+    "js_file": "assets/colorfigures/models/gashapon.js",
+    "size": 67345
+  },
+  {
+    "id": "gumball",
+    "title": "Gumball machine",
+    "js_file": "assets/colorfigures/models/gumball.js",
+    "size": 40171
+  },
+  {
+    "id": "lamp",
+    "title": "Desk lamp",
+    "js_file": "assets/colorfigures/models/lamp.js",
+    "size": 37556
+  },
+  {
+    "id": "microwave",
+    "title": "Microwave",
+    "js_file": "assets/colorfigures/models/microwave.js",
+    "size": 60013
+  },
+  {
+    "id": "musicbox",
+    "title": "Music box",
+    "js_file": "assets/colorfigures/models/musicbox.js",
+    "size": 39887
+  },
+  {
+    "id": "photobooth",
+    "title": "Photo booth",
+    "js_file": "assets/colorfigures/models/photobooth.js",
+    "size": 48760
+  },
+  {
+    "id": "pourover",
+    "title": "Pour-over coffee set",
+    "js_file": "assets/colorfigures/models/pourover.js",
+    "size": 65854
+  },
+  {
+    "id": "recordplayer",
+    "title": "Record player",
+    "js_file": "assets/colorfigures/models/recordplayer.js",
+    "size": 51041
+  },
+  {
+    "id": "sharpener",
+    "title": "Pencil sharpener",
+    "js_file": "assets/colorfigures/models/sharpener.js",
+    "size": 32347
+  },
+  {
+    "id": "smokealarm",
+    "title": "Smoke alarm",
+    "js_file": "assets/colorfigures/models/smokealarm.js",
+    "size": 48689
+  },
+  {
+    "id": "toaster",
+    "title": "Toaster",
+    "js_file": "assets/colorfigures/models/toaster.js",
+    "size": 35690
+  },
+  {
+    "id": "vacuum",
+    "title": "Upright vacuum",
+    "js_file": "assets/colorfigures/models/vacuum.js",
+    "size": 65280
+  },
+  {
+    "id": "vending",
+    "title": "Vending machine",
+    "js_file": "assets/colorfigures/models/vending.js",
+    "size": 48104
+  },
+  {
+    "id": "washer",
+    "title": "Washing machine",
+    "js_file": "assets/colorfigures/models/washer.js",
+    "size": 71447
+  },
+  {
+    "id": "windup",
+    "title": "Wind-up toy",
+    "js_file": "assets/colorfigures/models/windup.js",
+    "size": 34569
+  }
+]

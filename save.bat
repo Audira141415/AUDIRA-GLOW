@@ -1,15 +1,12 @@
 @echo off
 setlocal enabledelayedexpansion
-title AUDIRA GLOW - Git Auto-Save & Push Tool
+title AUDIRA GLOW - Git Auto-Save and Push Tool
 color 0b
 
 echo ================================================================
-echo    ___   __  __ ___   ___ ___    _       ___ _    _____      __
-echo   / _ \ / / / / _ \ / _ \_ _|  /_\     / __^| ^|  / _ \ \    / /
-echo  / /_\ / /_/ / // / / , _/ ^|  / _ \   ^| (_ ^| ^|__^| (_) \ \/\/ / 
-echo /_/   \_\____/____/ /_/ \_\___/_/   \_\   \___^|____\___/ \_/\_/  
+echo     AUDIRA GLOW - Git Auto-Save and Push Tool
 echo ================================================================
-echo       AUDIRA GLOW · Interactive Isometric Systems Engine
+echo       Interactive Isometric Systems and 3D Engine Suite
 echo       Author: Audira (Agus Dwi R)
 echo       Target Repo: https://github.com/Audira141415/AUDIRA-GLOW.git
 echo ================================================================

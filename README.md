@@ -16,12 +16,12 @@
 **AUDIRA GLOW** is a bespoke, zero-dependency interactive graphics and audio framework developed by **Audira (Agus Dwi R)**. Designed as a high-performance alternative to heavy WebGL canvas textures, it calculates exact sub-pixel axonometric 3D-to-2D projection matrices directly into scalable SVG DOM trees.
 
 ### Key Highlights
-- **45+ Interactive Models**: Precision isometric hardware and architectural figures.
-- **6 Master Collections**: Enterprise Data Center, Cyber Lab, Audira Studio, Architectural Cities, Classic Objects, and Lumen Light Sculptures.
+- **75+ Interactive Models**: Precision isometric hardware, architectural, hand-inked mechanical figures, procedural 3D vessels, and drivable 3D mecha/robot characters.
+- **10 Master Collections**: AUDIRA-01 Gundam Striker & Playable 3D, Colorfigures Playable Mechanics (26), Shipwright 3D Naval Studio, Enterprise Data Center (12), Cyber Lab (5), Audira Studio (5), Architectural Cities (10), Classic Objects (10), Lumen Light Sculptures (12), and Standalone 3D Canvas.
 - **Zero External Dependencies**: Pure Vanilla ES6+, semantic HTML5, and native SVG. No heavy frameworks or large asset bundles.
 - **Procedural Sound Engine**: 100% native Web Audio API audio synthesis (plasma blasts, vacuum tube harmonics, radio static, and jet turbines) with zero MP3/WAV download overhead.
 - **Dual Theme & Dynamic Luminous System**: Instant one-click toggle between obsidian **Dark Mode** (retaining the signature deep neon aesthetic) and clean **Light Mode** (architectural vector CAD styling), paired with a universal 6-color accent matrix (Ember, Ice, Mint, Gold, Neon, Dusk) and `localStorage` persistence.
-- **Living Animation Physics**: Active animation loops (`api.every` & `api.loop`) powering real-time waveforms, particle packet streams, and flywheel lerp kinematics.
+- **Living Animation Physics**: Active animation loops (`api.every` & `api.loop`) powering real-time waveforms, particle packet streams, flywheel kinematics, and hand-drawn paper wobble shader.
 
 ---
 
@@ -64,7 +64,59 @@
 
 ---
 
-### 4. 🏙️ Additional Architectural & Geometric Collections
+### 4. 🕹️ Colorfigures Hand-Inked Mechanical Suite (`colorfigures.html`)
+*26 Playable Hand-Inked Isometric Figures with 3D Orbit, Turntable & Paper Wobble Physics:*
+1. **Washing Machine (`assets/colorfigures/washer.html`)**: Rotating drum, water fill & drain cycles, spin tumble physics, transparent porthole door.
+2. **Espresso Machine (`assets/colorfigures/espresso.html`)**: Portafilter lock with mechanical torque, dual extraction stream, pressure dial gauge, and steam wand purge.
+3. **Vending Machine (`assets/colorfigures/vending.html`)**: Interactive matrix keypad, drop chute physics, coin acceptor mechanism, snack delivery flap.
+4. **Toaster (`assets/colorfigures/toaster.html`)**: Toast slot depression, spring-loaded pop-up latch, browning potentiometer dial.
+5. **Microwave Oven (`assets/colorfigures/microwave.html`)**: Turntable motorized rotation, door latch, digital LED timer, food heating simulation.
+6. **Pencil Sharpener (`assets/colorfigures/sharpener.html`)**: Geared rotary hand crank, shavings collection bin, progressive graphite sharpening.
+7. **Wind-Up Toy (`assets/colorfigures/windup.html`)**: Ratchet winding key, spring tension energy store, bipedal mechanical clockwork walk.
+8. **Pedestrian Traffic Light (`assets/colorfigures/crossing.html`)**: Push-button crosswalk controller, 3-state automotive & pedestrian walk signal phases.
+9. **Smoke Alarm (`assets/colorfigures/smokealarm.html`)**: Piezoelectric buzzer test button, battery compartment drawer, intermittent LED blink.
+10. **Refrigerator (`assets/colorfigures/fridge.html`)**: Magnetic seal dual doors, interior illumination trigger, crisper drawers, freezer compartment.
+11. **Toilet Flush Cistern (`assets/colorfigures/cistern.html`)**: Dual-flush chrome lever, rubber flapper valve, siphonic flush whirlpool, float ball valve refill.
+12. **Gashapon Capsule Machine (`assets/colorfigures/gashapon.html`)**: 100-yen coin mechanism, rotary turn dial, tumbling toy capsule drop and unboxing.
+13. **Food Truck (`assets/colorfigures/foodtruck.html`)**: Fold-down awning, kitchen serving window, griddle exhaust stack, mobile street vendor detailing.
+14. **Pour-Over Coffee Set (`assets/colorfigures/pourover.html`)**: Gooseneck kettle with spiral water stream, paper filter coffee bloom, glass dripper carafe.
+15. **Articulated Desk Lamp (`assets/colorfigures/lamp.html`)**: Double-scissor spring counterbalance arm, tiltable conical shade, toggle push-button, light beam cone.
+16. **Electric Kettle (`assets/colorfigures/ekettle.html`)**: 360° cordless power base, auto-shutoff bimetallic steam switch, boiling bubble physics.
+17. **Oscillating Desk Fan (`assets/colorfigures/fan.html`)**: 3-speed selector buttons, oscillation clutch pin, wire safety grille, spinning aerodynamic blades.
+18. **Arcade Claw Machine (`assets/colorfigures/claw.html`)**: Fully playable with arrow keys + space! X/Y gantry crane movement, motorized drop claw, prize grab and chute physics.
+19. **Canister Vacuum Cleaner (`assets/colorfigures/vacuum.html`)**: Cyclone centrifugal dust bin, foot pedal power switch, spring-loaded cord retraction reel.
+20. **Countertop Blender (`assets/colorfigures/blender.html`)**: High-torque motor base, 4-blade stainless vortex, pulse switch, variable speed potentiometer.
+21. **Toilet Booth (`assets/colorfigures/booth.html`)**: Privacy slide latch with Vacant/Engaged indicator disc, toilet paper dispenser, sanitary interior.
+22. **Spiral Gumball Machine (`assets/colorfigures/gumball.html`)**: Coin slot turn key, spherical glass globe, multi-turn spiral gravity race track.
+23. **Vinyl Record Player (`assets/colorfigures/recordplayer.html`)**: Motorized platter, 33/45 RPM pitch selector, cueing tonearm lift and needle groove tracking.
+24. **Cylinder Music Box (`assets/colorfigures/musicbox.html`)**: Winding key, revolving studded brass cylinder, tuned steel comb resonant chime acoustics.
+25. **Vintage Photo Booth (`assets/colorfigures/photobooth.html`)**: Privacy curtain, coin slot trigger, 4 timed xenon strobe flashes, developing photo strip ejection.
+26. **Retro Arcade Cabinet (`assets/colorfigures/arcade.html`)**: Fully playable arcade video game! 8-way microswitch joystick, dual fire buttons, CRT curvature and phosphor scanlines.
+
+---
+
+### 5. ⛵ Shipwright 3D Procedural Naval Studio (`shipwright.html`)
+*Real-Time Parametric 18th-Century Ship of the Line & 1-Click GLTF/GLB Exporter:*
+- **Procedural Hull Generator**: Station curves, tumblehome, sheer, rocker, deck sheer, and transom gallery.
+- **Historical Presets**: *Le Bucentaure (1803)* (80-gun French flagship), *HMS Victory (1805)* (104-gun First Rate), *38-Gun Frigate*, *2-Masted Brig*, and *Plaster Architectural Maquette*.
+- **Full Kinematics & Rigging**: Standing shrouds, ratlines, forestays, backstays, running halyards, and billowing canvas sails with dynamic simplex noise wind simulation.
+- **Naval Architecture Metrics**: Real-time calculated displacement tonnage, length on deck, beam, draft, broadside weight, sail area (m²), and crew complement.
+- **1-Click 3D GLB Export**: Export any procedurally generated parametric vessel into standard binary `.glb` ready for Blender 3D, Three.js, or game engines.
+
+---
+
+### 6. 🤖 Playable 3D Character Playground (`playable.html`)
+*Turn Any 3D Rigged Model or 2D Sketch into a Playable Character in the Browser:*
+- **Two Workflows**:
+  1. **Rigged 3D Model (`.glb` / `.gltf` / `.fbx` / `.blend`)**: Loads bones, blends animation clips (idle → walk → run) according to speed, and matches foot planting velocity so feet never skate.
+  2. **Code-Built Robot from Sketch (e.g. `CatBot`)**: Generates 30-joint skeleton and stylized solid meshes in pure Three.js, with dynamic two-joint IK 4-legged gait, springy tail lag physics, body bobbing, head leveling, and keyframe moves (Sit, Stretch, Pounce, Lie Down, Tail Swish).
+- **Game Controls**: WASD relative to follow camera, Shift to run, Space to jump, Q auto-walk, L headlights, 1-9 action moves, and click-to-walk ground navigation.
+- **Iso-Glow Hairline & Lighting**: Real Three.js light sources for glowing eye visors, directional spotlights lighting the floor ahead, and illuminated footprint step decals.
+- **Customizable Workspace Skill**: Installed in [`.agents/skills/playable/`](file:///f:/AUDIRA-GLOW/.agents/skills/playable/SKILL.md) with `build.py`, `inspect_rig.py`, and `to_glb.py`.
+
+---
+
+### 7. 🏙️ Additional Architectural & Geometric Collections
 - **Architectural Cities (`cities.html`)**: 10 dense isometric cyber arcologies, hyperloop interchanges, and elevated neon skyways.
 - **Classic Objects & Artifacts (`objects.html`)**: 10 vintage mechanical and telecommunication workstations.
 - **Lumen Geometric Light Sculptures (`lumen.html`)**: 12 minimalist volumetric light prisms, hypercubes, and radiant crystal monoliths.

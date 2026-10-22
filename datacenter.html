@@ -140,56 +140,96 @@
     .press, .glass, .halo, .press .face, .wire { transition:none; } .blink { animation:none; } .pulse.go { animation:none; }
   }
 </style>
-<style>
-  :root { --dh-w: 1320px; }
-  body { padding-top: 72px !important; }
-  .dh { position:fixed; z-index:40; top:0; left:0; right:0; padding:12px 24px; font:12px/1.45 var(--mono, "DM Mono", monospace); background:linear-gradient(var(--bg) 65%, transparent); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); transition:background .3s; }
-  .dh-in { max-width:var(--dh-w, 1320px); margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .dh-brand { flex:none; display:flex; align-items:center; gap:10px; color:var(--ink-hi); text-decoration:none; font-weight:600; font-size:13px; letter-spacing:.14em; text-transform:uppercase; }
-  .dh-brand .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
-  .dh-seg { display:flex; min-width:0; overflow-x:auto; scrollbar-width:none; padding:4px; gap:4px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); transition:background .3s, border-color .3s; }
-  :root[data-theme="light"] .dh-seg { background:rgba(255,255,255,0.9); }
-  .dh-seg a { flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; padding:6px 14px; border-radius:999px; color:var(--ink); text-decoration:none; font-size:11px; letter-spacing:.06em; transition:all .2s; }
-  .dh-seg a:hover { color:var(--ink-hi); }
-  .dh-seg a.active { color:var(--ink-hi); background:var(--bg); box-shadow:0 0 0 1px var(--accent) inset; }
-  .dh-seg .n { opacity:.6; font-size:10px; }
-
-  /* SWATCHES & THEME CONTROLS */
-  .dh-actions { display:flex; align-items:center; gap:8px; flex:none; }
-  .swatches { display:flex; align-items:center; gap:4px; padding:3px 6px; border:1px solid var(--edge); border-radius:999px; background:rgba(20,21,23,0.85); transition:background .3s, border-color .3s; }
-  :root[data-theme="light"] .swatches { background:rgba(255,255,255,0.9); }
-  .swatches button { width:22px; height:22px; border-radius:50%; border:1px solid transparent; background:none; cursor:pointer; display:grid; place-items:center; padding:0; }
-  .swatches button i { width:10px; height:10px; border-radius:50%; background:var(--sw); border:1px solid var(--line); transition:all .2s; }
-  .swatches button:hover i { transform:scale(1.2); }
-  .swatches button[aria-checked="true"] { border-color:var(--line); }
-  .swatches button[aria-checked="true"] i { box-shadow:0 0 10px 1px var(--sw); transform:scale(1.15); }
-
-  /* THEME TOGGLE BUTTON */
-  .theme-toggle {
-    display:flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px;
-    border:1px solid var(--edge); background:rgba(20,21,23,0.85); color:var(--ink);
-    font:500 11px/1 var(--mono, "DM Mono", monospace); letter-spacing:.08em; cursor:pointer; transition:all .2s;
-    user-select:none;
-  }
-  :root[data-theme="light"] .theme-toggle { background:rgba(255,255,255,0.9); }
-  .theme-toggle:hover { color:var(--ink-hi); border-color:var(--line); }
-  .theme-toggle-icon { display:flex; align-items:center; justify-content:center; }
-  :root[data-theme="dark"] .theme-toggle .sun-icon { display:none; }
-  :root[data-theme="dark"] .theme-toggle .moon-icon { display:block; color:var(--accent); }
-  :root[data-theme="light"] .theme-toggle .moon-icon { display:none; }
-  :root[data-theme="light"] .theme-toggle .sun-icon { display:block; color:var(--accent); }
-</style>
+<link rel="stylesheet" href="assets/audira/audira-nav.css">
 </head>
 <body>
 
 <header class="dh">
   <div class="dh-in">
-    <a class="dh-brand" href="index.html"><span class="dot"></span><span>AUDIRA GLOW</span></a>
-    <nav class="dh-seg" aria-label="Collections"><a href="index.html" class="">OVERVIEW <span class="n">38+</span></a><a href="datacenter.html" class=" active">DATA CENTER <span class="n">12</span></a><a href="cyberlab.html" class="">CYBER LAB <span class="n">5</span></a><a href="audira-studio.html" class="">AUDIRA STUDIO <span class="n">5</span></a><a href="objects.html" class="">OBJECTS <span class="n">10</span></a><a href="cities.html" class="">CITIES <span class="n">10</span></a><a href="lumen.html" class="">LUMEN <span class="n">12</span></a><a href="computer-demo.html" class="">DESK COMPUTER <span class="n">1</span></a><a href="assets/gallery-3d.html" class="">3D DEMO <span class="n">12</span></a></nav>
+    <!-- Brand Logo -->
+    <a class="dh-brand" href="index.html" title="AUDIRA GLOW · Interactive Systems Engine">
+      <span class="dot"></span>
+      <span>AUDIRA GLOW</span>
+    </a>
+
+    <!-- Primary Nav Items with Dropdowns -->
+    <nav class="dh-nav" aria-label="Master Collections">
+      <div class="dh-item">
+        <a href="index.html" class="dh-link">Home</a>
+      </div>
+
+      <!-- 3D & Mecha Dropdown -->
+      <div class="dh-item">
+        <a href="playable.html" class="dh-link">
+          <span>🎮 3D &amp; Mecha</span>
+          <span class="badge">4</span>
+        </a>
+        <div class="dh-menu">
+          <a href="gundam.html" class="dh-menu-link"><span>🤖 Gundam Striker 3D</span><span class="badge">WASD</span></a>
+          <a href="playable.html" class="dh-menu-link"><span>🐱 CatBot IK Rig</span><span class="badge">3D</span></a>
+          <a href="colorfigures.html" class="dh-menu-link"><span>🕹️ Colorfigures Gallery</span><span class="badge">26</span></a>
+          <a href="shipwright.html" class="dh-menu-link"><span>⛵ Shipwright 3D Studio</span><span class="badge">GLB</span></a>
+        </div>
+      </div>
+
+      <!-- Direct Colorfigures -->
+      <div class="dh-item">
+        <a href="colorfigures.html" class="dh-link">
+          <span>🕹️ Colorfigures</span>
+          <span class="badge">26</span>
+        </a>
+      </div>
+
+      <!-- Direct Shipwright -->
+      <div class="dh-item">
+        <a href="shipwright.html" class="dh-link">
+          <span>⛵ Shipwright</span>
+          <span class="badge">GLB</span>
+        </a>
+      </div>
+
+      <!-- Enterprise Infrastructure Dropdown -->
+      <div class="dh-item">
+        <a href="datacenter.html" class="dh-link active">
+          <span>🏢 Enterprise</span>
+          <span class="badge">NOC</span>
+        </a>
+        <div class="dh-menu">
+          <a href="datacenter.html" class="dh-menu-link"><span>🖥️ Data Center Tier IV</span><span class="badge">12</span></a>
+          <a href="cyberlab.html" class="dh-menu-link"><span>⚛️ Cyber Lab Sci-Fi</span><span class="badge">5</span></a>
+          <a href="audira-studio.html" class="dh-menu-link"><span>📻 Valve Synth Studio</span><span class="badge">5</span></a>
+        </div>
+      </div>
+
+      <!-- Galleries Dropdown -->
+      <div class="dh-item">
+        <a href="cities.html" class="dh-link">
+          <span>🏙️ Galleries</span>
+          <span class="badge">33</span>
+        </a>
+        <div class="dh-menu">
+          <a href="cities.html" class="dh-menu-link"><span>🏙️ Cyber Cities</span><span class="badge">10</span></a>
+          <a href="objects.html" class="dh-menu-link"><span>📠 Classic Objects</span><span class="badge">10</span></a>
+          <a href="lumen.html" class="dh-menu-link"><span>💎 Lumen Lightforms</span><span class="badge">12</span></a>
+          <a href="computer-demo.html" class="dh-menu-link"><span>🖥️ Desk Computer 3D</span><span class="badge">1</span></a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Dedicated Search Button (Ctrl+K) -->
+    <button class="dh-search-btn" id="openSearchBtn" type="button" aria-label="Search all 75+ Models (Ctrl+K)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <span>Search 75+ Models...</span>
+      <kbd>Ctrl K</kbd>
+    </button>
+
+    <!-- Actions: Swatches & Theme Toggle -->
     <div class="dh-actions">
-      <div class="swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
-      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle Light/Dark Theme" title="Toggle Light / Dark Mode">
-        <span class="theme-toggle-icon">
+      <div class="dh-swatches" id="swatches" role="radiogroup" aria-label="Glow colour"></div>
+      <button class="dh-theme-toggle" id="themeToggle" type="button" aria-label="Toggle Light/Dark Theme" title="Toggle Light / Dark Mode">
+        <span class="dh-theme-toggle-icon">
           <svg class="sun-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
           <svg class="moon-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </span>
@@ -198,6 +238,7 @@
     </div>
   </div>
 </header>
+
 
 <svg class="fx" aria-hidden="true">
   <defs>
@@ -3668,6 +3709,7 @@ const AUDIO = (() => {
   apply();
 })();
 </script>
+<script src="assets/audira/audira-nav.js"></script>
 
 <script id="theme-ctrl">
 (function() {
@@ -3675,26 +3717,26 @@ const AUDIO = (() => {
     var theme = (t === 'light') ? 'light' : 'dark';
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('audira-glow-theme', theme); } catch(e) {}
-    var btn = document.getElementById('themeToggle');
-    if (btn) {
+    var btns = document.querySelectorAll('#themeToggle, .dh-theme-toggle');
+    btns.forEach(function(btn) {
       var lbl = btn.querySelector('.theme-toggle-label');
       if (lbl) lbl.textContent = theme.toUpperCase();
-    }
+    });
   }
   var saved = 'dark';
   try { saved = localStorage.getItem('audira-glow-theme') || 'dark'; } catch(e) {}
   setTheme(saved);
   
   function initBtn() {
-    var btn = document.getElementById('themeToggle');
-    if (btn) {
+    var btns = document.querySelectorAll('#themeToggle, .dh-theme-toggle');
+    btns.forEach(function(btn) {
       var lbl = btn.querySelector('.theme-toggle-label');
       if (lbl) lbl.textContent = (document.documentElement.dataset.theme || 'dark').toUpperCase();
       btn.onclick = function() {
         var cur = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
         setTheme(cur === 'light' ? 'dark' : 'light');
       };
-    }
+    });
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initBtn);
