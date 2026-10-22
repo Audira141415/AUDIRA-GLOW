@@ -87,10 +87,17 @@ echo [3/3] Pushing to GitHub (origin main)...
 git branch -M main
 git push -u origin main
 
-if %errorlevel% neq 0 (
+if !errorlevel! equ 0 (
+    color 0a
+    echo.
+    echo ================================================================
+    echo    SUCCESS! All changes have been pushed to GitHub!
+    echo    Repository: %REPO_URL%
+    echo ================================================================
+) else (
     echo.
     color 0e
-    echo [WARNING] Standard push failed. Trying to pull rebase first or force push...
+    echo [WARNING] Standard push failed. Trying to resolve...
     echo Options:
     echo  [1] Pull and Rebase from remote, then push
     echo  [2] Force push to overwrite remote (Caution)
@@ -104,17 +111,15 @@ if %errorlevel% neq 0 (
     ) else (
         echo [INFO] Push cancelled by user.
     )
-)
-
-echo.
-if %errorlevel% equ 0 (
-    color 0a
-    echo ================================================================
-    echo    SUCCESS! All changes have been pushed to GitHub!
-    echo    Repository: %REPO_URL%
-    echo ================================================================
-) else (
-    echo [WARNING] Please review the git output above for any authentication or network issues.
+    if !errorlevel! equ 0 (
+        color 0a
+        echo ================================================================
+        echo    SUCCESS! All changes have been pushed to GitHub!
+        echo    Repository: %REPO_URL%
+        echo ================================================================
+    ) else (
+        echo [WARNING] Please review the git output above for authentication or network issues.
+    )
 )
 
 echo.

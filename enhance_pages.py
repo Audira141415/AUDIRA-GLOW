@@ -79,22 +79,6 @@ def create_header(active_key):
         </div>
       </div>
 
-      <!-- Direct Colorfigures -->
-      <div class="dh-item">
-        <a href="colorfigures.html" class="dh-link{act_colorfigures}">
-          <span>🕹️ Colorfigures</span>
-          <span class="badge">26</span>
-        </a>
-      </div>
-
-      <!-- Direct Shipwright -->
-      <div class="dh-item">
-        <a href="shipwright.html" class="dh-link{act_shipwright}">
-          <span>⛵ Shipwright</span>
-          <span class="badge">GLB</span>
-        </a>
-      </div>
-
       <!-- Enterprise Infrastructure Dropdown -->
       <div class="dh-item">
         <a href="datacenter.html" class="dh-link{act_enterprise}">

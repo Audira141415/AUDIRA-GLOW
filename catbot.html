@@ -135,6 +135,7 @@ import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 // Three.js: X = x, Y = z, Z = −y (metres).
 const V = (x, y, z) => new THREE.Vector3(x / 100, z / 100, -y / 100);
 const themeHooks = [];       // per-figure theme updates
+const accentFillU = { value: 0 }, accentFilled = new WeakSet();
 let active = 'heli';           // which figure is on screen
 let camAnim = null;            // iso-view snap animation
 
@@ -3824,13 +3825,12 @@ function applyWeight() {
   outlineMat.uniforms.color.value.copy(BG_COL).lerp(LINE_COL, fade);
 }
 let edTimer;
-function setEdge(a, rebuild = true) { edgeAngle = a; ed.value = a; edv.textContent = a + '°'; store('edge', a); if (rebuild) { clearTimeout(edTimer); edTimer = setTimeout(rebuildEdges, 60); } }
-ed.addEventListener('input', () => setEdge(+ed.value));
+function setEdge(a, rebuild = true) { edgeAngle = a; if (ed) ed.value = a; if (edv) edv.textContent = a + '°'; store('edge', a); if (rebuild) { clearTimeout(edTimer); edTimer = setTimeout(rebuildEdges, 60); } }
+if (ed) ed.addEventListener('input', () => setEdge(+ed.value));
 setEdge(+load('edge') || 30, false);
 
 setAccent(PALETTE[0][1]);   // always the orange (sodium) accent
 
-const accentFillU = { value: 0 }, accentFilled = new WeakSet();
 function accentFill(root) {   // patch every material that can light up with the accent
   root.traverse(o => { const m = o.material; if (!m || !m.isMeshStandardMaterial || accentFilled.has(m) || m.emissive.getHex() === 0) return; accentFilled.add(m);
     m.onBeforeCompile = sh => { sh.uniforms.uAccentFill = accentFillU; sh.uniforms.uAccentC = { value: accent };
@@ -3856,10 +3856,11 @@ function setTheme(t) {
 }
 // auto revolve: the camera slowly orbits the figure on screen; drag/zoom still work while it turns
 const spinBtn = document.getElementById('spin');
-function setSpin(on) { if (camAnim) camAnim.spin = on; controls.autoRotate = on; controls.autoRotateSpeed = 1.2; spinBtn.setAttribute('aria-pressed', on); store('spin', on ? 1 : 0); }
-spinBtn.addEventListener('click', () => { setSpin(!controls.autoRotate); spinBtn.blur(); });
+function setSpin(on) { if (camAnim) camAnim.spin = on; controls.autoRotate = on; controls.autoRotateSpeed = 1.2; if (spinBtn) spinBtn.setAttribute('aria-pressed', on); store('spin', on ? 1 : 0); }
+if (spinBtn) spinBtn.addEventListener('click', () => { setSpin(!controls.autoRotate); spinBtn.blur(); });
 setSpin(load('spin') === '1');
-document.getElementById('theme').addEventListener('click', () => setTheme(theme === 'dark' ? 'light' : 'dark'));
+const themeEl = document.getElementById('theme');
+if (themeEl) themeEl.addEventListener('click', () => setTheme(theme === 'dark' ? 'light' : 'dark'));
 addEventListener('keydown', e => { if (!['tw', 'pc'].includes(active) && e.key.toLowerCase() === 't' && !e.metaKey && !e.ctrlKey && !e.altKey && e.target.tagName !== 'INPUT') setTheme(theme === 'dark' ? 'light' : 'dark'); });
 setTheme(load('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
 
